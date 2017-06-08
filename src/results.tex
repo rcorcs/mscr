@@ -1,0 +1,156 @@
+
+\chapter{Experimental Evaluation}
+
+In this section we discuss our experimental evaluation.
+First we describe the benchmarks with datasets used in the experiments.
+Afterwards, we discuss our results concerning the instrumentations for profiling our work metric.
+Finally we present the results of the online {\itercomp}.
+
+We implemented the instrumentations in LLVM 4.0.
+The target platform is a Linux-4.4.27 system with an Intel Core i7-4770 3.40GHz Skylake~CPU with 16~GiB RAM.
+
+\section{Benchmarks}
+
+%{\Itercomp} is essentially based on repeatedly trying out a large number of compiler optimisations until the best combination of compiler optimisations is found for a particular program.
+%Our main goal is to speed up {\itercomp} while targeting optimal performance across large input datasets.
+
+For the experimental evaluation we have used a subset of the \textit{KDataSets} benchmark suit, which is the same benchmark and dataset suit used by Chen~\etal~\cite{chen10,chen12a}.
+The KDataSets contains 1000 different inputs for each one of its benchmark programs.
+These benchmarks cover a broad spectrum of application scenarios, ranging from simple embedded signal-processing tasks to common mobile-phone and desktop tasks.
+The different inputs try to capture distinct characteristics in terms of workload sizes and how these workloads exercise different control flow paths.
+A summary of the benchmark and dataset suit is shown in Table~\ref{tab:kdatasets}.
+
+\begin{table}[h]
+\centering
+\scalebox{.8}{
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Program} & \textbf{LOC}    & \textbf{Input file size}            & \textbf{Input description}              \\ \hline % Domain
+%bitcount      & 460    &  -                         & Numbers: random                \\ \hline
+qsort         & 154    & 32K-1.8M                   & 3D coordinates                 \\ \hline
+%dijkstra      & 163    & 0.06K-4.3M                 & Adjacency matrices             \\ \hline
+%patricia      & 290    & 0.6K-1.9M                  & IP and mask pairs              \\ \hline
+jpeg\_d       & 13501  & 3.6K-1.5M                  & JPEG images                    \\ \hline
+jpeg\_c       & 14014  & 16K-137M                   & PPM images                     \\ \hline
+tiff2bw       & 15477  & \multirow{4}{*}{9K-137M}   & \multirow{4}{*}{TIFF images}   \\ \cline{1-2}
+tiff2rgba     & 15424  &                            &                                \\ \cline{1-2}
+tiffdither    & 15399  &                            &                                \\ \cline{1-2}
+tiffmedian    & 15870  &                            &                                \\ \hline
+susan\_c      & 1376   & \multirow{3}{*}{12K-46M}   & \multirow{3}{*}{PGM images}    \\ \cline{1-2}
+susan\_e      & 1376   &                            &                                \\ \cline{1-2}
+susan\_s      & 1376   &                            &                                \\ \hline
+%mad           & 2358   & 28K-27M                    & MP3 audios                     \\ \hline
+%lame          & 14491  & 167K-36M                   & WAVE audios                    \\ \hline
+adpcm\_c      & 210    & 167K-36M                   & WAVE audios                    \\ \hline
+adpcm\_d      & 211    & 21K-8.8M                   & ADPCM audios                   \\ \hline
+%gsm           & 3806   & 83K-18M                    & Sun/NeXT audios                \\ \hline
+%ghostscript   & 99869  & 11K-43M                    & Postscript files               \\ \hline
+%ispell        & 6522   & \multirow{3}{*}{0.1K-42M}  & \multirow{3}{*}{Text files}    \\ \cline{1-2}
+%rsynth        & 4111   &                            &                                \\ \cline{1-2}
+rsynth        & 4111   &                            &  Text files                    \\ \hline %%%%%% copied line
+%stringsearch  & 338    &                            &                                \\ \hline
+%blowfish\_e   & 863    & 0.6K-35M                   & Files of any format            \\ \hline
+%blowfish\_d   & 863    & 0.6K-35M                   & Encrypted files                \\ \hline
+%pgp\_e        & 19575  & 0.6K-35M                   & Files of any format            \\ \hline
+%pgp\_d        & 19575  & 0.4K-18M                   & Encrypted files                \\ \hline
+%rijndael\_e   & 952    & 0.6K-35M                   & Files of any format            \\ \hline
+%rijndael\_d   & 952    & 0.7K-35M                   & Encrypted files                \\ \hline
+sha           & 197    & 0.6K-35M                   & Files of any format            \\ \hline
+%CRC32         & 130    & 0.6K-35M                   & Files of any format            \\ \hline
+%bzip2e        & 5125   & 0.7K-57M                   & Files of any format            \\ \hline
+%bzip2d        & 5125   & 0.2K-25M                   & Compressed files               \\ \hline
+\end{tabular}
+}
+\caption{Description of the KDataSets with 1000 inputs for each benchmark (Chen~\etal~\cite{chen10,chen12a}).}
+\label{tab:kdatasets}
+\end{table}
+
+\section{Evaluation of the Instrumentation}
+
+\begin{figure*}[htp]
+    \centering
+    \includegraphics[width=\textwidth]{figs/overhead-O3.pdf}
+    \caption{Overhead of the instrumentations compiled with {\texttt{-O3}}.}
+    \label{fig:overhead-O3}
+\end{figure*}
+
+Figure~\ref{fig:instr} shows percentage of instrumented basic blocks for the optimal and the relaxed instrumentation with different relaxation thresholds.
+The naive instrumentation always has 100\% of the basic blocks instrumented, by definition.
+
+\begin{figure*}[htp]
+    \centering
+    \includegraphics[width=\textwidth]{figs/instr.pdf}
+    \caption{Percentage of instrumented basic blocks for the optimal and the relaxed instrumentation with different relaxation thresholds.}
+    \label{fig:instr}
+\end{figure*}
+
+The \texttt{adpcm\_d} benchmark is the most critical case amongst the used benchmarks, with a overhead of about 66\% with the optimal instrumentation.
+This benchmark consists mainly of a single hot loop with several branches inside it.
+The relaxation algorithm is able to reduce this overhead down to about 52\% (with an error threshold of 1\%) and 19\% (with an error threshold of 2\%) by removing only one and two probes from the hot loop, respectively.
+These two removed probes were placed in branches, inside the hot loop, with a high probability of being taken, but with a small contribution to the work measured in the loop.
+
+%In this section we discuss the three baseline implementations that will be used for assessing the quality of the proposed metric.
+
+%\vspace{1ex}
+%\noindent \textbf{{\Itercomp} over a single input}
+
+%Most of the existing {\itercomp} studies find the best optimisation though repeated runs on the same input.
+%Although this approach will usually lead to sub-optimal performance across large input datasets, it provides a good baseline when considering the complexity and resonably low compile-time regarding iterative optimising compilers.
+%If $M$ is the total number of combinations of compiler optimisations, this approach requires $O(M)$ runs of the program being optimised.
+%We can consider two main scenarios:
+%\textit{($i$ - best case scenario)} after selecting the optimisation over each individual input, consider the one with best performance across the whole input dataset;
+%\textit{($ii$ - expected scenario)} after selecting the optimisation over each individual input, consider the average case of their performance across the whole input dataset.
+
+%\vspace{1ex}
+%\noindent \textbf{{\Itercomp} across large input datasets}
+
+%Recent work on {\itercomp} have been targeting optimisation across multiple inputs~\cite{fursin07,chen10,chen12a}.
+%If $N$ is the number of input test cases and $M$ is the total number of combinations of compiler optimisations, they perform a total of $O(NM)$ runs of the program being optimised.
+%Similarly to what have been discussed previously, there are different ways for how to determine the optimal combination of compiler optimisations across multiple inputs.
+%It is possible to tune the selection of the program-optimal combination to minimise risk or to maximise average performance.
+%A compromise-based selection criterion could be to maximise average speedup with minimised variance.
+
+%\vspace{1ex}
+%\noindent \textbf{{\Itercomp} based on the IPC metric}
+
+%While the previous two baselines addresses two opposite aspects of {\itercomp}, namely, compile-time efficiency and performance of the generated code, we also intend to compare against IPC as the competing baseline.
+%The main reason for comparing against IPC is because it has been proposed as a metric for comparing the performance of two optimisations running on two distinct inputs.
+%If $M$ is the total number of combinations of compiler optimisations, this approach requires $O(M)$ runs of the program being optimised.
+
+\section{Evaluation of the Online {\IterComp}}
+
+\begin{itemize}
+\item Oracle-RM executes the program twice, for each input, and then measuring the real speedup for each compiler optimisation and uses the real speedup for selecting the best optimisation.
+\item Oracle-PP represents the \textit{perfect} non-intrusive profiling by also executing the program twice, once for estimating the amount of work and the second for measuring its execution time.
+This version uses the work-based metric, $\frac{\Delta W}{\Delta t}$, during the {\itercomp} search.
+\end{itemize}
+
+\begin{figure*}[htb]
+    \centering
+    \includegraphics[width=\textwidth]{figs/speedups.pdf}
+    \caption{Speedups observed with the online {\itercomp}.}
+    \label{fig:speedups}
+\end{figure*}
+
+%\begin{figure*}[htb]
+%    \centering
+%    \includegraphics[width=\textwidth]{figs/profiled-speedups.pdf}
+%    \caption{Speedups observed with the online {\itercomp} if we
+%             consider the instrumentation overhead.}
+%    \label{fig:profiled-speedups}
+%\end{figure*}
+
+%\subsubsection{Contribution of individual optimisation passes}
+%
+%Figure~\ref{fig:flagsfreq} shows an aggregated view of the final combination of compiler optimisations that were selected by {\itercomp} search.
+%The figure presents the individual optimisation passes with at least 1\% of frequency in the selected combination of compiler optimisations that improved the performance over {\texttt{-O3}}.
+%
+%\begin{figure*}[htb]
+%    \centering
+%    \includegraphics[width=\textwidth]{figs/flagsfreq.pdf}
+%    \caption{Frequency of individual optimisation passes on the final selected 
+%             compiler optimisations of the {\itercomp} search over
+%             all benchmarks.}
+%    \label{fig:flagsfreq}
+%\end{figure*}
+

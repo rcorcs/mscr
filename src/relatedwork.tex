@@ -1,0 +1,114 @@
+\chapter{Related Work}
+
+\section{{\IterComp}}
+
+\textbf{Specific work in {\IterComp} about multiple inputs and online scenarios}
+
+\cite{chen10,chen12a} evaluate the effectiveness of iterative compilations across a large number of input test cases.
+Their main motivation is to answer the question:
+\textit{How data input dependent is {\itercomp}?}
+Their results show that it is possible to find a combination of compiler optimisations that achieves at least 86\% of the maximum speedup across all input test cases.
+These optimal combinations are program-specific and yield average speedups up to 3.75$\times$ over the highest optimisation level of compilers.
+
+When optimising a program, the main method for {\itercomp} used by \cite{chen10,chen12a} evaluates each combination of compiler optimisations across all the available inputs, i.e., if $N$ is the number of input test cases and $M$ is the total number of combinations of compiler optimisations, they perform a total of $O(NM)$ runs of the program being optimised.
+Furthermore, they use a pre-defined set of only 300 different combinations of compiler optimisations, which represents a very small sample of the optimisation search space for most modern compilers, e.g.
+LLVM has 56 distinct optimisation passes and GCC has about 47 high-level (SSA form) optimisation passes and about 25 low-level (RTL) optimisation passes, which in both cases result in much more than $2^{50}$ distinct combinations of compiler optimisations, without considering repetition.
+
+Recent work~\citep{chen12b,fang15} have applied the same idea of performing input-dependent {\itercomp} to distributed applications on data centres.
+In summary, each worker receives a subset of the input dataset, called the evaluation dataset, to perform an \textit{online} {\itercomp} of the code being executed.
+Each worker performs the same the method for {\itercomp} used by \cite{chen10,chen12a}, i.e., they evaluate each combination of compiler optimisations across all the evaluation dataset.
+However, because the optimisation is performed online, they usually consider a small evaluation dataset and a small number of compiler optimisations.
+
+\cite{fursin07} addressed the problem of comparing the effect of two optimisations on two distinct inputs. For that purpose, they proposed to use instruction per cycle (IPC) as the metric for performing such comparison.
+Their result show that using IPC seems promising as a robust metric for {\itercomp} across large input datasets.
+However, some specific optimisation techniques may affect the use of IPC as a robust metric, and specially IPC has been shown to provide poor performance estimation for multi-threaded programs~\citep{alameldeen06,eyerman08}.
+In particular, IPC can give a skewed performance measure if threads spend time in \textit{spin-lock loops} or other synchronisation mechanisms. 
+Some existing work on performance assessment suggest that total execution time should be used for measuring performance of multi-threaded programs~\citep{alameldeen06,eyerman08}.
+\cite{alameldeen06} in particular suggest that a simple work-related metric should be used if the unit of work is representative enough.
+Work-related metrics have already been largely used for measuring performance of throughput-oriented applications, for other applications, however, choosing an appropriate unit of work can be more challenging~\citep{alameldeen06}.
+
+\section{Work and Input Size Metrics}
+
+\textbf{Talk about work-based metrics}
+
+Previous work have proposed profiling-based mechanism to estimate input sizes~\citep{zaparanuks12,coppa14}.
+\cite{coppa14} in particular propose the concept of \textit{read memory size} for automatically estimating the size of the input passed to a routine, where \textit{read memory size} represents the number of distinct memory cells first accessed by a read operation.
+In other words, the \textit{read memory size} metric measures the size of the useful portion of the input's memory footprint.
+However, because we are interested in the amount of computational work performed in respect of a given input, the memory footprint of the input may not always have a direct correspondence to  the amount of computational work.
+
+\cite{goldsmith07} use \textit{block frequency} as the measure for performance for empirically describing the asymptotic behaviour of programs, which is known as empirical computational complexity.
+Block frequency is a relative metric that represents the number of times a basic block executes~\citep{ball94,ball96}.
+They argue in favour of block frequency due to its portability, repeatability and exactness, since it does not suffer from timer resolution problems or non-deterministic noises.
+Block frequency also has the advantage of being efficiently profiled by means of automatic code instrumentation~\citep{knuth73,ball94}.
+
+However, in the context of comparing different optimisations, although block frequency would be able to capture aspects of optimisations that simplify the control-flow graph (CFG), measuring work at the basic block resolution would not capture effects of optimisations at the instruction level.
+Because of that, we extend the idea of using basic block frequency to measure computational work by also considering the computational cost of each basic block.
+The computational cost of a basic block is given by weighing the instructions that it contains.
+
+\section{Optimal Instrumentation} \label{subsec:optimalInstrumentation}
+
+In order to profile  block frequency, the program can be instrumented with counters that determine how many times each basic block in a program executes.
+A naive instrumentation would consist basically of having a counter for each basic block which is incremented every time the basic block is reached.
+Although the naive instrumentation was commonly used in practice~\citep{knuth71}, it is a very invasive instrumentation that imposes an unnecessarily high overhead in the instrumented program.
+An optimal instrumentation based on the principle of \textit{conservation of flow} (\textit{Kirchhoff's first law}\footnote{Gustav Kirchhoff defined two equalities about electric circuits, known as Kirchhoff's circuit laws. The first one is about current and and the second about potential difference.}) have been originally proposed by \cite{nahapetian73} and \cite{knuth73}.
+The optimal instrumentation was later studied by \cite{forman81} and \cite{ball94} in order to further reduce its overhead by placing the probes in basic blocks that are less likely to be executed.
+
+\begin{definition}[Kirchhoff's first law]
+The amount of flow into a vertex equals the amount of output flow, i.e. the sum of the incoming edges of a vertex equals the sum of outgoing edges of the same vertex.
+\end{definition}
+
+The optimal instrumentation places probes in edges as the basic block frequency can be derived by summing either the flow of the incoming or outgoing edges.
+However, it uses the Kirchhoff's first law in order to place probes in subset of the edges that allows to later infer the flow of all edges.
+Previous work have shown that a set of edges represents the minimum number of probes for profiling block frequency if and only if the complementary set of edges forms a spanning tree~\citep{nahapetian73,ball94}.
+In other words, after determining a spanning tree of the CFG, probes need to be placed only in the edges from the complement of a spanning tree, usually called \textit{cotree}.
+Because the edge frequencies satisfy Kirchhoff's first law, each edge flow can be uniquely determined as an algebraic sum of the known edge flows from the cotree~\citep{nahapetian73,ball94}.
+
+\begin{lstlisting}[caption={A data-flow analysis for populating all edge flows based on the probed edges.}, label={lst:populateEdgeFlows}, float]
+// Inputs: CFG with the known edges flows from the cotree
+// Output: Updated CFG with all edge flows
+populateEdgeFlows(G) {
+  changed = true
+  while changed:
+    changed = false
+    for B in G.vertices():
+      unIN = count( G.unknownIncomingEdges(B) )
+      unOUT = count( G.unknownOutgoingEdges(B) )
+      if unIN==0 and unOUT==1:
+        //sum known incoming and outgoing edges in B
+        sIN = sum( G.incomingEdges(B) )
+        sOUT = sum( G.outgoingEdges(B) )
+        //update unknown outgoing edge in B with (sIN-sOUT)
+        G.setUnknownOutgoingEdge(B, (sIN-sOUT))
+        changed = true
+      if unIN==1 and unOUT==0:
+        //sum known incoming and outgoing edges in B
+        sIN = sum( G.incomingEdges(B) )
+        sOUT = sum( G.outgoingEdges(B) )
+        //update unknown incoming edge in B with (sOUT-sIN)
+        G.setUnknownIncomingEdge(B, (sOUT-sIN))
+        changed = true
+}
+\end{lstlisting}
+
+Algorithm~\ref{lst:populateEdgeFlows} is guaranteed to terminate because the probed edge flows on the complement of a spanning tree are necessary and sufficient to compute all edge flows~\citep{nahapetian73,forman81}.
+Intuitively, if all the edge flows are known for the complement of a spanning tree then at any leaf of the spanning tree there is only one unknown edge flow.
+This unknown edge flow can be calculated by Kirchhoff's first law.
+This process repeats until all the unknown edge flows have been calculated.
+Although this instrumentation algorithm is proved to produce the optimal placement of probes for well-structured CFGs, it may produce sub-optimal placement for some unstructured CFGs~\citep{ball94}.
+
+\cite{forman81} and \cite{ball94} propose to optimise the placement of the probes with respect to edges that are less likely to be executed.
+It works by considering a weighing that assigns a non-negative value to each edge in the CFG.
+The overhead cost of profiling a set of edges is considered to be proportional to the sum of the weights of the edges.
+These weights can be obtained either by empirical measurements from previous executions or by static heuristic estimations at compile-time.
+In order to minimise the profiling overhead, the instrumentation computes the maximum spanning tree in order to avoid probing in frequently executed edges.
+
+\textbf{Talk about extending to inter-procedural}
+
+\subsection{Extending to Interprocedural Instrumentation}
+
+\subsection{Static Heuristic Estimations}
+
+\textbf{Talk about how Static Heuristic Estimations works}
+\citep{forman81,ball94}
+Wu and Larus (1994): Static branch frequency and program profile analysis
+

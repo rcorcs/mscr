@@ -1,0 +1,69 @@
+
+\chapter{Work-based Metric} \label{sec:metric}
+
+In this section we define the work-based performance metric proposed for comparing different optimised versions of a program when executing with different inputs.
+We define the performance metric as the ratio between the amount of \textit{work}, $\Delta W$, performed during a period of time, $\Delta t$.
+\[
+   P = \frac{\Delta W}{\Delta t}
+\]
+
+%The hypothesis is that, given two optimisations $o_1$ and $o_2$, a program compiled with optimisation $o_2$ would \textit{consistently} perform better than when it is compiled with $o_1$, i.e., $o_1 \tilde{<}_p \, o_2$, if it performs more \textit{work} per unit of time when compiled with $o_2$ instead of $o_1$. 
+By measuring the amount of \textit{work} done per unit of time we reduce the impact of input-dependent aspects and focus instead on the efficiency of the optimised program.
+For this metric, the main challenge is to precisely define what represents \textit{work}.
+
+%For that purpose, we intend to use profiling techniques to measure the input size and amount of computation performed on the execution path triggered by the input~\cite{ball94,ball96,zaparanuks12,coppa14}.
+
+%In addition to being useful for speeding up {\itercomp} across a large number of different inputs, this metric based on comparing work-based efficiencies could
+%potentially be used for applying {\itercomp} \textit{online}.
+%However, the overhead for estimating the amount of \textit{work} must be low enough for the performance gains to be beneficial.
+
+We model the computational work $\Delta W$ as a linear equation based on block frequency information and a cost-model of the instruction set.
+\[
+\Delta W = \varepsilon + \sum_{B} w(B)f(B)
+\]
+where $f(B)$ represents the frequency of basic block $B$ and $w(B)$ represents the computational work of executing $B$.
+We define the work of a basic block $B$ as the sum of the cost of its instructions, i.e.,
+\[
+w(B) = \sum_{i} w_i N_B(i)
+\]
+where $w_i$ is the cost of instruction $i$ and $N_B(i)$ is the number of occurrences of instruction $i$ in basic block $B$.
+
+In this simplified model, we consider that $w_i$ is constant across all programs and executions in the given target platform.
+However, $N_B(i)$ is program dependent but constant across executions, while $f(B)$ is both program and execution dependent, since $f(B)$ can change when executing with different inputs.
+In other words, $N_B(i)$ is a static value known at compile-time and $f(B)$ is a dynamic value known only at run-time.
+%If we define $x_i$ as
+%\[
+%x_i = \sum_{B\in P} N_B(i)f(B)
+%\]
+%we can write our definition of work $\Delta W$ as the following linear equation
+%\[
+%\Delta W = \varepsilon + \sum_{i\in I} w_i x_i
+%\]
+
+%\subsection{Linear regression}
+%
+%\begin{figure}[htb]
+%    \centering
+%    \includegraphics[width=\linewidth]{figs/cost-model.pdf}
+%    \caption{Comparison between the naive and optimal instrumentation with no compiler optimisation.} %, i.e., compiled with \textbf{\texttt{-O0}}.}
+%    \label{fig:cost-model}
+%\end{figure}
+%mse 0.000145373168444
+%mae 0.00737261168981
+%mae* 0.0033892281406
+%mape 75.2924320971
+%corr (0.99946441743545622, 0.0)
+
+Similarly to previous work~\citep{giusto01,powell09,brandolese11}, we derive the cost model for the instruction set by modelling the problem as a multi-variable linear regression, where the \textit{regression coefficients} are the costs of the instructions and the \textit{regressors} (or \textit{explanatory variables}) are computed as $\sum_B N_B(i)f(B)$ for each instruction $i$.
+\[
+\Delta W = \varepsilon + \sum_{i} \left(w_i \sum_{B} N_B(i)f(B)\right)
+\]
+
+By having some empirical data after executing several benchmarks with different inputs, we can fit the linear model with this empirical data in order to obtain the costs of the instructions.
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figs/cost-model.pdf}
+    \caption{Linear model fitted from empirical data. The mean absolute error (MAE) for the fitted curve is of 7 milliseconds.}
+    \label{fig:cost-model}
+\end{figure}
