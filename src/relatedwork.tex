@@ -96,15 +96,17 @@ This unknown edge flow can be calculated by Kirchhoff's first law.
 This process repeats until all the unknown edge flows have been calculated.
 Although this instrumentation algorithm is proved to produce the optimal placement of probes for well-structured CFGs, it may produce sub-optimal placement for some unstructured CFGs~\citep{ball94}.
 
+\textbf{Edge propagation algorithm determines the frequencies of edges in the spanning tree E-Ecnt given the frequencies
+of edges in Ecnt. The algorithm uses a post-order traversal of the spanning tree.}
+
 \cite{forman81} and \cite{ball94} propose to optimise the placement of the probes with respect to edges that are less likely to be executed.
 It works by considering a weighing that assigns a non-negative value to each edge in the CFG.
 The overhead cost of profiling a set of edges is considered to be proportional to the sum of the weights of the edges.
 These weights can be obtained either by empirical measurements from previous executions or by static heuristic estimations at compile-time.
 In order to minimise the profiling overhead, the instrumentation computes the maximum spanning tree in order to avoid probing in frequently executed edges.
 
-\textbf{Talk about extending to inter-procedural}
-
-\subsection{Extending to Interprocedural Instrumentation}
+%\subsection{Extending to Interprocedural Instrumentation}
+%\textbf{Talk about extending to inter-procedural}
 
 \subsection{Static Heuristic Estimations}
 
@@ -112,3 +114,4 @@ In order to minimise the profiling overhead, the instrumentation computes the ma
 \citep{forman81,ball94}
 Wu and Larus (1994): Static branch frequency and program profile analysis
 
+\section{Summary}

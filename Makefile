@@ -11,3 +11,4 @@ build: $(FILE).tex
 
 clean:
 	$(RM) *.aux *.bbl *.blg *.dvi *.idx *.log *.lol *.out *.spl *.t1 *.toc *~
+    $(RM) src/*.aux
