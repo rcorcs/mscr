@@ -67,27 +67,43 @@ sha           & 197    & 0.6K-35M                   & Files of any format       
 
 \section{Evaluation of the Instrumentation}
 
-\begin{figure*}[htp]
+In this section we evaluathe the 
+
+\textbf{Static results.}
+Figure~\ref{fig:num-probes} shows percentage of instrumented basic blocks for the optimal and the relaxed instrumentation with different relaxation thresholds.
+The naive instrumentation always has 100\% of the basic blocks instrumented, by definition.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{figs/num-probes.pdf}
+    \caption{Percentage of instrumented basic blocks for the optimal and the relaxed instrumentation with different relaxation thresholds.}
+    \label{fig:num-probes}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{figs/num-probes-improvement.pdf}
+    \caption{Percentage of instrumented basic blocks for the optimal and the relaxed instrumentation with different relaxation thresholds.}
+    \label{fig:num-probes-improvement}
+\end{figure}
+
+\textbf{Overhead results.}
+Figure~\ref{fig:overhead-O3} shows overhead results 
+The \texttt{adpcm\_d} benchmark is the most critical case amongst the evaluated benchmarks, with an overhead of about 62\% with the optimal instrumentation.
+This benchmark consists mainly of a single hot loop with several branches inside it.
+The relaxation algorithm is able to reduce this overhead down to about 52\% (with an error threshold of 1\%) and 19\% (with an error threshold of 2\%) by removing only one and two probes from the hot loop, respectively.
+These two removed probes were placed in branches, inside the hot loop, with a high probability of being taken, but with a small contribution to the work measured in the loop.
+
+\begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{figs/overhead-O3.pdf}
     \caption{Overhead of the instrumentations compiled with {\texttt{-O3}}.}
     \label{fig:overhead-O3}
-\end{figure*}
+\end{figure}
 
-Figure~\ref{fig:instr} shows percentage of instrumented basic blocks for the optimal and the relaxed instrumentation with different relaxation thresholds.
-The naive instrumentation always has 100\% of the basic blocks instrumented, by definition.
+\textbf{Profile-guided Instrumentation.}
 
-\begin{figure*}[htp]
-    \centering
-    \includegraphics[width=\textwidth]{figs/instr.pdf}
-    \caption{Percentage of instrumented basic blocks for the optimal and the relaxed instrumentation with different relaxation thresholds.}
-    \label{fig:instr}
-\end{figure*}
-
-The \texttt{adpcm\_d} benchmark is the most critical case amongst the used benchmarks, with a overhead of about 66\% with the optimal instrumentation.
-This benchmark consists mainly of a single hot loop with several branches inside it.
-The relaxation algorithm is able to reduce this overhead down to about 52\% (with an error threshold of 1\%) and 19\% (with an error threshold of 2\%) by removing only one and two probes from the hot loop, respectively.
-These two removed probes were placed in branches, inside the hot loop, with a high probability of being taken, but with a small contribution to the work measured in the loop.
+\textbf{Code size.}
 
 %In this section we discuss the three baseline implementations that will be used for assessing the quality of the proposed metric.
 
