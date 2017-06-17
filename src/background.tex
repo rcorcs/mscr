@@ -52,27 +52,37 @@ This type system includes the type information used by sophisticated techniques,
 LLVM also offers instructions for performing type conversions and low-level address arithmetic while preserving type information.
 Furthermore, LLVM IR also differs from RISC instruction sets as some details of the machine are abstracted away.
 For example, the calling convention is abstracted through call and ret instructions and explicit arguments.
-Another significant difference from machine code is that the LLVM IR doesn't use a fixed set of named registers, it uses an infinite set of temporaries named with a \% character.
+Another significant difference from machine code is that the LLVM IR has an infinite set of virtual registers (which are named with a \% character), insted of having just a fixed set of named registers.
 
 In addition to type information, LLVM IR also provides other high-level information that are useful for effectively performing several code analysis and transformations.
-This includes explicit control flow graphs (CFG) and an explicit dataflow representation, by means of the infinite register set in \textit{static single assignment} (SSA) form~\citep{}.
+This includes explicit control flow graphs (CFG)~\citep{allen70} and an explicit dataflow representation, by means of the infinite register set in \textit{static single assignment} (SSA) form~\citep{alpern88,cytron89,cytron91}.
 
-SSA FORM
+A control flow graph (CFG) is a directed graph in which the nodes represent basic blocks and the edges represent control flow paths, i.e. edges represent transfers of control (jumps) between basic blocks.
+A basic block is a straight-line sequence of instructions having only one entry point, i.e. the first instruction to be executed in the basic block, and only one exit point, i.e. the last instruction executed~\citep{allen70,cytron91}.
 
-\textbf{Another difference between LLVM and GCC:}
+An IR is in SSA form if and only if each virtual register is assigned exactly once and every use of registers occur after their definition.
+The primary advantage of using the SSA form is that it simultaneously simplifies and improves several compiler optimisations and analysis~\citep{alpern88,cytron91}.
+Most of the industrial-strength compilers for imperative programming language rely heavily on the SSA form.
 
-In particular, LLVM IR is both well specified and the only interface to the optimizer.
-This property means that all you need to know to write a front end for LLVM is what LLVM IR is, how it works, and the invariants it expects.
-Since LLVM IR has a first-class textual form, it is both possible and reasonable to build a front end that outputs LLVM IR as text, then uses Unix pipes to send it through the optimizer sequence and code generator of your choice.
-
-It might be surprising, but this is actually a pretty novel property to LLVM and one of the major reasons for its success in a broad range of different applications.
-Even the widely successful and relatively well-architected GCC compiler does not have this property: its GIMPLE mid-level representation is not a self-contained representation.
-As a simple example, when the GCC code generator goes to emit DWARF debug information, it reaches back and walks the source level "tree" form.
-GIMPLE itself uses a "tuple" representation for the operations in the code, but (at least as of GCC 4.5) still represents operands as references back to the source level tree form.
-
-The implications of this are that front-end authors need to know and produce GCC's tree data structures as well as GIMPLE to write a GCC front end.
-The GCC back end has similar problems, so they also need to know bits and pieces of how the RTL back end works as well.
-Finally, GCC doesn't have a way to dump out "everything representing my code", or a way to read and write GIMPLE (and the related data structures that form the representation of the code) in text form. The result is that it is relatively hard to experiment with GCC, and therefore it has relatively few front ends.
+The SSA form requires a special assignment statements called the $\phi$-function.
+The $\phi$-function receives as argument a list of virtual registers from different  control flow predecessors of the point where the $\phi$-function occurs.
+The control flow predecessors of each point in the CFG are listed in some arbitrary fixed order, and the $i$-th operand of $\phi$-function is associated with the $i$-th predecessor.
+If control reaches the $\phi$-function from its $i$-th predecessor, then the value of the $i$-th operand is attributed in the assignment.
+Each execution of a $\phi$-function uses only one of the operands, but which one depends on the flow of control just before the $\phi$-function.
 
 
-\textbf{IR, what is a Basic Block, SSA Form}
+
+%\textbf{Another difference between LLVM and GCC:}
+
+%In particular, LLVM IR is both well specified and the only interface to the optimizer.
+%This property means that all you need to know to write a front end for LLVM is what LLVM IR is, how it works, and the invariants it expects.
+%Since LLVM IR has a first-class textual form, it is both possible and reasonable to build a front end that outputs LLVM IR as text, then uses Unix pipes to send it through the optimizer sequence and code generator of your choice.
+
+%It might be surprising, but this is actually a pretty novel property to LLVM and one of the major reasons for its success in a broad range of different applications.
+%Even the widely successful and relatively well-architected GCC compiler does not have this property: its GIMPLE mid-level representation is not a self-contained representation.
+%As a simple example, when the GCC code generator goes to emit DWARF debug information, it reaches back and walks the source level "tree" form.
+%GIMPLE itself uses a "tuple" representation for the operations in the code, but (at least as of GCC 4.5) still represents operands as references back to the source level tree form.
+
+%The implications of this are that front-end authors need to know and produce GCC's tree data structures as well as GIMPLE to write a GCC front end.
+%The GCC back end has similar problems, so they also need to know bits and pieces of how the RTL back end works as well.
+%Finally, GCC doesn't have a way to dump out "everything representing my code", or a way to read and write GIMPLE (and the related data structures that form the representation of the code) in text form. The result is that it is relatively hard to experiment with GCC, and therefore it has relatively few front ends.
