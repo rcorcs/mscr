@@ -1,12 +1,6 @@
 \chapter{Background}
 
-\section{Early Work in {\IterComp}}
-
-\textbf{Original work in {\IterComp}: single input and offline}
-
-\section{Program Profiling}
-
-\textbf{Basic background about profiling in general}
+\section{Graph Theoretic Notations}
 
 \section{LLVM Compiler Infrastructure}
 
@@ -40,11 +34,12 @@ It is common for the backend to also perform some low-level optimisations that t
 
 %Like a real RISC instruction set, it supports linear sequences of simple instructions like add, subtract, compare, and branch.
 
+\subsection{LLVM Virtual Instruction Set}
+
 LLVM IR is a low-level RISC-like virtual instruction set.
 It differs from other intermediate representations (e.g. GCC's GENERICS or the most recent GCC's GIMPLE) as it is defined as a first class language with well-defined semantics.
-Beyond being implemented as a language, LLVM IR is actually defined in three isomorphic forms: the textual format above, an in-memory data structure inspected and modified by optimizations themselves, and an efficient and dense on-disk binary "bitcode" format.
-The LLVM Project also provides tools to convert the on-disk format from text to binary: llvm-as assembles the textual .ll file into a .bc file containing the bitcode goop and llvm-dis turns a .bc file into a .ll file.
-
+Beyond being implemented as a language, LLVM IR is actually defined in three isomorphic forms: the textual format above, an in-memory data structure inspected and modified by optimizations themselves, and an efficient and dense on-disk binary \textit{bitcode} format.
+%The LLVM Project also provides tools to convert the on-disk format from text to binary: llvm-as assembles the textual .ll file into a .bc file containing the bitcode goop and llvm-dis turns a .bc file into a .ll file.
 
 Unlike most RISC instruction sets, LLVM is strongly typed with a simple language-independent type system.
 LLVM's type system can be used to implement data types and operations from high-level languages exposing their implementation behaviour to all stages of optimisation.
@@ -59,18 +54,77 @@ This includes explicit control flow graphs (CFG)~\citep{allen70} and an explicit
 
 A control flow graph (CFG) is a directed graph in which the nodes represent basic blocks and the edges represent control flow paths, i.e. edges represent transfers of control (jumps) between basic blocks.
 A basic block is a straight-line sequence of instructions having only one entry point, i.e. the first instruction to be executed in the basic block, and only one exit point, i.e. the last instruction executed~\citep{allen70,cytron91}.
+Figure~\ref{fig:cfg-odd_inc} shows an example of a CFG constructed from the code in Listing~\ref{lst:ex:odd_inc}.
 
 An IR is in SSA form if and only if each virtual register is assigned exactly once and every use of registers occur after their definition.
 The primary advantage of using the SSA form is that it simultaneously simplifies and improves several compiler optimisations and analysis~\citep{alpern88,cytron91}.
 Most of the industrial-strength compilers for imperative programming language rely heavily on the SSA form.
 
-The SSA form requires a special assignment statements called the $\phi$-function.
+\begin{lstlisting}[language=llvm,style=nasm,caption={An illustrative example of a function in textual LLVM IR. This function returns the argument incremented by one if it is even or by two if it is an odd integer.}, label={lst:ex:odd_inc}]
+define i32 @odd_inc(i32 %arg) {
+entry:
+  %rem = srem i32 %arg, 2
+  %cmp = icmp eq i32 %rem, 0
+  br i1 %cmp, label %if.then, label %if.else
+if.then:
+  %add.1 = add i32 %arg, 1
+  br label %if.end
+if.else:
+  %add.2 = add i32 %arg, 2
+  br label %if.end
+if.end:
+  %ans = phi i32 [ %add.1, %if.then ], [ %add.2, %if.else ] [!\label{lst:odd_inc:phi}!]
+  ret i32 %ans
+}
+\end{lstlisting}
+
+Listing~\ref{lst:ex:odd_inc} shows an example of a function written using textual LLVM IR.
+Names starting with the @ character have a global scope, while names starting with \% have a local scope.
+As stated previously, LLVM IR is strongly typed, which means that every virtual register is attributed a specific type (e.g.\lstinline[language=llvm,style=nasm]{i32 %arg} is of type\lstinline[language=llvm,style=nasm]{i32}, namely a 32-bit integer) as well as every operation (e.g.\lstinline[language=llvm,style=nasm]{add i32} expects all operands of type\lstinline[language=llvm,style=nasm]{i32}).
+
+Furthermore, the SSA form requires a special assignment statements called the $\phi$-function (see line \ref{lst:odd_inc:phi} of Listing~\ref{lst:ex:odd_inc}).
 The $\phi$-function receives as argument a list of virtual registers from different  control flow predecessors of the point where the $\phi$-function occurs.
 The control flow predecessors of each point in the CFG are listed in some arbitrary fixed order, and the $i$-th operand of $\phi$-function is associated with the $i$-th predecessor.
 If control reaches the $\phi$-function from its $i$-th predecessor, then the value of the $i$-th operand is attributed in the assignment.
 Each execution of a $\phi$-function uses only one of the operands, but which one depends on the flow of control just before the $\phi$-function.
 
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.7]{figs/cfg-odd_inc.pdf}
+  \caption{Control flow graph of the\lstinline[language=llvm,style=nasm]{odd_inc} function (see Listing~\ref{lst:ex:odd_inc}).}
+  \label{fig:cfg-odd_inc}
+\end{figure}
 
+In addition to virtual registers, LLVM also allows for stack allocated local variables.
+These are created by allocating data on the stack frame of the currently executing function.
+Data from the stack frame can be manipulated by using explicit memory access operations.
+Figure~\ref{lst:ex:odd_inc_stack} shows an implementation of the\lstinline[language=llvm,style=nasm]{odd_inc} function using data allocated on the stack frame.
+This implementation avoids using the $\phi$-function by keeping the answer on the stack.
+
+\begin{lstlisting}[language=llvm,style=nasm,caption={An example of the odd\_inc function implemented using data allocated on the stack frame.}, label={lst:ex:odd_inc_stack}]
+define i32 @odd_inc_stack(i32 %arg) {
+entry:
+  %addr = alloca i32
+  %rem = srem i32 %arg, 2
+  %cmp = icmp eq i32 %rem, 0
+  br i1 %cmp, label %if.then, label %if.else
+if.then:
+  %add.1 = add i32 %arg, 1
+  store i32 %add.1, i32* %addr
+  br label %if.end
+if.else:
+  %add.2 = add i32 %arg, 2
+  store i32 %add.2, i32* %addr
+  br label %if.end
+if.end:
+  %ans = load i32, i32* %addr
+  ret i32 %ans
+}
+\end{lstlisting}
+
+LLVM provides an optimisation optimisation pass for promoting memory references to be register references (called \texttt{-mem2reg}).
+It promotes alloca instructions which only have loads and stores as uses.
+An alloca is transformed by using dominator frontiers to place phi nodes, then traversing the function in depth-first order to rewrite loads and stores as appropriate.
 
 %\textbf{Another difference between LLVM and GCC:}
 
@@ -86,3 +140,14 @@ Each execution of a $\phi$-function uses only one of the operands, but which one
 %The implications of this are that front-end authors need to know and produce GCC's tree data structures as well as GIMPLE to write a GCC front end.
 %The GCC back end has similar problems, so they also need to know bits and pieces of how the RTL back end works as well.
 %Finally, GCC doesn't have a way to dump out "everything representing my code", or a way to read and write GIMPLE (and the related data structures that form the representation of the code) in text form. The result is that it is relatively hard to experiment with GCC, and therefore it has relatively few front ends.
+
+
+\section{Early Work in {\IterComp}}
+
+\textbf{Original work in {\IterComp}: single input and offline}
+
+\section{Program Profiling}
+
+\textbf{Basic background about profiling in general}
+
+\section{Summary}
