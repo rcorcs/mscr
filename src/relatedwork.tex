@@ -43,7 +43,7 @@ Block frequency also has the advantage of being efficiently profiled by means of
 
 However, in the context of comparing different optimisations, although block frequency would be able to capture aspects of optimisations that simplify the control-flow graph (CFG), measuring work at the basic block resolution would not capture effects of optimisations at the instruction level.
 Because of that, we extend the idea of using basic block frequency to measure computational work by also considering the computational cost of each basic block.
-The computational cost of a basic block is given by weighing the instructions that it contains.
+The computational cost of a basic block is given by weighting the instructions that it contains.
 
 \section{Optimal Instrumentation} \label{subsec:optimalInstrumentation}
 
@@ -100,10 +100,12 @@ Although this instrumentation algorithm is proved to produce the optimal placeme
 of edges in Ecnt. The algorithm uses a post-order traversal of the spanning tree.}
 
 \cite{forman81} and \cite{ball94} propose to optimise the placement of the probes with respect to edges that are less likely to be executed.
-It works by considering a weighing that assigns a non-negative value to each edge in the CFG.
+It works by considering a weighting that assigns a non-negative value to each edge in the CFG.
 The overhead cost of profiling a set of edges is considered to be proportional to the sum of the weights of the edges.
 These weights can be obtained either by empirical measurements from previous executions or by static heuristic estimations at compile-time.
 In order to minimise the profiling overhead, the instrumentation computes the maximum spanning tree in order to avoid probing in frequently executed edges.
+
+Notice that when instrumentation is performed guided by empirical measurements from previous executions, it means that edge profiling information is used in order to produce a better edge profiling instrumentation.
 
 %\subsection{Extending to Interprocedural Instrumentation}
 %\textbf{Talk about extending to inter-procedural}
@@ -113,5 +115,55 @@ In order to minimise the profiling overhead, the instrumentation computes the ma
 \textbf{Talk about how Static Heuristic Estimations works}
 \citep{forman81,ball94}
 Wu and Larus (1994): Static branch frequency and program profile analysis
+
+Wu and Larus's static profiler assigns to each edge in the control flow graph
+of a program a frequency. This frequency is an estimate of how many times that
+edge will be traversed during the execution of the program. In order to determine
+this frequency, Wu and Larus resort to heuristics. These rules gauge the chance that
+branches will be taken. Some heuristics are based on the structure of the control flow
+graph of the program, and others are based on the type and/or value of variables used
+in conditional tests. For instance, Wu and Larus assume that a branch that goes back
+to a loop header, or that leaves the loop will stay in the loop 88\% of the time. They
+also predict that a comparison of a pointer against null is likely to fail with 60\% of
+chance. In total, Wu and Larus have defined nine different approximation rules. It
+is possible that different rules apply to the same branch. In this case, the authors
+have a way to combine these different probabilities, a feat that they accomplish with
+Dempster-Shafer theory of evidences [Shafer, 1976].
+
+In 1994 Wu and Larus [71] presented an estimator that combines several predictions
+regarding the outcome of a branch to make more accurate estimations.
+The algorithm relies on real world programs that are profiled first, this programs
+and their profiling data is then analysed and the collected results are
+used during the estimation of arbitrary programs.
+
+For the analysis several categories were established and the branches in the
+analysed programs then would fall into one or more of these categories:
+
+• Branches that either take a back edge to the loop head or to a block
+outside the loop.
+• Branches based on comparisons (e.g. between pointers, on pointer is
+null,. . . )
+• Branches based on the contents of the next basic block (e.g. is one
+branch target a loop header, does one branch target contain a call, does
+the branch target return,. . . )
+
+Additionally dynamic profiles of the real world programs were measured. This
+measured values were used to determine the probability that, given a branch
+falls into one of the categories, the branch is actually taken. This results in
+several heuristics, for example if a branch is based on a comparison of a pointer
+to null, the probability that the branch is taken is 60%. Or if the block that
+is branched to returns the function the probability for it to be taken is 72%.
+
+When analysing a program the algorithm determines for each branch into
+which of the categories it falls. When the branch falls into more than one
+category, the possibilities of the heuristics for this category are combined with
+statistical methods to estimate the overall probability that this branch is taken.
+
+When using those estimated branch probabilities to estimate execution frequencies
+for all of the control flow edges and basic blocks care has to be taken
+when the function contains loops. Wu and Larus thus also presented a method
+to calculate this execution frequencies from local branch probabilities which
+works for reducible control flow graphs. (Reducible CFGs are graphs where
+the loop head dominates all blocks in the loop see [71] for details.)
 
 \section{Summary}

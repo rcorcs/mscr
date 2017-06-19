@@ -49,6 +49,14 @@ Furthermore, LLVM IR also differs from RISC instruction sets as some details of 
 For example, the calling convention is abstracted through call and ret instructions and explicit arguments.
 Another significant difference from machine code is that the LLVM IR has an infinite set of virtual registers (which are named with a \% character), insted of having just a fixed set of named registers.
 
+The LLVM type system is considered one of the most important features of its intermediate representation, as it enables several optimisations to be performed directly on the IR, without having to do extra analyses on the side before the transformation.
+The main first class types supported are: single value types, aggregate types, and labels.
+Single value types consist of integers of arbitrary bit width (e.g.\lstinline[language=llvm,style=nasm]{i32} denotes a 32-bit integer), floating-point of commonly used width (e.g.\lstinline[language=llvm,style=nasm]{half},\lstinline[language=llvm,style=nasm]{float},\lstinline[language=llvm,style=nasm]{double}, and\lstinline[language=llvm,style=nasm]{fp128}), pointers (e.g.\lstinline[language=llvm,style=nasm]{i32*}) and vector types.
+Vectors are used when multiple primitive data are operated in parallel using a single instruction (SIMD).
+A vector type is represented by a the number of elements and an underlying primitive data type, e.g.\lstinline[language=llvm,style=nasm]{<4 x i32>} is a vector of four 32-bit integer values.
+Aggregated types consist of arrays and structures.
+Vectors are not considered to be aggregate types.
+
 In addition to type information, LLVM IR also provides other high-level information that are useful for effectively performing several code analysis and transformations.
 This includes explicit control flow graphs (CFG)~\citep{allen70} and an explicit dataflow representation, by means of the infinite register set in \textit{static single assignment} (SSA) form~\citep{alpern88,cytron89,cytron91}.
 
@@ -81,6 +89,8 @@ if.end:
 Listing~\ref{lst:ex:odd_inc} shows an example of a function written using textual LLVM IR.
 Names starting with the @ character have a global scope, while names starting with \% have a local scope.
 As stated previously, LLVM IR is strongly typed, which means that every virtual register is attributed a specific type (e.g.\lstinline[language=llvm,style=nasm]{i32 %arg} is of type\lstinline[language=llvm,style=nasm]{i32}, namely a 32-bit integer) as well as every operation (e.g.\lstinline[language=llvm,style=nasm]{add i32} expects all operands of type\lstinline[language=llvm,style=nasm]{i32}).
+Instructions use the three address format, which refers to the use of three operands by most of the instructions.
+However, instructions with fewer or more operands may occur, e.g. the\lstinline[language=llvm,style=nasm]{ret} instruction have fewer operands, while the\lstinline[language=llvm,style=nasm]{phi} and the\lstinline[language=llvm,style=nasm]{call} instructions may have more than three operands.
 
 Furthermore, the SSA form requires a special assignment statements called the $\phi$-function (see line \ref{lst:odd_inc:phi} of Listing~\ref{lst:ex:odd_inc}).
 The $\phi$-function receives as argument a list of virtual registers from different  control flow predecessors of the point where the $\phi$-function occurs.
@@ -100,6 +110,10 @@ These are created by allocating data on the stack frame of the currently executi
 Data from the stack frame can be manipulated by using explicit memory access operations.
 Figure~\ref{lst:ex:odd_inc_stack} shows an implementation of the\lstinline[language=llvm,style=nasm]{odd_inc} function using data allocated on the stack frame.
 This implementation avoids using the $\phi$-function by keeping the answer on the stack.
+
+LLVM provides an optimisation pass for promoting memory references to be register references (called \texttt{-mem2reg}).
+It promotes alloca instructions which only have loads and stores as uses.
+An alloca is transformed by using dominator frontiers to place phi nodes, then traversing the function in depth-first order to rewrite loads and stores as appropriate.
 
 \begin{lstlisting}[language=llvm,style=nasm,caption={An example of the odd\_inc function implemented using data allocated on the stack frame.}, label={lst:ex:odd_inc_stack}]
 define i32 @odd_inc_stack(i32 %arg) {
@@ -122,10 +136,6 @@ if.end:
 }
 \end{lstlisting}
 
-LLVM provides an optimisation optimisation pass for promoting memory references to be register references (called \texttt{-mem2reg}).
-It promotes alloca instructions which only have loads and stores as uses.
-An alloca is transformed by using dominator frontiers to place phi nodes, then traversing the function in depth-first order to rewrite loads and stores as appropriate.
-
 %\textbf{Another difference between LLVM and GCC:}
 
 %In particular, LLVM IR is both well specified and the only interface to the optimizer.
@@ -140,6 +150,18 @@ An alloca is transformed by using dominator frontiers to place phi nodes, then t
 %The implications of this are that front-end authors need to know and produce GCC's tree data structures as well as GIMPLE to write a GCC front end.
 %The GCC back end has similar problems, so they also need to know bits and pieces of how the RTL back end works as well.
 %Finally, GCC doesn't have a way to dump out "everything representing my code", or a way to read and write GIMPLE (and the related data structures that form the representation of the code) in text form. The result is that it is relatively hard to experiment with GCC, and therefore it has relatively few front ends.
+
+\subsection{Analysis and Transformation Passes}
+
+The LLVM Pass Framework is an important part of the LLVM system, because LLVM passes are where most of the interesting parts of the compiler exist.
+Passes perform the transformations and optimizations that make up the compiler, they build the analysis results that are used by these transformations, and they are, above all, a structuring technique for compiler code.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=1]{figs/llvm-containers.pdf}
+  \caption{.}
+  \label{fig:llvm-containers}
+\end{figure}
 
 
 \section{Early Work in {\IterComp}}
