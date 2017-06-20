@@ -51,7 +51,8 @@ In order to profile  block frequency, the program can be instrumented with count
 A naive instrumentation would consist basically of having a counter for each basic block which is incremented every time the basic block is reached.
 Although the naive instrumentation was commonly used in practice~\citep{knuth71}, it is a very invasive instrumentation that imposes an unnecessarily high overhead in the instrumented program.
 An optimal instrumentation based on the principle of \textit{conservation of flow} (\textit{Kirchhoff's first law}\footnote{Gustav Kirchhoff defined two equalities about electric circuits, known as Kirchhoff's circuit laws. The first one is about current and and the second about potential difference.}) have been originally proposed by \cite{nahapetian73} and \cite{knuth73}.
-The optimal instrumentation was later studied by \cite{forman81} and \cite{ball94} in order to further reduce its overhead by placing the probes in basic blocks that are less likely to be executed.
+While \cite{knuth73} proposed an optimal solution for basic block profiling with \textit{vertex counters}, \cite{ball94} showed that an optimal basic block profiling with \textit{edge counters} provides the best instrumentation for block frequency profiling.
+Further overhead reduction of the optimal instrumentation was later proposed by placing the counters in edges that are less likely to be executed~\cite{forman81,ball94}.
 
 \begin{definition}[Kirchhoff's first law]
 The amount of flow into a vertex equals the amount of output flow, i.e. the sum of the incoming edges of a vertex equals the sum of outgoing edges of the same vertex.
@@ -110,11 +111,19 @@ Notice that when instrumentation is performed guided by empirical measurements f
 %\subsection{Extending to Interprocedural Instrumentation}
 %\textbf{Talk about extending to inter-procedural}
 
-\subsection{Static Heuristic Estimations}
+\subsection{Static Estimates of Edge Frequencies}
 
 \textbf{Talk about how Static Heuristic Estimations works}
 \citep{forman81,ball94}
 Wu and Larus (1994): Static branch frequency and program profile analysis
+
+
+\cite{wu94} proposed an algorithm for statically estimating edge frequencies, which improves on the work of \cite{wagner94}.
+This algorithm is able to combine several predictions of the outcome of a branch into an estimated probability of the branch being taken.
+For this purpose, they use Dempster-Shafer theory~\citep{shafer76} that provides the necessary mathematical technique for combining evidences from different heuristics in order to produce more accurate estimates.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 Wu and Larus's static profiler assigns to each edge in the control flow graph
 of a program a frequency. This frequency is an estimate of how many times that
@@ -151,8 +160,8 @@ Additionally dynamic profiles of the real world programs were measured. This
 measured values were used to determine the probability that, given a branch
 falls into one of the categories, the branch is actually taken. This results in
 several heuristics, for example if a branch is based on a comparison of a pointer
-to null, the probability that the branch is taken is 60%. Or if the block that
-is branched to returns the function the probability for it to be taken is 72%.
+to null, the probability that the branch is taken is 60\%. Or if the block that
+is branched to returns the function the probability for it to be taken is 72\%.
 
 When analysing a program the algorithm determines for each branch into
 which of the categories it falls. When the branch falls into more than one
