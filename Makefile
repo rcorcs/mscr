@@ -3,9 +3,7 @@ FILE=dissertation
 
 build: $(FILE).tex
 	pdflatex $(FILE)
-	pdflatex $(FILE)
 	bibtex $(FILE)
-	pdflatex $(FILE)
 	pdflatex $(FILE)
 	pdflatex $(FILE)
 
