@@ -97,8 +97,10 @@ This unknown edge flow can be calculated by Kirchhoff's first law.
 This process repeats until all the unknown edge flows have been calculated.
 Although this instrumentation algorithm is proved to produce the optimal placement of probes for well-structured CFGs, it may produce sub-optimal placement for some unstructured CFGs~\citep{ball94}.
 
-\textbf{Edge propagation algorithm determines the frequencies of edges in the spanning tree E-Ecnt given the frequencies
-of edges in Ecnt. The algorithm uses a post-order traversal of the spanning tree.}
+This briefly described proof suggests that the edges can be more efficiently populated by a bottom-up propagation in the spanning tree.
+By performing a post-order traversal of the spanning tree, i.e. starting from the leaves, we can then apply the flow equation from the Kirchhoff's first law.
+At each node of the spanning tree, we first sum the known incoming and outgoing edges, and then the unknown edge flow will by computed by subtracting the minimum of the two sums from the maximum (as before).
+This bottom-up propagation allows to populate the edge flows in a single pass over the basic blocks.
 
 \cite{forman81} and \cite{ball94} propose to optimise the placement of the probes with respect to edges that are less likely to be executed.
 It works by considering a weighting that assigns a non-negative value to each edge in the CFG.
@@ -107,72 +109,31 @@ These weights can be obtained either by empirical measurements from previous exe
 In order to minimise the profiling overhead, the instrumentation computes the maximum spanning tree in order to avoid probing in frequently executed edges.
 
 Notice that when instrumentation is performed guided by empirical measurements from previous executions, it means that edge profiling information is used in order to produce a better edge profiling instrumentation.
-
-%\subsection{Extending to Interprocedural Instrumentation}
-%\textbf{Talk about extending to inter-procedural}
+The next section presents the main algorithms for producing static estimates for the weights of the edges in a CFG.
 
 \subsection{Static Estimates of Edge Frequencies}
 
-\textbf{Talk about how Static Heuristic Estimations works}
-\citep{forman81,ball94}
-Wu and Larus (1994): Static branch frequency and program profile analysis
+\cite{ball93} presented a simple algorithm that predicts the outcome of conditional branches with a reasonably good accuracy.
+For this purpose, they used several branch heuristics that were derived by measuring, on a large number of programs, the probability of branches being taken in respect of some \textit{ad-hoc} features from the programs.
+Their algorithm selects, for each branch, the first heuristic that applies to the branch, in a given priority order of the heuristics.
+The \textit{ad-hoc} heuristics defined by \cite{ball93} are:
+\begin{description}
+\item[Loop branch heuristic (probability 88\%):] Probability of an edge back to a loop's head being executed.
+\item[Loop exit heuristic (probability 80\%):] Probability that a comparison inside a loop will \textit{not} exit the loop. This heuristic does not apply to latch blocks, i.e. basic blocks that contain a branch back to the header of the loop.
+\item[Pointer heuristic (probability 60\%):] Probability that a comparison between two pointers, where one of them can be a null pointer, will fail.
+\item[Opcode heuristic (probability 84\%):] Probability that a comparison of an integer being less than zero, less than or equal to zero, or equal to a constant will fail.
+\item[Guard heuristic (probability 62\%):] For a comparison with a register as operand, where the register is defined in a successor basic block which is not a post-dominator. The probability that the successor basic block is reached.
+\item[Loop header heuristic (probability 75\%):] Probability of reaching a successor block that is a loop header (or pre-header) but not a post-dominator.
+\item[Call heuristic (probability 78\%):] Probability of reaching a successor block that is not a post-dominator but contains a function call.
+\item[Store heuristic (probability 55\%):] Probability of reaching a successor block that is not a post-dominator but contains a store instruction.
+\item[Return heuristic (probability 72\%):] Probability of reaching a successor block that contains a return instruction.
+\end{description}
 
-
-\cite{wu94} proposed an algorithm for statically estimating edge frequencies, which improves on the work of \cite{wagner94}.
-This algorithm is able to combine several predictions of the outcome of a branch into an estimated probability of the branch being taken.
-For this purpose, they use Dempster-Shafer theory~\citep{shafer76} that provides the necessary mathematical technique for combining evidences from different heuristics in order to produce more accurate estimates.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-Wu and Larus's static profiler assigns to each edge in the control flow graph
-of a program a frequency. This frequency is an estimate of how many times that
-edge will be traversed during the execution of the program. In order to determine
-this frequency, Wu and Larus resort to heuristics. These rules gauge the chance that
-branches will be taken. Some heuristics are based on the structure of the control flow
-graph of the program, and others are based on the type and/or value of variables used
-in conditional tests. For instance, Wu and Larus assume that a branch that goes back
-to a loop header, or that leaves the loop will stay in the loop 88\% of the time. They
-also predict that a comparison of a pointer against null is likely to fail with 60\% of
-chance. In total, Wu and Larus have defined nine different approximation rules. It
-is possible that different rules apply to the same branch. In this case, the authors
-have a way to combine these different probabilities, a feat that they accomplish with
-Dempster-Shafer theory of evidences [Shafer, 1976].
-
-In 1994 Wu and Larus [71] presented an estimator that combines several predictions
-regarding the outcome of a branch to make more accurate estimations.
-The algorithm relies on real world programs that are profiled first, this programs
-and their profiling data is then analysed and the collected results are
-used during the estimation of arbitrary programs.
-
-For the analysis several categories were established and the branches in the
-analysed programs then would fall into one or more of these categories:
-
-• Branches that either take a back edge to the loop head or to a block
-outside the loop.
-• Branches based on comparisons (e.g. between pointers, on pointer is
-null,. . . )
-• Branches based on the contents of the next basic block (e.g. is one
-branch target a loop header, does one branch target contain a call, does
-the branch target return,. . . )
-
-Additionally dynamic profiles of the real world programs were measured. This
-measured values were used to determine the probability that, given a branch
-falls into one of the categories, the branch is actually taken. This results in
-several heuristics, for example if a branch is based on a comparison of a pointer
-to null, the probability that the branch is taken is 60\%. Or if the block that
-is branched to returns the function the probability for it to be taken is 72\%.
-
-When analysing a program the algorithm determines for each branch into
-which of the categories it falls. When the branch falls into more than one
-category, the possibilities of the heuristics for this category are combined with
-statistical methods to estimate the overall probability that this branch is taken.
-
-When using those estimated branch probabilities to estimate execution frequencies
-for all of the control flow edges and basic blocks care has to be taken
-when the function contains loops. Wu and Larus thus also presented a method
-to calculate this execution frequencies from local branch probabilities which
-works for reducible control flow graphs. (Reducible CFGs are graphs where
-the loop head dominates all blocks in the loop see [71] for details.)
+\cite{wu94} proposed an algorithm for statically estimating edge frequencies, which improves on the work of \cite{wagner94} and \cite{ball93}.
+This algorithm is able to combine several heuristics of the outcome of a branch into an estimated probability of the branch being taken.
+\cite{wu94} use the \textit{ad-hoc} heuristics defined by \cite{ball93} as their initial predictions.
+They also use the Dempster-Shafer theory~\citep{shafer76} that provides the necessary mathematical technique for combining evidences from the different heuristics in order to produce more accurate estimates.
+These branch probabilities can then be used to estimate execution frequencies
+for all the edges in a CFG.
 
 \section{Summary}
