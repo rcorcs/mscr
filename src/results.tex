@@ -101,6 +101,15 @@ These two removed probes were placed in branches, inside the hot loop, with a hi
     \label{fig:overhead-O3}
 \end{figure}
 
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{figs/overhead-improvement-O3.pdf}
+    \caption{Overhead of the instrumentations compiled with {\texttt{-O3}}.}
+    \label{fig:overhead-O3}
+\end{figure}
+
+Even if we disconsider the exceptional improvement with the \texttt{adpcm\_d} benchmark, the relaxation with a 5\% threshold is able to improve about 20\% on average, over the optimal instrumentation.
+
 \textbf{Profile-guided Instrumentation.}
 
 \textbf{Code size.}
@@ -142,6 +151,7 @@ These two removed probes were placed in branches, inside the hot loop, with a hi
 
 \subsection{Case Studies}
 
+\noindent \textbf{Analysis of the Best Improvement: \texttt{adpcm\_d}}
 
 \begin{figure*}[htb]
     \centering
@@ -150,7 +160,7 @@ These two removed probes were placed in branches, inside the hot loop, with a hi
     \label{fig:speedups}
 \end{figure*}
 
-
+\noindent \textbf{Analysis of the Abnormal Regression: \texttt{susan\_c}}
 
 
 %\vspace{1ex}
