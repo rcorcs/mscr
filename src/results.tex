@@ -88,8 +88,9 @@ The naive instrumentation always has 100\% of the basic blocks instrumented, by 
 \end{figure}
 
 \textbf{Overhead results.}
+
 Figure~\ref{fig:overhead-O3} shows overhead results 
-The \texttt{adpcm\_d} benchmark is the most critical case amongst the evaluated benchmarks, with an overhead of about 62\% with the optimal instrumentation.
+The \texttt{adpcm\_d} benchmark is the most critical case amongst the evaluated benchmarks, with an overhead of about 62\% for the optimal instrumentation.
 This benchmark consists mainly of a single hot loop with several branches inside it.
 The relaxation algorithm is able to reduce this overhead down to about 52\% (with an error threshold of 1\%) and 19\% (with an error threshold of 2\%) by removing only one and two probes from the hot loop, respectively.
 These two removed probes were placed in branches, inside the hot loop, with a high probability of being taken, but with a small contribution to the work measured in the loop.
@@ -160,7 +161,22 @@ Even if we disconsider the exceptional improvement with the \texttt{adpcm\_d} be
     \label{fig:speedups}
 \end{figure*}
 
+\begin{figure*}[htb]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figs/adpcm_d.png}
+    \caption{Comparison between probe frequency and static error for the \texttt{adpcm\_d} benchmark.}
+    \label{fig:speedups}
+\end{figure*}
+
+
 \noindent \textbf{Analysis of the Abnormal Regression: \texttt{susan\_c}}
+
+\begin{figure*}[htb]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figs/susan_c.png}
+    \caption{Comparison between probe frequency and static error for the \texttt{susan\_c} benchmark.}
+    \label{fig:speedups}
+\end{figure*}
 
 
 %\vspace{1ex}
