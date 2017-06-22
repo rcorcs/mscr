@@ -154,9 +154,9 @@ if.end:
 
 \subsection{Analysis and Transformation Passes}
 
-The LLVM optimiser provides several of different passes in order to provide analysis and transformation capabilities.
+The LLVM optimiser offers several of different passes in order to provide analysis and transformation capabilities.
 These passes are written using the LLVM Core libraries and they are as loosely coupled as possible.
-In other words, each pass is either a stand alone pass or it explicitly declares its dependencies among other passes, in the case where it depend on some other analysis.
+In other words, each pass is either a stand-alone pass or it explicitly declares its dependencies among other passes, in the case where it depend on some other analysis.
 
 The LLVM Core libraries provide both analysis and transformation passes for different levels of the input program.
 These levels, in hierarchical order, are: module, call-graph SCC, function, loop, single-entry single-exit region (or only region for short), and basic block.

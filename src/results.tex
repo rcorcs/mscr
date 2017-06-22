@@ -87,6 +87,15 @@ The naive instrumentation always has 100\% of the basic blocks instrumented, by 
     \label{fig:num-probes-improvement}
 \end{figure}
 
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{figs/instr-error.pdf}
+    \caption{Overhead of the instrumentations compiled with {\texttt{-O3}}.}
+    \label{fig:overhead-O3}
+\end{figure}
+
+
 \textbf{Overhead results.}
 
 Figure~\ref{fig:overhead-O3} shows overhead results 
@@ -113,20 +122,20 @@ Even if we disconsider the exceptional improvement with the \texttt{adpcm\_d} be
 
 \textbf{Profile-guided Instrumentation.}
 
-\textbf{Code size.}
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=\textwidth]{figs/code-size-probes.pdf}
-    \caption{Percentage of instrumented basic blocks for the optimal and the relaxed instrumentation with different relaxation thresholds.}
-    \label{fig:num-probes}
-\end{figure}
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=\textwidth]{figs/code-size-probes-improvement.pdf}
-    \caption{Percentage of instrumented basic blocks for the optimal and the relaxed instrumentation with different relaxation thresholds.}
-    \label{fig:num-probes-improvement}
-\end{figure}
+%\textbf{Code size.}
+%\begin{figure}[ht]
+%    \centering
+%    \includegraphics[width=\textwidth]{figs/code-size-probes.pdf}
+%    \caption{Percentage of instrumented basic blocks for the optimal and the relaxed instrumentation with different relaxation thresholds.}
+%    \label{fig:num-probes}
+%\end{figure}
+%
+%\begin{figure}[ht]
+%    \centering
+%    \includegraphics[width=\textwidth]{figs/code-size-probes-improvement.pdf}
+%    \caption{Percentage of instrumented basic blocks for the optimal and the relaxed instrumentation with different relaxation thresholds.}
+%    \label{fig:num-probes-improvement}
+%\end{figure}
 
 
 %In this section we discuss the three baseline implementations that will be used for assessing the quality of the proposed metric.
