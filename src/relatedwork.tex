@@ -64,9 +64,14 @@ Previous work have shown that a set of edges represents the minimum number of pr
 In other words, after determining a spanning tree of the CFG, probes need to be placed only in the edges from the complement of a spanning tree, usually called \textit{cotree}.
 Because the edge frequencies satisfy Kirchhoff's first law, each edge flow can be uniquely determined as an algebraic sum of the known edge flows from the cotree~\citep{nahapetian73,ball94}.
 
-\begin{lstlisting}[caption={A data-flow analysis for populating all edge flows based on the probed edges.}, label={lst:populateEdgeFlows}, float]
-// Inputs: CFG with the known edges flows from the cotree
-// Output: Updated CFG with all edge flows
+The optimal block frequency instrumentation happens in two main stages:
+\textit{(i.) Before execution.} The code is instrumented with the edge counters, i.e., it requires one global counter for each edge selected to contain a probe.
+\textit{(ii.) After execution.} The information from the recorded probes is propagated in the CFGs of the program, in a post-processing phase.
+\lstlistingname~\ref{lst:populateEdgeFlows} shows the algorithm for the post-processing of a CFG, once we have the profiling information collected by the probes.
+
+\begin{lstlisting}[caption={Post-processing of the CFG for populating all edge flows based on the collected probes.}, label={lst:populateEdgeFlows}, float]
+// Inputs: CFG with the known edges flows from the cotree (collected probes).
+// Output: Updated CFG with all edge flows.
 populateEdgeFlows(G) {
   changed = true
   while changed:
@@ -91,7 +96,7 @@ populateEdgeFlows(G) {
 }
 \end{lstlisting}
 
-Algorithm~\ref{lst:populateEdgeFlows} is guaranteed to terminate because the probed edge flows on the complement of a spanning tree are necessary and sufficient to compute all edge flows~\citep{nahapetian73,forman81}.
+\lstlistingname~\ref{lst:populateEdgeFlows} is guaranteed to terminate because the probed edge flows on the complement of a spanning tree are necessary and sufficient to compute all edge flows~\citep{nahapetian73,forman81}.
 Intuitively, if all the edge flows are known for the complement of a spanning tree then at any leaf of the spanning tree there is only one unknown edge flow.
 This unknown edge flow can be calculated by Kirchhoff's first law.
 This process repeats until all the unknown edge flows have been calculated.
