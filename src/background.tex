@@ -110,6 +110,7 @@ These are created by allocating data on the stack frame of the currently executi
 Data from the stack frame can be manipulated by using explicit memory access operations.
 Figure~\ref{lst:ex:odd_inc_stack} shows an implementation of the\lstinline[language=llvm,style=nasm]{odd_inc} function using data allocated on the stack frame.
 This implementation avoids using the $\phi$-function by keeping the answer on the stack.
+This is the preferred way of generating LLVM code by most frontends, as it simplifies the frontend's own implementation without incurring any serious detriment to the generated code.
 
 LLVM provides an optimisation pass for promoting memory references to be register references (called \texttt{-mem2reg}).
 It promotes alloca instructions which only have loads and stores as uses.
