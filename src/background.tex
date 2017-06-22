@@ -153,16 +153,46 @@ if.end:
 
 \subsection{Analysis and Transformation Passes}
 
-The LLVM Pass Framework is an important part of the LLVM system, because LLVM passes are where most of the interesting parts of the compiler exist.
-Passes perform the transformations and optimizations that make up the compiler, they build the analysis results that are used by these transformations, and they are, above all, a structuring technique for compiler code.
+The LLVM optimiser provides several of different passes in order to provide analysis and transformation capabilities.
+These passes are written using the LLVM Core libraries and they are as loosely coupled as possible.
+In other words, each pass is either a stand alone pass or it explicitly declares its dependencies among other passes, in the case where it depend on some other analysis.
+
+The LLVM Core libraries provide both analysis and transformation passes for different levels of the input program.
+These levels, in hierarchical order, are: module, call-graph SCC, function, loop, single-entry single-exit region (or only region for short), and basic block.
+A module is an entire \textit{translation unit} (e.g., a C/C++ file with all its headers included).
+A pass level only allows modification inside the component in focus.
+For example: while a module-level pass can operate on the entire module at once,
+a function-level pass prohibits any modification on the module-level (or other functions).
 
 \begin{figure}[h]
   \centering
   \includegraphics[scale=1]{figs/llvm-containers.pdf}
-  \caption{.}
+  \caption{The hierarchical levels in an LLVM input program. A call-graph SCC is a particular pattern amongst the functions in a module.
+Similarly, a loop and a region are particular patterns on the CFG of a function.}
   \label{fig:llvm-containers}
 \end{figure}
 
+%\begin{description}
+%\item[Module Pass:] This pass level allows the entire module to be analysed at once.
+%\item[Function Pass:] This pass operates on each individual function contained in the module being processed.
+%There is no particular order in which the functions will be considered.
+%This pass level prohibits any modification on the module-level (or other functions).
+%\item[Basic Block Pass:] This pass level considers one basic block at a time.
+%\end{description}
+
+The LLVM Pass Manager is responsible for scheduling the passes to be executed efficiently.
+It also makes sure that the interactions among the passes are correctly fulfilled.
+For that purpose, when given a series of passes to execute, the Pass Manager uses the explicit dependency information to satisfy these dependencies and optimise the execution of passes.
+
+A pass specifies its dependency on other passes, i.e., which other passes need to be executed before its own execution,
+Moreover, it can also specify the passes that will be invalidated by its execution.
+
+The Pass Manager aims at avoiding to repeat the execution of analysis passes.
+It keeps track of which analyses are already available, which are invalidated, and which analyses are pending.
+It also tracks the lifetimes of the analysis results and frees memory of the analysis results, when appropriate, managing memory usage.
+
+The Pass Manager pipelines the passes together to get a better memory and cache usage, improving the overall cache behaviour of the compiler.
+When performing a series of function-level passes, it executes all these passes in only one function, before moving to the next function, in order to improve cache usage.
 
 \section{Early Work in {\IterComp}}
 
