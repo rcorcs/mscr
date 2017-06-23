@@ -37,13 +37,6 @@ Their results show that a limited number of input datasets may be sufficient to 
 Finding such a robust combination of compiler optimisations by means of {\itercomp} across a large range of inputs may be very time consuming.
 In order to speed up this process we intend to reduce the number of actual executions during the exploration of the optimisation space without much degradation of the final selected optimisation.
 
-\begin{figure}[htb]
-    \centering
-    \includegraphics[width=\linewidth]{figs/diagram}
-    \caption{Overview of the execution engine for applying {\itercomp}.}
-    \label{fig:diagram}
-\end{figure}
-
 In this work, our main goal is to enable {\itercomp} in \textit{online} scenarios with the restriction of executing distinct inputs only once, while targeting optimal performance across different inputs.
 This online aspect is usually found in mobile and data centre platforms~\citep{chen12b,fang15,mpeis16}, where the goal is to optimise programs based on the workload of a particular user (or group of users) between executions.
 
@@ -60,4 +53,3 @@ Our main contributions are the following:
 \item The use of a work-based performance metric in order to enable \textit{online} {\itercomp} by comparing different combination of compiler optimisations even when executed with distinct inputs.
 \item We propose a relaxed instrumentation for low overhead profiling, with a controlled trade-off between accuracy and overhead.
 \end{itemize}
-
