@@ -77,17 +77,16 @@ By having some empirical data after executing several benchmarks with different 
 \textbf{Add phase for "Generate Optimisation".}
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=\linewidth]{figs/diagram}
+    \includegraphics[width=\linewidth]{figs/infra-diagram}
     \caption{Overview of the execution engine for applying {\itercomp}.}
-    \label{fig:diagram}
+    \label{fig:infra-diagram}
 \end{figure}
 
-Figure~\ref{fig:diagram} shows an overview of the infrastructure required for applying online {\itercomp}.
+Figure~\ref{fig:infra-diagram} shows an overview of the infrastructure required for applying online {\itercomp}.
 In this work we focus mainly on the two highlighted components.
 In both phases the goal is to improve the performance of the execution phase, but from different perspectives.
 \textit{(i.)} In the compilation phase we focused on providing a low-overhead instrumentation for profiling the work metric. This phase is responsible to improve performance by lowering the overhead of the work profiling.
 \textit{(ii.)} In the evaluation phase we proposed the use of the work-based metric in order to enable {\itercomp} in an online scenario. This phase is responsible to improve performance by being able to properly assess different optimisations such that the best optimisation can be selected.
 Chapter~\ref{chap:instr} describes our work profiling strategy and Section~\ref{sec:metric} describes the work-based metric.
-
 
 \textbf{Talk about the process of keeping the same optimization for a given input-window and how the optimizations as selected based on the evaluation of these "evidences". Perhaps we could suggest using the Theory of Evidences at this point?!}

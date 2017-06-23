@@ -1,12 +1,10 @@
 %%
 %%    File : infthesis.cls    (LaTeX2e class file)
-%%  Author : Version 3.7 updated by Jennifer Oxley <joxley@inf.ed.ac.uk>
-%%           Version 3.6 by Charles Sutton <csutton@inf.ed.ac.uk>  
-%%           Version 3.5 by Vasilis Vasaitis <v.vasaitis@sms.ed.ac.uk>
+%%  Author : Version 3.5 by Vasilis Vasaitis <v.vasaitis@sms.ed.ac.uk>
 %%           Version 3.4.1 updated by Tiejun Ma (t.j.ma@ed.ac.uk)
 %%           Version 3.0 by Mary Ellen Foster <mef@cogsci.ed.ac.uk>
 %%           Original version by Martin Reddy (mxr@dcs.ed.ac.uk) 
-%% Version : 3.7
+%% Version : 3.5
 %% Updates : 1.0 [9/11/95] - initial release.
 %%           1.1 [24/4/96] - fixed bibliography bug caused by new report.cls 
 %%           1.2 [13/5/96] - \dedication & \thesiscaption[]
@@ -30,8 +28,6 @@
 %%           3.4.1[09/03/2006] -add [a4paper] parameter for geometry package
 %%           3.5 [02/02/2011] - fix double-sided margins with modern
 %%                              versions of the geometry package
-%%           3.6 [15/03/2012] - addition to support the MInf degree
-%%           3.7 [07/02/2013] - fix MInf definition
 
 
 %% This file contains a class definition, infthesis, for the LaTeX2e
@@ -42,7 +38,7 @@
 %%
 
 \NeedsTeXFormat{LaTeX2e}[1994/12/01]
-\ProvidesClass{infthesis}[2013/02/07 v3.7 School of Informatics Thesis Class]
+\ProvidesClass{infthesis}[2011/02/02 v3.5 School of Informatics Thesis Class]
 
 
 %%
@@ -58,7 +54,7 @@
 \RequirePackage{ifthen,%  
     graphics,%
     xspace,
-    eushield}
+    styles/logos/eushield}
 
 
 %%%% The following packages are also used but are included further on rather
@@ -98,12 +94,6 @@
 \newboolean{timesfonts}
 
 %% Choose the monochrome crest for the front page (if crests used)
-%% Possible values for shieldtype:
-%% 0: regular monochrome
-%% 1: monochrome with no background lines
-%% 2: reverse monochrome
-%% 3: two colours: navy and red
-%% 4: full colour
 \shieldtype{0}
 
 %%
@@ -177,7 +167,6 @@ Computer Science}}
     \@infschool \\ \@university}%
     \setboolean{strict}{false}}
 \DeclareOption{msc}{\@taughtdegree{Master of Science}{\@mscdegree}}
-\DeclareOption{minf}{\@taughtdegree{Master of Informatics}{~}}
 \DeclareOption{bsc}{\@taughtdegree{\@project}{\@course}}
 
 %% Chapter header alignment, font of headings

@@ -344,9 +344,10 @@ The highlighted section is introduced by the relaxed instrumentation on top of t
 
 
 The relaxed instrumentation performs a post-processing on the resulting instrumentation of the optimal algorithm.
-The relaxation starts by extracting \textit{extended} DAGs (directed acyclic graphs) from the CFG, as illustrated in Figure~\ref{fig:cfg-relax-example}.
-Each loop (and the outer most region of the function) represents an extended DAG where any inner loop is considered to never execute, i.e. only the headers of the inner loops are included into the extended DAG.
-
+The relaxation starts by extracting DAGs (directed acyclic graphs) from the CFG, as illustrated in Figure~\ref{fig:cfg-relax-example}.
+The algorithm extracts all the subgraphs that represent a loop or the outer most region of the function.
+These subgraphs are transformed into DAGs by ignoring the back edge and also by considering that any loop within the subgraph is never executed, i.e., only the headers of the inner loops are actually included into the DAG.
+Figure~\ref{fig:cfg-relax-example} shows a CFG partitioned into two DAGs (consider only basic blocks and edges completely inside the yellow and green boundaries).
 %
 %LLVM has a Scalar Evolution Analysis which is used primarily to analyse expressions involving induction variables in loops~\cite{pop05}.
 %An induction variable is a variable that is increased or decreased by a fixed amount on every iteration of a loop or is a linear function of another induction variable.
@@ -356,7 +357,8 @@ Each loop (and the outer most region of the function) represents an extended DAG
 \begin{figure}[h]
   \centering
   \includegraphics[scale=1]{figs/cfg-relax-example.pdf}
-  \caption{Example of a CFG containing a loop and its decomposition into extended DAGs when applying the relaxation.}
+  \caption{Example of a CFG containing a loop and its decomposition into extended DAGs when applying the relaxation.
+           The DAGs are the subgraphs within the dashed boundaries.}
   \label{fig:cfg-relax-example}
 \end{figure}
 
@@ -382,32 +384,28 @@ Therefore, we can model the overall error of the relaxation as:
 1 - \frac{n_1(m_1 - r_1) + n_2(m_2 - r_2) + \ldots + n_k(m_k - r_k) + c}{n_1m_1 + n_2m_2 + \ldots + n_km_k + c}
 \]
 That is,
-\[
-1 - \frac{n_1m_1 + n_2m_2 + \ldots + n_km_k + c}{n_1m_1 + n_2m_2 + \ldots + n_km_k + c} + \frac{n_1r_1 + n_2r_2 + \ldots + n_kr_k}{n_1m_1 + n_2m_2 + \ldots + n_km_k + c} =
-\]
-\[
-\frac{n_1r_1 + n_2r_2 + \ldots + n_kr_k}{n_1m_1 + n_2m_2 + \ldots + n_km_k + c}
-\]
+%\begin{equation*}
+\begin{gather*}
+ 1 - \frac{n_1m_1 + n_2m_2 + \ldots + n_km_k + c}{n_1m_1 + n_2m_2 + \ldots + n_km_k + c} + \frac{n_1r_1 + n_2r_2 + \ldots + n_kr_k}{n_1m_1 + n_2m_2 + \ldots + n_km_k + c} = \\
+ \frac{n_1r_1 + n_2r_2 + \ldots + n_kr_k}{n_1m_1 + n_2m_2 + \ldots + n_km_k + c}
+\end{gather*}
+%\end{equation*}
 If $\frac{r_j}{m_j}$ is the maximum ratio $\frac{r_i}{m_i}$ for every $i$, then
-\[
-\frac{n_1r_1 + n_2r_2 + \ldots + n_kr_k}{n_1m_1 + n_2m_2 + \ldots + n_km_k + c} \leq
-\]
-\[
-\frac{n_1r_j + n_2r_j + \ldots + n_kr_j}{n_1m_j + n_2m_j + \ldots + n_km_j + c} \leq
-\]
-\[
-\frac{n_1r_j + n_2r_j + \ldots + n_kr_j}{n_1m_j + n_2m_j + \ldots + n_km_j}
-\]
-If $N = max\{n_i$ for every $\}$, then
-\[
-\frac{n_1r_j + n_2r_j + \ldots + n_kr_j}{n_1m_j + n_2m_j + \ldots + n_km_j} \leq
-\]
-\[
-\frac{Nr_j + Nr_j + \ldots + Nr_j}{Nm_j + Nm_j + \ldots + Nm_j} \leq
-\]
-\[
-\frac{Nkr_j}{Nkm_j} = \frac{r_j}{m_j} \leq T
-\]
+\begin{equation*}
+\begin{aligned}
+ \frac{n_1r_1 + n_2r_2 + \ldots + n_kr_k}{n_1m_1 + n_2m_2 + \ldots + n_km_k + c} &\leq\\
+ \frac{n_1r_j + n_2r_j + \ldots + n_kr_j}{n_1m_j + n_2m_j + \ldots + n_km_j + c} &\leq\\
+ \frac{n_1r_j + n_2r_j + \ldots + n_kr_j}{n_1m_j + n_2m_j + \ldots + n_km_j} & 
+\end{aligned}
+\end{equation*}
+If $N = max\{n_i$ for every $i\}$, then
+\begin{equation*}
+\begin{aligned}
+ \frac{n_1r_j + n_2r_j + \ldots + n_kr_j}{n_1m_j + n_2m_j + \ldots + n_km_j} &\leq\\
+ \frac{Nr_j + Nr_j + \ldots + Nr_j}{Nm_j + Nm_j + \ldots + Nm_j} &\leq\\
+ \frac{Nkr_j}{Nkm_j} = \frac{r_j}{m_j} &\leq T
+\end{aligned}
+\end{equation*}
 
 While the optimal placement of probes tries to place probes in edges that are less likely to be executed, the relaxation focus on removing probes that are more likely to be executed.
 The necessary block frequency information for optimising both the placement of probes can be acquired from profiles of previous executions of the program or by a static heuristic of the CFG during compilation.

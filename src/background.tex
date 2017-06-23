@@ -199,6 +199,11 @@ When performing a series of function-level passes, it executes all these passes 
 
 \textbf{Original work in {\IterComp}: single input and offline}
 
+A well known compilation technique that addresses this challenge is {\itercomp}.
+{\Itercomp} has the ability to adapt to new platforms, program and workload while still having a systematic and simple optimisation process.
+It works by repeatedly evaluating a large number of compiler optimisations until the best combination is found for a particular program~\citep{fursin07,chen10}.
+The main challenge concerning {\itercomp} is the need for efficiently exploring such a large optimisation space~\citep{fursin07,cavazos07,zhou12}.
+
 \section{Program Profiling}
 
 \textbf{Basic background about profiling in general}

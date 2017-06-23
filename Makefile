@@ -1,5 +1,5 @@
 
-FILE=dissertation
+FILE=mscr-thesis
 
 build: $(FILE).tex
 	pdflatex $(FILE)
