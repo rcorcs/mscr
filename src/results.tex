@@ -26,10 +26,7 @@ A summary of the benchmark and dataset suit is shown in Table~\ref{tab:kdatasets
 \begin{tabular}{|c|c|c|c|}
 \hline
 \textbf{Program} & \textbf{LOC}    & \textbf{Input file size}            & \textbf{Input description}              \\ \hline % Domain
-%bitcount      & 460    &  -                         & Numbers: random                \\ \hline
 qsort         & 154    & 32K-1.8M                   & 3D coordinates                 \\ \hline
-%dijkstra      & 163    & 0.06K-4.3M                 & Adjacency matrices             \\ \hline
-%patricia      & 290    & 0.6K-1.9M                  & IP and mask pairs              \\ \hline
 jpeg\_d       & 13501  & 3.6K-1.5M                  & JPEG images                    \\ \hline
 jpeg\_c       & 14014  & 16K-137M                   & PPM images                     \\ \hline
 tiff2bw       & 15477  & \multirow{4}{*}{9K-137M}   & \multirow{4}{*}{TIFF images}   \\ \cline{1-2}
@@ -39,15 +36,19 @@ tiffmedian    & 15870  &                            &                           
 susan\_c      & 1376   & \multirow{3}{*}{12K-46M}   & \multirow{3}{*}{PGM images}    \\ \cline{1-2}
 susan\_e      & 1376   &                            &                                \\ \cline{1-2}
 susan\_s      & 1376   &                            &                                \\ \hline
-%mad           & 2358   & 28K-27M                    & MP3 audios                     \\ \hline
-%lame          & 14491  & 167K-36M                   & WAVE audios                    \\ \hline
 adpcm\_c      & 210    & 167K-36M                   & WAVE audios                    \\ \hline
 adpcm\_d      & 211    & 21K-8.8M                   & ADPCM audios                   \\ \hline
+rsynth        & 4111   &                            &  Text files                    \\ \hline %%%%%% copied line
+sha           & 197    & 0.6K-35M                   & Files of any format            \\ \hline
+%bitcount      & 460    &  -                         & Numbers: random                \\ \hline
+%dijkstra      & 163    & 0.06K-4.3M                 & Adjacency matrices             \\ \hline
+%patricia      & 290    & 0.6K-1.9M                  & IP and mask pairs              \\ \hline
+%mad           & 2358   & 28K-27M                    & MP3 audios                     \\ \hline
+%lame          & 14491  & 167K-36M                   & WAVE audios                    \\ \hline
 %gsm           & 3806   & 83K-18M                    & Sun/NeXT audios                \\ \hline
 %ghostscript   & 99869  & 11K-43M                    & Postscript files               \\ \hline
 %ispell        & 6522   & \multirow{3}{*}{0.1K-42M}  & \multirow{3}{*}{Text files}    \\ \cline{1-2}
 %rsynth        & 4111   &                            &                                \\ \cline{1-2}
-rsynth        & 4111   &                            &  Text files                    \\ \hline %%%%%% copied line
 %stringsearch  & 338    &                            &                                \\ \hline
 %blowfish\_e   & 863    & 0.6K-35M                   & Files of any format            \\ \hline
 %blowfish\_d   & 863    & 0.6K-35M                   & Encrypted files                \\ \hline
@@ -55,7 +56,6 @@ rsynth        & 4111   &                            &  Text files               
 %pgp\_d        & 19575  & 0.4K-18M                   & Encrypted files                \\ \hline
 %rijndael\_e   & 952    & 0.6K-35M                   & Files of any format            \\ \hline
 %rijndael\_d   & 952    & 0.7K-35M                   & Encrypted files                \\ \hline
-sha           & 197    & 0.6K-35M                   & Files of any format            \\ \hline
 %CRC32         & 130    & 0.6K-35M                   & Files of any format            \\ \hline
 %bzip2e        & 5125   & 0.7K-57M                   & Files of any format            \\ \hline
 %bzip2d        & 5125   & 0.2K-25M                   & Compressed files               \\ \hline
@@ -67,11 +67,16 @@ sha           & 197    & 0.6K-35M                   & Files of any format       
 
 \section{Evaluation of the Instrumentation}
 
-In this section we evaluathe the 
+In this section we evaluate the performance of the work instrumentation presented in Chapter~\ref{chap:instr}, comparing between the optimal and the relaxed instrumentation with different thresholds.
+%We organise the evaluation of the instrumentation as follows:
+
 
 \textbf{Static results.}
-Figure~\ref{fig:num-probes} shows percentage of instrumented basic blocks for the optimal and the relaxed instrumentation with different relaxation thresholds.
+
+We first compare static aspects of the instrumentation algorithms.
 The naive instrumentation always has 100\% of the basic blocks instrumented, by definition.
+Figure~\ref{fig:num-probes} shows percentage of instrumented basic blocks for the optimal and the relaxed instrumentation with different relaxation thresholds.
+While Figure~\ref{fig:num-probes} compares the different instrumentation algorithms in respect of the naive instrumentation, Figure~\ref{fig:num-probes-improvement} shows the improvement of the relaxation algorithm over the optimial instrumentation.
 
 \begin{figure}[ht]
     \centering
@@ -80,6 +85,10 @@ The naive instrumentation always has 100\% of the basic blocks instrumented, by 
     \label{fig:num-probes}
 \end{figure}
 
+Even a small threshold of 2\% is able to reduce the number of probes by an average of 5\% compared to the optimal algorithm. 
+The \texttt{sha} benchmark was the only benchmark for which a 2\% threshold was not sufficient for further reducing the number of probes.
+With a 10\% threshold the relaxation algorithm was able to improve over the optimal instrumentation by an average of 11\%, in terms of the amount of instrumented basic blocks.
+
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{figs/num-probes-improvement.pdf}
@@ -87,16 +96,23 @@ The naive instrumentation always has 100\% of the basic blocks instrumented, by 
     \label{fig:num-probes-improvement}
 \end{figure}
 
+The static errors presented in Figure~\ref{fig:static-instr-error} indicate the amount of error expected by the relaxation algorithm after reducing the number of probes.
+This figure shows both the maximum (bars with light colours) and the average (bars with dark colours) static errors observed when relaxing the instrumentation for each DAG of the benchmarks.
+Notice that, in most cases, the average static errors are considerably lower than the relaxation threshold, while the maximum static errors are usually close to the threshold.
+The average static error shows that in a significant number of DAGs, the relaxation was notably conservative.
+This conservatism will be specially evident in the dynamic evaluation.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{figs/instr-error.pdf}
-    \caption{Overhead of the instrumentations compiled with {\texttt{-O3}}.}
-    \label{fig:overhead-O3}
+    \caption{Average and maximum static error expected for the work profiling, after relaxing the number of probes.}
+    \label{fig:static-instr-error}
 \end{figure}
 
 
 \textbf{Overhead results.}
+
+We measured using the default \texttt{-O3} optimisation.
 
 Figure~\ref{fig:overhead-O3} shows overhead results 
 The \texttt{adpcm\_d} benchmark is the most critical case amongst the evaluated benchmarks, with an overhead of about 62\% for the optimal instrumentation.
