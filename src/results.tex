@@ -195,12 +195,15 @@ The two relaxed probes were placed in branches, inside the hot loop, with a high
     \label{fig:adpcm_d-cfg-instr}
 \end{figure*}
 
+Figure~\ref{fig:adpcm_d-probes-err-freq} shows all the probes necessary for the function that contains the hot loop of the \texttt{adpcm\_d} benchmark.
+Notice that the relaxation was able to remove all probes with an static error lower than the 5\% threshold.
+Because these probes were placed in basic blocks with a considerable execution frequency, their removal resulted in a significant reduction in performance overhead.
 
 \begin{figure*}[htb]
     \centering
     \includegraphics[width=0.8\textwidth]{figs/adpcm_d.pdf}
     \caption{Comparison between probe frequency and static error for the \texttt{adpcm\_d} benchmark. The red line marks the 5\% threshold limit.}
-    \label{fig:speedups}
+    \label{fig:adpcm_d-probes-err-freq}
 \end{figure*}
 
 
