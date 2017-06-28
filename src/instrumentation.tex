@@ -340,8 +340,7 @@ The highlighted section is introduced by the relaxed instrumentation on top of t
 %    \label{fig:overhead-O0}
 %\end{figure*}
 
-%Define an extended DAG of a CFG as a directed graph which may contain cycles if they have known constant trip counts.
-
+%Define an DAG of a CFG as a directed graph which may contain cycles if they have known constant trip counts.
 
 The relaxed instrumentation performs a post-processing on the resulting instrumentation of the optimal algorithm.
 The relaxation starts by extracting DAGs (directed acyclic graphs) from the CFG, as illustrated in Figure~\ref{fig:cfg-relax-example}.
@@ -357,12 +356,12 @@ Figure~\ref{fig:cfg-relax-example} shows a CFG partitioned into two DAGs (consid
 \begin{figure}[h]
   \centering
   \includegraphics[scale=1]{figs/cfg-relax-example.pdf}
-  \caption{Example of a CFG containing a loop and its decomposition into extended DAGs when applying the relaxation.
+  \caption{Example of a CFG containing a loop and its decomposition into DAGs when applying the relaxation.
            The DAGs are the subgraphs within the dashed boundaries.}
   \label{fig:cfg-relax-example}
 \end{figure}
 
-For every extended DAG with a set of probes $\{P_0, P_1, \ldots, P_k\}$, we relax the instrumentation accuracy by selecting a subset of the probes to be removed, subject to the maximum allowed percentage error, $M$.
+For every DAG with a set of probes $\{P_0, P_1, \ldots, P_k\}$, we relax the instrumentation accuracy by selecting a subset of the probes to be removed, subject to the maximum allowed percentage error, $M$.
 
 We model the relaxation as a 0-1 Knapsack problem:
 \[
@@ -373,9 +372,9 @@ We model the relaxation as a 0-1 Knapsack problem:
 \textrm{subject to } \sum_{i=0}^{k} \varepsilon(P_i)x_i \leq M \textrm{ and } x_i\in\{0,1\}
 \]
 %$c(I_i)$ is the relative overhead of the instrumentation on the instrumented basic block,
-where $f(P_i)$ is the execution frequency of the instrumented basic block $P_i$, $\varepsilon(P_i)$ is the percentage error of removing probe $P_i$ relative to the minimum work value possible to compute in the extended DAG, and $x_i$ denotes the probes selected for removal.
+where $f(P_i)$ is the execution frequency of the instrumented basic block $P_i$, $\varepsilon(P_i)$ is the percentage error of removing probe $P_i$ relative to the minimum work value possible to compute in the DAG, and $x_i$ denotes the probes selected for removal.
 Because the percentage error is computed based on the path with the minimum amount of work, $\varepsilon(P_i)$ represents the maximum error possible that would be incurred when removing probe $P_i$.
-Furthermore, by constraining the percentage error of every extended DAG below a given threshold we guarantee that the final error of the relaxation will always be bounded by the threshold.
+Furthermore, by constraining the percentage error of every DAG below a given threshold we guarantee that the final error of the relaxation will always be bounded by the threshold.
 
 Let $n_i$ be the number of times a given DAG $i$ is executed, $r_i$ be the relaxation (amount of work removed) in DAG $i$, and $m_i$ be its minimum amount of work.
 Let $\frac{r_i}{m_i} \leq T$ for every $i$.
@@ -415,6 +414,17 @@ the optimal brute-force solver;
 the greedy heuristic based on sorting the items~\citep{dantzig57}.
 We use the brute-force solver for DAGs with a small number of probes and the greedy heuristic when the number of probes is greater than a threshold.
 Some of the benchmarks have DAGs with several hundreds of probes, which could result in a long compilation time.
+
+\section{Whole Program Relaxation}
+
+In some cases, the proposed relaxation can be very conservative, because it considers the static error of removing probe $P_i$ relative to the minimum work possible of a DAG, in order to be able to guarantee that the dynamic error will be bounded by a given threshold.
+This conservatism can be overly restrictive in some cases.
+
+Traditionally, compilers optimise a program procedure by procedure, or at best compilation unit per compilation unit. Whole program optimisation (WPO) means that the compiler considers all compilation units that make up a program or library and optimises them using the combined knowledge of how they are used together in this particular case.
+
+Whole program optimization is the compiler optimization of a program using information about all the modules in the program. Normally, optimizations are performed on a per module, "compiland", basis; but this approach, while easier to write and test and less demanding of resources during the compilation itself, does not allow certainty about the safety of a number of optimizations such as aggressive inlining and thus cannot perform them even if they would actually turn out to be efficiency gains that do not change the semantics of the emitted object code.
+
+
 
 \section{Other Possible Uses}
 

@@ -263,5 +263,106 @@ The figure presents the individual optimisation passes with at least 1\% of freq
     \label{fig:flagsfreq}
 \end{figure*}
 
+%\begin{description}
+\noindent\textbf{Dead Global Elimination (\texttt{-globaldce}):}
+It is an inter-procedural optimisation that eliminates unreachable internal globals from the program.
+It uses an aggressive algorithm that searches for global definitions that are known to be alive.
+After finding all live global definitions, it deletes all remaining globals.
+%This allows it to delete recursive chunks of the program which are unreachable.
+
+\noindent\textbf{Simplify the CFG \texttt{-simplifycfg}:}
+This optimisation simplifies the CFG by basic blocks merging and dead code elimination, such as:
+eliminates a basic block that only contains an unconditional branch;
+removes basic blocks with no predecessors;
+eliminates PHI nodes for basic blocks with a single predecessor; etc.
+
+\noindent\textbf{Dead Store Elimination \texttt{-dse}:}
+A trivial dead store elimination that only considers basic-block local redundant stores.
+
+\noindent\textbf{MemCpy Optimization \texttt{-memcpyopt}:}
+This pass performs various transformations related to eliminating \texttt{memcpy} calls, or transforming sets of stores into \texttt{memsets}.
+
+\noindent\textbf{Unroll Loops \texttt{-loop-unroll}:}
+This pass implements a simple loop unroller. It works best when loops have been canonicalized by the \texttt{-indvars} pass, allowing it to determine the trip counts of loops easily.
+
+\noindent\textbf{Canonicalize Natural Loops \texttt{-loop-simplify}:}
+This pass performs several transformations to transform natural loops into a simpler form, which makes subsequent analyses and transformations simpler and more effective.
+Loop pre-header insertion guarantees that there is a single, non-critical entry edge from outside of the loop to the loop header.
+This simplifies a number of analyses and transformations, such as Loop Invariant Code Motion (LICM).
+Loop exit-block insertion guarantees that all exit blocks from the loop (blocks which are outside of the loop that have predecessors inside of the loop) only have predecessors from inside of the loop (and are thus dominated by the loop header). This simplifies transformations such as store-sinking that are built into LICM.
+This pass also guarantees that loops will have exactly one backedge.
+Note that the \texttt{-simplifycfg} pass will clean up blocks which are split out but end up being unnecessary, so usage of this pass should not pessimize generated code.
+This pass obviously modifies the CFG, but updates loop information and dominator information.
+
+\noindent\textbf{Promote Memory to Register \texttt{-mem2reg}:}
+This file promotes memory references to be register references. It promotes alloca instructions which only have loads and stores as uses. An alloca is transformed by using dominator frontiers to place phi nodes, then traversing the function in depth-first order to rewrite loads and stores as appropriate. This is just the standard SSA construction algorithm to construct “pruned” SSA form.
+
+\noindent\textbf{Reassociate expressions \texttt{-reassociate}:}
+This pass reassociates commutative expressions in an order that is designed to promote better constant propagation, GCSE, LICM, PRE, etc.
+For example: 4 + (x + 5) -> x + (4 + 5)
+In the implementation of this algorithm, constants are assigned rank = 0, function arguments are rank = 1, and other values are assigned ranks corresponding to the reverse post order traversal of current function (starting at 2), which effectively gives values in deep loops higher rank than values not in loops.
+
+\noindent\textbf{Merge Duplicate Global Constants \texttt{-constmerge}:}
+Merges duplicate global constants together into a single constant that is shared. This is useful because some passes (i.e., TraceValues) insert a lot of string constants into the program, regardless of whether or not an existing string is available.
+
+\noindent\textbf{Aggressive Dead Code Elimination \texttt{-adce}:}
+ADCE aggressively tries to eliminate code.
+This pass is similar to DCE but it assumes that values are dead until proven otherwise.
+This is similar to SCCP, except applied to the liveness of values.
+
+\noindent\textbf{Simple constant propagation \texttt{-constprop}:}
+This pass implements constant propagation and merging.
+It looks for instructions involving only constant operands and replaces them with a constant value instead of an instruction
+This pass has a habit of making definitions be dead.
+It is a good idea to run a Dead Instruction Elimination pass sometime after running this pass.
+
+\noindent\textbf{Dead Instruction Elimination \texttt{-die}:}
+Dead instruction elimination performs a single pass over the function, removing instructions that are obviously dead.
+
+\noindent\textbf{Combine redundant instructions \texttt{-instcombine}:}
+Combine instructions to form fewer, simple instructions.
+This pass does not modify the CFG.
+This pass is where algebraic simplification happens.
+This pass combines things like:
+%Y = add i32 %X, 1
+%Z = add i32 %Y, 1
+into:
+%Z = add i32 %X, 2
+This is a simple worklist driven algorithm.
+This pass guarantees that the following canonicalizations are performed on the program:
+If a binary operator has a constant operand, it is moved to the right-hand side.
+Bitwise operators with constant operands are always grouped so that shifts are performed first, then ors, then ands, then xors.
+Compare instructions are converted from <, >, ≤, or ≥ to = or ≠ if possible.
+All cmp instructions on boolean values are replaced with logical operations.
+add X, X is represented as mul X, 2 ⇒ shl X, 1
+Multiplies with a constant power-of-two argument are transformed into shifts.
+… etc.
+This pass can also simplify calls to specific well-known function calls (e.g. runtime library functions). For example, a call exit(3) that occurs within the main() function can be transformed into simply return 3. Whether or not library calls are simplified is controlled by the -functionattrs pass and LLVM’s knowledge of library calls on different targets.
+
+\noindent\textbf{Dead Code Elimination \texttt{-dce}:}
+Dead code elimination is similar to dead instruction elimination, but it rechecks instructions that were used by removed instructions to see if they are newly dead.
+In other words, it performs dead instruction elimination until it reaches a fixed point.
+
+\noindent\textbf{Merge Functions \texttt{-mergefunc}:}
+This pass looks for equivalent functions that are mergable and folds them.
+Total-ordering is introduced among the functions set: we define comparison that answers for every two functions which of them is greater. It allows to arrange functions into the binary tree.
+For every new function we check for equivalent in tree.
+If equivalent exists we fold such functions. If both functions are overridable, we move the functionality into a new internal function and leave two overridable thunks to it.
+If there is no equivalent, then we add this function to tree.
+Lookup routine has O(log(n)) complexity, while whole merging process has complexity of O(n*log(n)).
+
+\noindent\textbf{Basic-Block Vectorization \texttt{-bb-vectorize}:}
+This pass combines instructions inside basic blocks to form vector instructions.
+The algorithm was inspired by that used by \cite{franchetti05}.
+It iterates over each basic block, attempting to pair compatible instructions, repeating this process until no additional pairs are selected for vectorization.
+When the outputs of some pair of compatible instructions are used as inputs by some other pair of compatible instructions, those pairs are part of a potential vectorization chain.
+Instruction pairs are only fused into vector instructions when they are part of a chain longer than some threshold length.
+Moreover, the pass attempts to find the best possible chain for each pair of compatible instructions.
+These heuristics are intended to prevent vectorization in cases where it would not yield a performance increase of the resulting code.
+
+
+
+%\end{description}
+
 \section{Summary}
 
