@@ -120,6 +120,8 @@ This conservatism will be specially evident in the dynamic evaluation.
 \subsection{Dynamic Evaluation}
 
 For the evaluation of the performance overhead that the instrumentation incur to the benchmarks, we measure the wall-clock time of the benchmarks when compiled with thee default \texttt{-O3} optimisation.
+For each benchmark, we compute the average overhead over all its 1000 input dataset.
+When measuring the wall-clock time for each input, in order to reduce noise, we execute the same input until we have a statistically sound measurement, i.e. we execute until we have an interval no larger than 1\% with 99\% confidence.
 Figure~\ref{fig:overhead-O3} shows the performance overhead imposed by the work instrumentation on the benchmarks when compared to their non-instrumented counterparts.
 Figure~\ref{fig:overhead-improvement-O3} shows the improvement of the relaxation algorithm over the optimial instrumentation, regarding the reduction in overhead.
 
