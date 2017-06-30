@@ -45,10 +45,10 @@ Figure~\ref{fig:cfg-example} shows an example of a CFG with a maximum spanning t
      \begin{minipage}{0.5\textwidth}
      Instrumented value for each probe $P_i$:
      \begin{align*}
-     w(P_0) &= w(B_0) + w(B_1) + w(B_4) + w(B_6) + w(B_7) + w(B_8) + w(B_9)\\
-     w(P_1) &= w(B_2) - w(B_1) - w(B_4) - w(B_6) - w(B_7) - w(B_8)\\
-     w(P_2) &= w(B_5) - w(B_6)\\
-     w(P_3) &= w(B_3) - w(B_4) - w(B_6) - w(B_7)
+     \omega(P_0) &= w(B_0) + w(B_1) + w(B_4) + w(B_6) + w(B_7) + w(B_8) + w(B_9)\\
+     \omega(P_1) &= w(B_2) - w(B_1) - w(B_4) - w(B_6) - w(B_7) - w(B_8)\\
+     \omega(P_2) &= w(B_5) - w(B_6)\\
+     \omega(P_3) &= w(B_3) - w(B_4) - w(B_6) - w(B_7)
      \end{align*}
      \end{minipage}
   }
@@ -361,7 +361,7 @@ Figure~\ref{fig:cfg-relax-example} shows a CFG partitioned into two DAGs (consid
   \label{fig:cfg-relax-example}
 \end{figure}
 
-For every DAG with a set of probes $\{P_0, P_1, \ldots, P_k\}$, we relax the instrumentation accuracy by selecting a subset of the probes to be removed, subject to the maximum allowed percentage error, $M$.
+For every DAG with a set of probes $\{P_0, P_1, \ldots, P_k\}$, we relax the profiling accuracy by selecting a subset of the probes to be removed, subject to the maximum allowed percentage error, $M$.
 
 We model the relaxation as a 0-1 Knapsack problem:
 \[
@@ -372,13 +372,17 @@ We model the relaxation as a 0-1 Knapsack problem:
 \textrm{subject to } \sum_{i=0}^{k} \varepsilon(P_i)x_i \leq M \textrm{ and } x_i\in\{0,1\}
 \]
 %$c(I_i)$ is the relative overhead of the instrumentation on the instrumented basic block,
-where $f(P_i)$ is the execution frequency of the instrumented basic block $P_i$, $\varepsilon(P_i)$ is the percentage error of removing probe $P_i$ relative to the minimum work value possible to compute in the DAG, and $x_i$ denotes the probes selected for removal.
+where $f(P_i)$ is the execution frequency of probe $P_i$, $x_i$ denotes the probes selected for removal, and $\varepsilon(P_i)$ is the percentage error of removing probe $P_i$ relative to the minimum work value possible to compute in the DAG, i.e., if $m$ is the minimum amount of work possible to be computed when executing the DAG, then $\varepsilon(P_i) = \frac{\omega(P_i)}{m}$.
 Because the percentage error is computed based on the path with the minimum amount of work, $\varepsilon(P_i)$ represents the maximum error possible that would be incurred when removing probe $P_i$.
 Furthermore, by constraining the percentage error of every DAG below a given threshold we guarantee that the final error of the relaxation will always be bounded by the threshold.
 
-Let $n_i$ be the number of times a given DAG $i$ is executed, $r_i$ be the relaxation (amount of work removed) in DAG $i$, and $m_i$ be its minimum amount of work.
-Let $\frac{r_i}{m_i} \leq T$ for every $i$.
-Therefore, we can model the overall error of the relaxation as:
+\begin{prop}
+Let $n_i$ be the number of times a given DAG $i$ is executed, $r_i$ be the total relaxation (amount of work removed) in DAG $i$, and $m_i$ be its minimum amount of work.
+If $\frac{r_i}{m_i} \leq M$ for every $i$,
+then the final error of the relaxation will always be bounded by the same threshold.
+\end{prop}
+\begin{proof}
+We can model the overall error of the relaxation as:
 \[
 1 - \frac{n_1(m_1 - r_1) + n_2(m_2 - r_2) + \ldots + n_k(m_k - r_k) + c}{n_1m_1 + n_2m_2 + \ldots + n_km_k + c}
 \]
@@ -401,10 +405,11 @@ If $N = max\{n_i$ for every $i\}$, then
 \begin{equation*}
 \begin{aligned}
  \frac{n_1r_j + n_2r_j + \ldots + n_kr_j}{n_1m_j + n_2m_j + \ldots + n_km_j} &\leq\\
- \frac{Nr_j + Nr_j + \ldots + Nr_j}{Nm_j + Nm_j + \ldots + Nm_j} &\leq\\
- \frac{Nkr_j}{Nkm_j} = \frac{r_j}{m_j} &\leq T
+ \frac{Nr_j + Nr_j + \ldots + Nr_j}{Nm_j + Nm_j + \ldots + Nm_j} &=\\
+ \frac{Nkr_j}{Nkm_j} = \frac{r_j}{m_j} &\leq M
 \end{aligned}
 \end{equation*}
+\end{proof}
 
 While the optimal placement of probes tries to place probes in edges that are less likely to be executed, the relaxation focus on removing probes that are more likely to be executed.
 The necessary block frequency information for optimising both the placement of probes can be acquired from profiles of previous executions of the program or by a static heuristic of the CFG during compilation.
@@ -425,8 +430,26 @@ For these cases, we propose an adapted version of the relaxation algorithm that 
 Traditionally, compilers optimisations are performed on the function-level, or at best on a per module basis.
 Whole program optimisation (WPO) means that the compiler considers all compilation units of the program and optimises them using the combined knowledge of how they are used together.
 
-%Traditionally, compilers optimise a program procedure by procedure, or at best compilation unit per compilation unit. Whole program optimisation (WPO) means that the compiler considers all compilation units that make up a program or library and optimises them using the combined knowledge of how they are used together in this particular case.
-%Whole program optimization is the compiler optimization of a program using information about all the modules in the program. Normally, optimizations are performed on a per module, "compiland", basis; but this approach, while easier to write and test and less demanding of resources during the compilation itself, does not allow certainty about the safety of a number of optimizations such as aggressive inlining and thus cannot perform them even if they would actually turn out to be efficiency gains that do not change the semantics of the emitted object code.
+The whole program relaxation works by using profiling information from previous executions
+This profiling information consists on both the basic block frequency and the work metric.
+By having this profiling information, the whole program relaxation is able to compute the error of removing a probe in terms of the whole program's execution,
+and then use this error value for selecting a subset of all the probes to be removed.
+
+For a program with a set of probes $\{P_0, P_1, \ldots, P_k\}$, we model the whole program the relaxation as the following 0-1 Knapsack problem:
+\[
+\textrm{maximise } \sum_{i=0}^{k} f(P_i)x_i
+\]
+\[
+\textrm{subject to } \sum_{i=0}^{k} \varepsilon(P_i)x_i \leq M \textrm{ and } x_i\in\{0,1\}
+\]
+where $f(P_i)$ is the execution frequency of the instrumented basic block $P_i$, $x_i$ denotes the probes selected for removal, $M$ is the error threshold, and $\varepsilon(P_i)$ is the percentage error of removing probe $P_i$ relative to the profiled global work, i.e.,
+if $\Delta W$ is the work value profiled from previous executions, the error for a given probe $P_i$ is
+\[
+\varepsilon(P_i) = \frac{\omega(P_i)f(P_i)}{\Delta W}.
+\]
+
+Contrary to the per DAG relaxation, the whole program relaxation is not guaranteed to be bounded by the error threshold $M$,
+as it is dependent on the representativity of the profiling information that was provided.
 
 
 

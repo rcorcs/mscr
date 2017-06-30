@@ -229,9 +229,11 @@ Because these probes were placed in basic blocks with a considerable execution f
 \section{Evaluation of the Online {\IterComp}}
 
 \begin{itemize}
-\item Oracle-RM executes the program twice, for each input, and then measuring the real speedup for each compiler optimisation and uses the real speedup for selecting the best optimisation.
-\item Oracle-PP represents the \textit{perfect} non-intrusive profiling by also executing the program twice, once for estimating the amount of work and the second for measuring its execution time.
-This version uses the work-based metric, $\frac{\Delta W}{\Delta t}$, during the {\itercomp} search.
+\item \textbf{Oracle-RM} executes the program twice, for each input, and then measuring the real speedup for each compiler optimisation and uses the real speedup for selecting the best optimisation.
+\item \textbf{Oracle-PP} represents the \textit{perfect} non-intrusive profiling by also executing the program twice, once for estimating the amount of work and the second for measuring its execution time.
+This version uses the proposed work-based performance metric, $\frac{\Delta W}{\Delta t}$, during the {\itercomp} search.
+\item \textbf{Real-OP} corresponds to the online {\itercomp} as it would be applied in a real online scenario.
+
 \end{itemize}
 
 \begin{figure*}[htb]
@@ -241,6 +243,16 @@ This version uses the work-based metric, $\frac{\Delta W}{\Delta t}$, during the
     \label{fig:speedups}
 \end{figure*}
 
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{figs/speedups-per-input.pdf}
+    \caption{Histograms for the speedups over \texttt{-O3} with the complete data-set of 1000 inputs for each benchmark.
+             In each case, we are using the optimisation with the best average speedup over \texttt{-O3}.
+             This figure shows how the performance for some of the benchmarks are highly sensitive to the input.}
+
+    \label{fig:speedups-per-input}
+\end{figure}
+
 %\begin{figure*}[htb]
 %    \centering
 %    \includegraphics[width=\textwidth]{figs/profiled-speedups.pdf}
@@ -249,7 +261,7 @@ This version uses the work-based metric, $\frac{\Delta W}{\Delta t}$, during the
 %    \label{fig:profiled-speedups}
 %\end{figure*}
 
-\subsubsection{Contribution of individual optimisation passes}
+\subsection{Contribution of individual optimisation passes}
 
 Figure~\ref{fig:flagsfreq} shows an aggregated view of the final combination of compiler optimisations that were selected by {\itercomp} search.
 The figure presents the individual optimisation passes with at least 1\% of frequency in the selected combination of compiler optimisations that improved the performance over {\texttt{-O3}}.
@@ -263,12 +275,21 @@ The figure presents the individual optimisation passes with at least 1\% of freq
     \label{fig:flagsfreq}
 \end{figure*}
 
+\subsubsection{Inter-Procedural Optimisations}
 %\begin{description}
 \noindent\textbf{Dead Global Elimination (\texttt{-globaldce}):}
 It is an inter-procedural optimisation that eliminates unreachable internal globals from the program.
 It uses an aggressive algorithm that searches for global definitions that are known to be alive.
 After finding all live global definitions, it deletes all remaining globals.
 %This allows it to delete recursive chunks of the program which are unreachable.
+
+\noindent\textbf{Merge Functions \texttt{-mergefunc}:}
+This pass looks for equivalent functions that are mergable and folds them.
+Total-ordering is introduced among the functions set: we define comparison that answers for every two functions which of them is greater. It allows to arrange functions into the binary tree.
+For every new function we check for equivalent in tree.
+If equivalent exists we fold such functions. If both functions are overridable, we move the functionality into a new internal function and leave two overridable thunks to it.
+If there is no equivalent, then we add this function to tree.
+Lookup routine has O(log(n)) complexity, while whole merging process has complexity of O(n*log(n)).
 
 \noindent\textbf{Simplify the CFG \texttt{-simplifycfg}:}
 This optimisation simplifies the CFG by basic blocks merging and dead code elimination, such as:
@@ -342,14 +363,6 @@ This pass can also simplify calls to specific well-known function calls (e.g. ru
 \noindent\textbf{Dead Code Elimination \texttt{-dce}:}
 Dead code elimination is similar to dead instruction elimination, but it rechecks instructions that were used by removed instructions to see if they are newly dead.
 In other words, it performs dead instruction elimination until it reaches a fixed point.
-
-\noindent\textbf{Merge Functions \texttt{-mergefunc}:}
-This pass looks for equivalent functions that are mergable and folds them.
-Total-ordering is introduced among the functions set: we define comparison that answers for every two functions which of them is greater. It allows to arrange functions into the binary tree.
-For every new function we check for equivalent in tree.
-If equivalent exists we fold such functions. If both functions are overridable, we move the functionality into a new internal function and leave two overridable thunks to it.
-If there is no equivalent, then we add this function to tree.
-Lookup routine has O(log(n)) complexity, while whole merging process has complexity of O(n*log(n)).
 
 \noindent\textbf{Basic-Block Vectorization \texttt{-bb-vectorize}:}
 This pass combines instructions inside basic blocks to form vector instructions.

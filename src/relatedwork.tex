@@ -2,12 +2,14 @@
 
 \section{{\IterComp}}
 
-\textbf{Specific work in {\IterComp} about multiple inputs and online scenarios}
-
 Until recently, most of existing work  had been focusing on finding the best optimisation through repeated runs using a single input.
 Although they demonstrate the potential of {\itercomp}, in real scenarios the user rarely executes the same input dataset multiple times~\citep{bodin98,kisuki99,stephenson03,kulkarni04,agakov06}.
 Applying {\itercomp} in light of a single input may not result in good performance when executing the optimised code with different inputs.
 
+Most of real world applications are complex enough so that a single input case does not capture the whole range of possible scenarios and program behaviour~\citep{haneda06,fursin07,chen10,chen12a}.
+Because programs can exhibit behaviours that differ greatly depending on the input, using a single input for {\itercomp} can produce poor performance when executed with different inputs.
+
+For this reason, researchers have been studying the impact of using multiple input datasets for performing {\itercomp}.
 \cite{chen10,chen12a} evaluate the effectiveness of iterative compilations across a large number of input test cases.
 Their main motivation is to answer the question:
 \textit{How data input dependent is {\itercomp}?}
@@ -18,12 +20,13 @@ When optimising a program, the main method for {\itercomp} used by \cite{chen10,
 Furthermore, they use a pre-defined set of only 300 different combinations of compiler optimisations, which represents a very small sample of the optimisation search space for most modern compilers, e.g.
 LLVM has 56 distinct optimisation passes and GCC has about 47 high-level (SSA form) optimisation passes and about 25 low-level (RTL) optimisation passes, which in both cases result in much more than $2^{50}$ distinct combinations of compiler optimisations, without considering repetition.
 
-Recent work~\citep{chen12b,fang15} have applied the same idea of performing input-dependent {\itercomp} to distributed applications on data centres.
+Some recent work~\citep{chen12b,fang15} have applied the same idea of performing input-dependent {\itercomp} to distributed applications on data centres.
 In summary, each worker receives a subset of the input dataset, called the evaluation dataset, to perform an \textit{online} {\itercomp} of the code being executed.
 Each worker performs the same the method for {\itercomp} used by \cite{chen10,chen12a}, i.e., they evaluate each combination of compiler optimisations across all the evaluation dataset.
 However, because the optimisation is performed online, they usually consider a small evaluation dataset and a small number of compiler optimisations.
 
-\cite{fursin07} addressed the problem of comparing the effect of two optimisations on two distinct inputs. For that purpose, they proposed to use instruction per cycle (IPC) as the metric for performing such comparison.
+\cite{fursin07} addressed the problem of comparing the effect of two optimisations on two distinct inputs.
+For that purpose, they proposed to use instruction per cycle (IPC) as the metric for performing such comparison.
 Their result show that using IPC seems promising as a robust metric for {\itercomp} across large input datasets.
 However, some specific optimisation techniques may affect the use of IPC as a robust metric, and specially IPC has been shown to provide poor performance estimation for multi-threaded programs~\citep{alameldeen06,eyerman08}.
 In particular, IPC can give a skewed performance measure if threads spend time in \textit{spin-lock loops} or other synchronisation mechanisms. 
@@ -126,17 +129,25 @@ The next section presents the main algorithms for producing static estimates for
 For this purpose, they used several branch heuristics that were derived by measuring, on a large number of programs, the probability of branches being taken in respect of some \textit{ad-hoc} features from the programs.
 Their algorithm selects, for each branch, the first heuristic that applies to the branch, in a given priority order of the heuristics.
 The \textit{ad-hoc} heuristics defined by \cite{ball93} are:
-\begin{description}
-\item[Loop branch heuristic (probability 88\%):] Probability of an edge back to a loop's head being executed.
-\item[Loop exit heuristic (probability 80\%):] Probability that a comparison inside a loop will \textit{not} exit the loop. This heuristic does not apply to latch blocks, i.e. basic blocks that contain a branch back to the header of the loop.
-\item[Pointer heuristic (probability 60\%):] Probability that a comparison between two pointers, where one of them can be a null pointer, will fail.
-\item[Opcode heuristic (probability 84\%):] Probability that a comparison of an integer being less than zero, less than or equal to zero, or equal to a constant will fail.
-\item[Guard heuristic (probability 62\%):] For a comparison with a register as operand, where the register is defined in a successor basic block which is not a post-dominator. The probability that the successor basic block is reached.
-\item[Loop header heuristic (probability 75\%):] Probability of reaching a successor block that is a loop header (or pre-header) but not a post-dominator.
-\item[Call heuristic (probability 78\%):] Probability of reaching a successor block that is not a post-dominator but contains a function call.
-\item[Store heuristic (probability 55\%):] Probability of reaching a successor block that is not a post-dominator but contains a store instruction.
-\item[Return heuristic (probability 72\%):] Probability of reaching a successor block that contains a return instruction.
-\end{description}
+
+\noindent\textbf{Loop branch heuristic (probability 88\%):} Probability of an edge back to a loop's head being executed.
+
+\noindent\textbf{Loop exit heuristic (probability 80\%):} Probability that a comparison inside a loop will \textit{not} exit the loop. This heuristic does not apply to latch blocks, i.e. basic blocks that contain a branch back to the header of the loop.
+
+\noindent\textbf{Pointer heuristic (probability 60\%):} Probability that a comparison between two pointers, where one of them can be a null pointer, will fail.
+
+\noindent\textbf{Opcode heuristic (probability 84\%):} Probability that a comparison of an integer being less than zero, less than or equal to zero, or equal to a constant will fail.
+
+\noindent\textbf{Guard heuristic (probability 62\%):} For a comparison with a register as operand, where the register is defined in a successor basic block which is not a post-dominator. The probability that the successor basic block is reached.
+
+\noindent\textbf{Loop header heuristic (probability 75\%):} Probability of reaching a successor block that is a loop header (or pre-header) but not a post-dominator.
+
+\noindent\textbf{Call heuristic (probability 78\%):} Probability of reaching a successor block that is not a post-dominator but contains a function call.
+
+\noindent\textbf{Store heuristic (probability 55\%):} Probability of reaching a successor block that is not a post-dominator but contains a store instruction.
+
+\noindent\textbf{Return heuristic (probability 72\%):} Probability of reaching a successor block that contains a return instruction.
+
 
 \cite{wu94} proposed an algorithm for statically estimating edge frequencies, which improves on the work of \cite{wagner94} and \cite{ball93}.
 This algorithm is able to combine several heuristics of the outcome of a branch into an estimated probability of the branch being taken.
