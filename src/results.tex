@@ -233,7 +233,8 @@ Because these probes were placed in basic blocks with a considerable execution f
 \item \textbf{Oracle-PP} represents the \textit{perfect} non-intrusive profiling by also executing the program twice, once for estimating the amount of work and the second for measuring its execution time.
 This version uses the proposed work-based performance metric, $\frac{\Delta W}{\Delta t}$, during the {\itercomp} search.
 \item \textbf{Real-OP} corresponds to the online {\itercomp} as it would be applied in a real online scenario.
-
+      For each optimisation, a random sample of input is selected, and the program is executed only once with each input.
+      The average of the work-based performance metric, $\frac{\Delta W}{\Delta t}$, for the sample of input is then used for selecting the best optimisation.
 \end{itemize}
 
 \begin{figure*}[htb]
