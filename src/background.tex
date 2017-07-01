@@ -8,7 +8,7 @@ LLVM was originally proposed as a \textit{Low-Level Virtual Machine}\footnote{Al
 Since then, LLVM has evolved into an umbrella project that comprises a collection of modular and reusable compiler and toolchain technologies.
 The main components under the LLVM umbrella is the LLVM intermediate representation (IR) and the LLVM \textit{Core} libraries.
 
-The LLVM compiler infrastructure implements the classical \textit{three-phase compiler} infrastructure, which consists of a frontend, an optimiser, and a backend.
+The LLVM compiler infrastructure implements the classical \textit{three-phase compiler} infrastructure, which consists of a frontend, an optimiser, and a backend, as depicted in Figure~\ref{fig:3-phase-compiler}.
 The frontend is responsible for parsing, validating and diagnosing errors in the source code.
 This parsed source code is then translated into an intermediate representation, which is the LLVM IR in this case.
 The optimiser is responsible for doing a broad variety of transformations, that are usually independent of language and target machine, to improve the code's performance.

@@ -139,7 +139,8 @@ Figure~\ref{fig:overhead-improvement-O3} shows the improvement of the relaxation
     \label{fig:overhead-improvement-O3}
 \end{figure}
 
-Even if we disconsider the exceptional improvement with the \texttt{adpcm\_d} benchmark, the relaxation with a 5\% threshold is able to improve about 20\% on average, over the optimal instrumentation.
+Figure~\ref{fig:overhead-improvement-O3} shows that the relaxation algorithm, with 5\% threshold, is able to improve an average of 48\% over the optimal instrumentation, improving about $4.5\times$ for both the \texttt{adpcm\_d} and \texttt{susan\_e} benchmarks.
+%If we disconsider the exceptional improvement for the \texttt{adpcm\_d} benchmark, the relaxation algorithm with a 5\% threshold is able to improve an average of about 20\% over the optimal instrumentation.
 
 \textbf{Profile-guided Instrumentation.}
 
@@ -267,7 +268,7 @@ other benchmarks are highly sensitive to the input.
 For example, the optimisation with best average performance for the \texttt{adpcm\_d} benchmark presents a wide range of speedups across all its inputs,
 varying from 0.7 up to about 1.5 of speedup.
 On the other hand, although the best optimisation selected for the \texttt{jpeg\_d} benchmark has a much shorter range of speedups, there is a clear concentration of inputs around two different speedups.
-These results support the initial claim that performing {\itercomp} on a single input can be misleading, overfitting the optimisation search.
+These results corroborate the claim that performing {\itercomp} on a single input can be misleading and cause the optimisation search to overfit.
 
 %\begin{figure*}[htb]
 %    \centering
@@ -301,51 +302,70 @@ After finding all live global definitions, it deletes all remaining globals.
 
 \noindent\textbf{Merge Functions \texttt{-mergefunc}:}
 This pass looks for equivalent functions that are mergable and folds them.
-Total-ordering is introduced among the functions set: we define comparison that answers for every two functions which of them is greater. It allows to arrange functions into the binary tree.
-For every new function we check for equivalent in tree.
-If equivalent exists we fold such functions. If both functions are overridable, we move the functionality into a new internal function and leave two overridable thunks to it.
-If there is no equivalent, then we add this function to tree.
-Lookup routine has O(log(n)) complexity, while whole merging process has complexity of O(n*log(n)).
+It introduces a function encoding which allows it to provide a total-ordering for the function set.
+The total-ordering allows to arrange functions into the binary tree.
+When iterating over the functions, it checks for an equivalent function in tree.
+If an equivalent function exists, both functions are merged, otherwise, the new function is added to the tree.
+This pass focus mainly on improving code size and memory footprint.
+%The lookup routine has $O(log(n))$ complexity, while the whole merging process has complexity of $O(n\cdot log(n))$.
+
+\subsubsection{Transformations of the CFG}
 
 \noindent\textbf{Simplify the CFG \texttt{-simplifycfg}:}
 This optimisation simplifies the CFG by basic blocks merging and dead code elimination, such as:
 eliminates a basic block that only contains an unconditional branch;
 removes basic blocks with no predecessors;
 eliminates PHI nodes for basic blocks with a single predecessor; etc.
-
-\noindent\textbf{Dead Store Elimination \texttt{-dse}:}
-A trivial dead store elimination that only considers basic-block local redundant stores.
-
-\noindent\textbf{MemCpy Optimization \texttt{-memcpyopt}:}
-This pass performs various transformations related to eliminating \texttt{memcpy} calls, or transforming sets of stores into \texttt{memsets}.
-
-\noindent\textbf{Unroll Loops \texttt{-loop-unroll}:}
-This pass implements a simple loop unroller. It works best when loops have been canonicalized by the \texttt{-indvars} pass, allowing it to determine the trip counts of loops easily.
+This pass makes use of LLVM's built-in cost model to decide when it is beneficial for performing such transformations.
 
 \noindent\textbf{Canonicalize Natural Loops \texttt{-loop-simplify}:}
-This pass performs several transformations to transform natural loops into a simpler form, which makes subsequent analyses and transformations simpler and more effective.
+This pass performs several transformations to convert natural loops into a simpler form, which makes subsequent analyses and transformations simpler and more effective.
 Loop pre-header insertion guarantees that there is a single, non-critical entry edge from outside of the loop to the loop header.
 This simplifies a number of analyses and transformations, such as Loop Invariant Code Motion (LICM).
 Loop exit-block insertion guarantees that all exit blocks from the loop (blocks which are outside of the loop that have predecessors inside of the loop) only have predecessors from inside of the loop (and are thus dominated by the loop header). This simplifies transformations such as store-sinking that are built into LICM.
 This pass also guarantees that loops will have exactly one backedge.
 Note that the \texttt{-simplifycfg} pass will clean up blocks which are split out but end up being unnecessary, so usage of this pass should not pessimize generated code.
-This pass obviously modifies the CFG, but updates loop information and dominator information.
 
-\noindent\textbf{Promote Memory to Register \texttt{-mem2reg}:}
-This file promotes memory references to be register references. It promotes alloca instructions which only have loads and stores as uses. An alloca is transformed by using dominator frontiers to place phi nodes, then traversing the function in depth-first order to rewrite loads and stores as appropriate. This is just the standard SSA construction algorithm to construct “pruned” SSA form.
+\noindent\textbf{Unroll Loops \texttt{-loop-unroll}:}
+This pass implements a simple loop unroller.
+It works best when loops have been canonicalized by the \texttt{-indvars} pass, allowing it to determine the trip counts of loops easily.
+This pass makes use of LLVM's built-in cost model to estimate the computational cost of both rolled and unrolled loops, which enables it to perform loop unrolling only when it is profitable.
 
-\noindent\textbf{Reassociate expressions \texttt{-reassociate}:}
-This pass reassociates commutative expressions in an order that is designed to promote better constant propagation, GCSE, LICM, PRE, etc.
-For example: 4 + (x + 5) -> x + (4 + 5)
-In the implementation of this algorithm, constants are assigned rank = 0, function arguments are rank = 1, and other values are assigned ranks corresponding to the reverse post order traversal of current function (starting at 2), which effectively gives values in deep loops higher rank than values not in loops.
+\subsubsection{Dead Code Elimination}
 
-\noindent\textbf{Merge Duplicate Global Constants \texttt{-constmerge}:}
-Merges duplicate global constants together into a single constant that is shared. This is useful because some passes (i.e., TraceValues) insert a lot of string constants into the program, regardless of whether or not an existing string is available.
+\noindent\textbf{Dead Instruction Elimination \texttt{-die}:}
+Dead instruction elimination performs a single pass over the function, removing instructions that are obviously dead.
+
+\noindent\textbf{Dead Store Elimination \texttt{-dse}:}
+A trivial dead store elimination that only considers basic-block local redundant stores.
+
+\noindent\textbf{Dead Code Elimination \texttt{-dce}:}
+Dead code elimination is similar to dead instruction elimination, but it rechecks instructions that were used by removed instructions to see if they are newly dead.
+In other words, it performs dead instruction elimination until it reaches a fixed point.
 
 \noindent\textbf{Aggressive Dead Code Elimination \texttt{-adce}:}
 ADCE aggressively tries to eliminate code.
 This pass is similar to DCE but it assumes that values are dead until proven otherwise.
 This is similar to SCCP, except applied to the liveness of values.
+
+\subsubsection{Simplification of Expressions}
+
+\noindent\textbf{Combine redundant instructions \texttt{-instcombine}:}
+Combine instructions to form fewer, simple instructions, by means of algebraic simplifications.
+This is a simple worklist driven algorithm, in a peephole fashion.
+Some of the simplifications and canonicalizations are:
+Constant operands are moved to the right-hand side of commutative binary operations;
+Multiplications with a constant power-of-two argument are transformed into shifts;
+All compare instructions on boolean values are replaced with logical operations.
+This pass can also simplify calls to specific well-known function calls (e.g. runtime library functions).
+For example, a call exit(3) that occurs within the main() function can be transformed into simply return 3.
+
+\noindent\textbf{Reassociate expressions \texttt{-reassociate}:}
+This pass reassociates commutative expressions in an order that is designed to promote better constant propagation, Global Common Subexpression Elimination (GCSE), LICM, etc.
+It performs a canonical reordering of the operands of commutative binary operations.
+
+\noindent\textbf{Merge Duplicate Global Constants \texttt{-constmerge}:}
+Merges duplicate global constants together into a single constant that is shared. This is useful because some passes (i.e., TraceValues) insert a lot of string constants into the program, regardless of whether or not an existing string is available.
 
 \noindent\textbf{Simple constant propagation \texttt{-constprop}:}
 This pass implements constant propagation and merging.
@@ -353,32 +373,14 @@ It looks for instructions involving only constant operands and replaces them wit
 This pass has a habit of making definitions be dead.
 It is a good idea to run a Dead Instruction Elimination pass sometime after running this pass.
 
-\noindent\textbf{Dead Instruction Elimination \texttt{-die}:}
-Dead instruction elimination performs a single pass over the function, removing instructions that are obviously dead.
+\subsubsection{Other Frequent Transformations}
 
-\noindent\textbf{Combine redundant instructions \texttt{-instcombine}:}
-Combine instructions to form fewer, simple instructions.
-This pass does not modify the CFG.
-This pass is where algebraic simplification happens.
-This pass combines things like:
-%Y = add i32 %X, 1
-%Z = add i32 %Y, 1
-into:
-%Z = add i32 %X, 2
-This is a simple worklist driven algorithm.
-This pass guarantees that the following canonicalizations are performed on the program:
-If a binary operator has a constant operand, it is moved to the right-hand side.
-Bitwise operators with constant operands are always grouped so that shifts are performed first, then ors, then ands, then xors.
-Compare instructions are converted from <, >, ≤, or ≥ to = or ≠ if possible.
-All cmp instructions on boolean values are replaced with logical operations.
-add X, X is represented as mul X, 2 ⇒ shl X, 1
-Multiplies with a constant power-of-two argument are transformed into shifts.
-… etc.
-This pass can also simplify calls to specific well-known function calls (e.g. runtime library functions). For example, a call exit(3) that occurs within the main() function can be transformed into simply return 3. Whether or not library calls are simplified is controlled by the -functionattrs pass and LLVM’s knowledge of library calls on different targets.
+\noindent\textbf{MemCpy Optimization \texttt{-memcpyopt}:}
+This pass performs various transformations related to eliminating \texttt{memcpy} calls, or transforming sets of stores into \texttt{memsets}.
 
-\noindent\textbf{Dead Code Elimination \texttt{-dce}:}
-Dead code elimination is similar to dead instruction elimination, but it rechecks instructions that were used by removed instructions to see if they are newly dead.
-In other words, it performs dead instruction elimination until it reaches a fixed point.
+\noindent\textbf{Promote Memory to Register \texttt{-mem2reg}:}
+This file promotes memory references to be register references. It promotes alloca instructions which only have loads and stores as uses. An alloca is transformed by using dominator frontiers to place phi nodes, then traversing the function in depth-first order to rewrite loads and stores as appropriate. This is just the standard SSA construction algorithm to construct “pruned” SSA form.
+
 
 \noindent\textbf{Basic-Block Vectorization \texttt{-bb-vectorize}:}
 This pass combines instructions inside basic blocks to form vector instructions.
