@@ -430,10 +430,9 @@ For these cases, we propose an adapted version of the relaxation algorithm that 
 Traditionally, compilers optimisations are performed on the function-level, or at best on a per module basis.
 Whole program optimisation (WPO) means that the compiler considers all compilation units of the program and optimises them using the combined knowledge of how they are used together.
 
-The whole program relaxation works by using profiling information from previous executions
-This profiling information consists on both the basic block frequency and the work metric.
-By having this profiling information, the whole program relaxation is able to compute the error of removing a probe in terms of the whole program's execution,
-and then use this error value for selecting a subset of all the probes to be removed.
+The whole program relaxation works by using block frequency profiling from previous executions.
+By having this profiling information, the \textit{whole program relaxation} is able to compute the error of removing a given probe in terms of the whole program's execution,
+and then use this error values for selecting a subset of all the probes to be removed.
 
 For a program with a set of probes $\{P_0, P_1, \ldots, P_k\}$, we model the whole program the relaxation as the following 0-1 Knapsack problem:
 \[
@@ -443,15 +442,13 @@ For a program with a set of probes $\{P_0, P_1, \ldots, P_k\}$, we model the who
 \textrm{subject to } \sum_{i=0}^{k} \varepsilon(P_i)x_i \leq M \textrm{ and } x_i\in\{0,1\}
 \]
 where $f(P_i)$ is the execution frequency of the instrumented basic block $P_i$, $x_i$ denotes the probes selected for removal, $M$ is the error threshold, and $\varepsilon(P_i)$ is the percentage error of removing probe $P_i$ relative to the profiled global work, i.e.,
-if $\Delta W$ is the work value profiled from previous executions, the error for a given probe $P_i$ is
+if $\Delta W$ is the work value for the whole program's execution, computed from the basic block frequencies profiled from previous executions, the error for a given probe $P_i$ is
 \[
 \varepsilon(P_i) = \frac{\omega(P_i)f(P_i)}{\Delta W}.
 \]
 
 Contrary to the per DAG relaxation, the whole program relaxation is not guaranteed to be bounded by the error threshold $M$,
 as it is dependent on the representativity of the profiling information that was provided.
-
-
 
 \section{Other Possible Uses}
 

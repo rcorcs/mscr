@@ -199,12 +199,29 @@ When performing a series of function-level passes, it executes all these passes 
 
 \textbf{Original work in {\IterComp}: single input and offline}
 
-A well known compilation technique that addresses this challenge is {\itercomp}.
+{\Itercomp} is a well known compilation technique that searches the optimisation space in order to find the best optimisation for a particular program.
 {\Itercomp} has the ability to adapt to new platforms, program and workload while still having a systematic and simple optimisation process.
-It works by repeatedly evaluating a large number of compiler optimisations until the best combination is found for a particular program~\citep{fursin07,chen10}.
+It works by repeatedly evaluating a large number of compiler optimisations, by means of an execution-driven search, until the best optimisation is found for a particular program~\citep{kisuki99,fursin07,chen10}.
 The main challenge concerning {\itercomp} is the need for efficiently exploring such a large optimisation space~\citep{fursin07,cavazos07,zhou12}.
 
-\textbf{Talk about work that focus on the suggestion of better optimisations based on aspects of the input program.}
+Early work on {\itercomp} demonstrated its use for determining simultaneously optimal tile sizes and unroll factors for any given loop nest~\cite{kisuki00,knijnenburg04}.
+These two transformations are highly interdependent with a very irregular optimisation space, as both of them affect, in different ways, cache behaviour and instruction-level parallelism.
+Because of their close interaction, with non-trivial trade-offs, designing a static cost model, that enables the compiler to automatically select the best configuration, is a very laborious and impractical task.
+\cite{kisuki00} propose the use of {\itercomp} to address this problem, where it is able to outperform several static techniques.
+However, its success comes at the cost of a significant increase in compilation time, which involves several runs of the program for the execution-driven search.
+
+Despite the high cost of compilation time, there are scenarios where this approach is highly attractive due to high-performance requirements, such as embedded systems and library codes.
+Moreover, {\itercomp} was originally intended to be applied in an \textit{offline} scenario, where the software vendor optimises the program before shipping, the compilation time can be amortised across the number of products shipped, the lifetime of the product, or a much larger number of executions in production~\cite{kisuki99,kisuki00,chen10}.
+It is also useful in contexts where the underlying architecture changes frequently, as the iterative search dismisses the arduous task of manually optimising the program for the new platform.
+
+Numerous researchers have addressed the problem of reducing the optimisation space.
+For the same problem of selecting optimal tile sizes and unroll factors, \cite{knijnenburg04} suggest the use of a cache model to avoid executing candidates during the execution-driven search of {\itercomp}.
+By querying the cache model, the compiler is able to rank the optimisation candidates, filtering out candidates below a given threshold.
+Their results show that it is possible to reduce the number of executions by up to about 70\%, without a significant degradation of the resulting optimisation.
+
+\cite{agakov06}...
+
+More recently, \cite{ogilvie17}...
 
 \section{Program Profiling}
 
