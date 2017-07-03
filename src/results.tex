@@ -229,23 +229,34 @@ Because these probes were placed in basic blocks with a considerable execution f
 
 \section{Evaluation of the Online {\IterComp}}
 
-
+In this section we evaluate the online {\itercomp} guided by the work-based performance metric.
+For comparison, we use the following baselines and configurations:
 \begin{itemize}
-\item \textbf{Oracle-RM} executes the program twice, for each input, and then measuring the real speedup for each compiler optimisation and uses the real speedup for selecting the best optimisation.
-\item \textbf{Oracle-PP} represents the \textit{perfect} non-intrusive profiling by also executing the program twice, once for estimating the amount of work and the second for measuring its execution time.
-This version uses the proposed work-based performance metric, $\frac{\Delta W}{\Delta t}$, during the {\itercomp} search.
+\item \textbf{Oracle-RM} executes the program multiple times for each input, measuring the real speedup for each compiler optimisation, and then uses the real speedup over \texttt{-O0} for comparing the optimisations.
+The speedups are computed based on the wall-clock time.
+In order to reduce noise, the program is executed several times for the same input, until the confidence interval no larger than 1\% for a 99\% confidence.
+\item \textbf{Oracle-PP} represents an oracle with a \textit{perfect} non-intrusive profiling.
+Although it uses the work-based performance metric for comparing optimisation, this oracle also avoids noise in its measurements by also executing the program multiple times for each input.
+The first execution is used for profiling the work metric.
+The remaining executes are used for measuring the wall-clock time without using the work profiling.
 \item \textbf{Real-OP} corresponds to the online {\itercomp} as it would be applied in a real online scenario.
       For each optimisation, a random sample of input is selected, and the program is executed only once with each input.
       The average of the work-based performance metric, $\frac{\Delta W}{\Delta t}$, for the sample of input is then used for selecting the best optimisation.
+\item \textbf{Real-R5}
 \end{itemize}
+In all configurations, the same optimisation is used for multiple distinct inputs, using a dynamic window size, as explained in Section~\ref{sec:oic-infra}.
+This window size provides an estimate for the optimisation performance across inputs.
+When selecting the best optimisation, they are ranked by the average of their performance measurement, using the work-based performance metric, except for the Oracle-RM which uses the real speedup over \texttt{-O0}.
+Figure~\ref{} shows the average window size for each benchmark and configuration.
 
 \begin{figure*}[htb]
     \centering
     %\includegraphics[width=\textwidth]{figs/speedups.pdf}
-    \caption{Speedups observed with the online {\itercomp}.}
+    \caption{Average window size observed during the online {\itercomp}.}
     \label{fig:speedups}
 \end{figure*}
 
+\textbf{talk about the fixed set of optimisations}
 
 In order to evaluate the quality of the final optimisation selected by the {\itercomp} search, we compare their speedup by measuring wall-clock time of the benchmarks when compiled with the default \texttt{-O3} optimisation.
 For each benchmark, after selecting the final optimisation, we compute the average speedup over all the 1000 input dataset.
@@ -253,6 +264,22 @@ When measuring the wall-clock time for each input, in order to reduce noise, we 
 Figure~\ref{fig:speedups-per-input} shows the histogram of the speedups obtained for each benchmark with all their respective 1000 inputs.
 This figure shows the speedups of the best optimisation found by the oracle with real measurements of execution time (Oracle-RM).
 It illustrates the expected upper bound by the online {\itercomp}.
+
+
+\begin{figure*}[htb]
+    \centering
+    %\includegraphics[width=\textwidth]{figs/speedups.pdf}
+    \caption{Speedups obtained from the final optimisation selected by the online {\itercomp}.
+	         The speedups reported for each benchmark represents the average speedup across their complete 1000 input datasets.}
+    \label{fig:speedups}
+\end{figure*}
+ 
+Figure~\ref{fig:speedups-per-input} is also important for showing that, although some of the benchmarks have a very consistent speedup for all their inputs,
+other benchmarks are highly sensitive to the input.
+For example, the optimisation with best average performance for the \texttt{adpcm\_d} benchmark presents a wide range of speedups across all its inputs,
+varying from 0.7 up to about 1.5 of speedup.
+On the other hand, although the best optimisation selected for the \texttt{jpeg\_d} benchmark has a much shorter range of speedups, there is a clear concentration of inputs around two different speedups.
+These results corroborate the claim that performing {\itercomp} on a single input can be misleading and cause the optimisation search to overfit.
 
 \begin{figure}[h!]
     \centering
@@ -262,13 +289,6 @@ It illustrates the expected upper bound by the online {\itercomp}.
              This figure shows how the performance for some of the benchmarks are highly sensitive to the input.}
     \label{fig:speedups-per-input}
 \end{figure}
- 
-Figure~\ref{fig:speedups-per-input} is also important for showing that, although some of the benchmarks have a very consistent speedup for all their inputs,
-other benchmarks are highly sensitive to the input.
-For example, the optimisation with best average performance for the \texttt{adpcm\_d} benchmark presents a wide range of speedups across all its inputs,
-varying from 0.7 up to about 1.5 of speedup.
-On the other hand, although the best optimisation selected for the \texttt{jpeg\_d} benchmark has a much shorter range of speedups, there is a clear concentration of inputs around two different speedups.
-These results corroborate the claim that performing {\itercomp} on a single input can be misleading and cause the optimisation search to overfit.
 
 %\begin{figure*}[htb]
 %    \centering

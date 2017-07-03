@@ -197,12 +197,27 @@ When performing a series of function-level passes, it executes all these passes 
 
 \section{Early Work in {\IterComp}}
 
-\textbf{Original work in {\IterComp}: single input and offline}
+
+In this section we present the basic concepts of {\itercomp} and discuss some of the early work on this research topic.
+We also consider some of the challenges on reducing its compilation time and present recent work that addresses these challenges.
 
 {\Itercomp} is a well known compilation technique that searches the optimisation space in order to find the best optimisation for a particular program.
 {\Itercomp} has the ability to adapt to new platforms, program and workload while still having a systematic and simple optimisation process.
 It works by repeatedly evaluating a large number of compiler optimisations, by means of an execution-driven search, until the best optimisation is found for a particular program~\citep{kisuki99,fursin07,chen10}.
-The main challenge concerning {\itercomp} is the need for efficiently exploring such a large optimisation space~\citep{fursin07,cavazos07,zhou12}.
+%The main challenge concerning {\itercomp} is the need for efficiently exploring such a large optimisation space~\citep{fursin07,cavazos07,zhou12}.
+
+Figure~\ref{fig:itercomp-diagram} shows an overview of the architecture necessary for performing {\itercomp}.
+After executing an optimised version of the program, profiling data is provided as a feed-back to the iterative search.
+This profiling data can be as simple as the program's execution time, or more complex, including hardware performance counters for cache behaviour, measurements of energy consumption, etc.
+The evaluator is able to use the feed-back in order to rank the optimisations and select the best one.
+The optimisation generator can be a fixed sequence of optimisations or a dynamic mechanism for suggesting the next optimisation.
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=\linewidth]{figs/infra-diagram}
+    \caption{A simplified overview of the architecture for {\itercomp}.}
+    \label{fig:itercomp-diagram}
+\end{figure}
 
 Early work on {\itercomp} demonstrated its use for determining simultaneously optimal tile sizes and unroll factors for any given loop nest~\cite{kisuki00,knijnenburg04}.
 These two transformations are highly interdependent with a very irregular optimisation space, as both of them affect, in different ways, cache behaviour and instruction-level parallelism.
