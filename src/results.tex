@@ -251,12 +251,36 @@ Figure~\ref{} shows the average window size for each benchmark and configuration
 
 \begin{figure*}[htb]
     \centering
-    %\includegraphics[width=\textwidth]{figs/speedups.pdf}
+    \includegraphics[width=\textwidth]{figs/window-size.pdf}
     \caption{Average window size observed during the online {\itercomp}.}
     \label{fig:speedups}
 \end{figure*}
 
-\textbf{talk about the fixed set of optimisations}
+For the purpose of evaluating the use of the work-based performance metric for guiding the optimisation search, we collected in advance a fixed set of optimisations.
+This set contains 500 optimisations collected in a random search using the training benchmarks.
+These optimisations contain an average of 40 passes, including repetitions, with a maximum of 119 optimisation passes and minimum, but it also contains optimisations which consists of a single flag, such as the default optimisations \texttt{-O1}, \texttt{-O2}, \texttt{-O3}, \texttt{-Os}, and \texttt{-Oz}.
+
+  \begin{minipage}{0.9\textwidth}
+     \vspace{1em}
+     \singlespace
+     \noindent\textbf{Example of a long optimisation sequence:}\vspace{-1ex}
+     \justify{\usefont{T1}{cmr}{m}{n} -globalopt -reassociate -instcombine -loop-rotate -block-freq -deadargelim -early-cse -sroa -argpromotion -sccp -tbaa -barrier -constmerge \mbox{-loop-vectorize} -domtree -basicaa -memdep -basiccg -memcpyopt \mbox{-constprop} -adce -globaldce -mem2reg -constmerge \mbox{-globaldce} -constprop -instsimplify -dse -dce -simplifycfg -loop-unroll -reassociate -constprop \mbox{-globaldce} -instsimplify -adce -constmerge -bb-vectorize -dce -mergefunc -simplifycfg -dse -loop-unroll -globaldce}
+  \end{minipage}
+
+  \begin{minipage}{0.9\textwidth}
+     \vspace{1em}
+     \singlespace
+     \noindent\textbf{Example of a short optimisation sequence:}\vspace{-1ex}
+     \justify{\usefont{T1}{cmr}{m}{n} -mem2reg -simplifycfg -constprop -dce}
+  \end{minipage}
+
+  \begin{minipage}{0.9\textwidth}
+     \vspace{1em}
+     \singlespace
+     \noindent\textbf{Example of an optimisation sequence which includes {-O3}:}\vspace{-1ex}
+     \justify{\usefont{T1}{cmr}{m}{n} -O3 -adce -globaldce -simplifycfg -memcpyopt -reassociate -mergefunc \mbox{-dce} -dse}
+     \vspace{2em}
+  \end{minipage}
 
 In order to evaluate the quality of the final optimisation selected by the {\itercomp} search, we compare their speedup by measuring wall-clock time of the benchmarks when compiled with the default \texttt{-O3} optimisation.
 For each benchmark, after selecting the final optimisation, we compute the average speedup over all the 1000 input dataset.

@@ -214,8 +214,8 @@ The optimisation generator can be a fixed sequence of optimisations or a dynamic
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=\linewidth]{figs/infra-diagram}
-    \caption{A simplified overview of the architecture for {\itercomp}.}
+    \includegraphics[width=\linewidth]{figs/itercomp-diagram}
+    \caption{A simplified overview of the architecture of an iterative compiler.}
     \label{fig:itercomp-diagram}
 \end{figure}
 
@@ -234,7 +234,7 @@ For the same problem of selecting optimal tile sizes and unroll factors, \cite{k
 By querying the cache model, the compiler is able to rank the optimisation candidates, filtering out candidates below a given threshold.
 Their results show that it is possible to reduce the number of executions by up to about 70\%, without a significant degradation of the resulting optimisation.
 
-\cite{agakov06}...
+\cite{agakov06} suggest using machine learning techniques to speed up {\itercomp}.
 
 More recently, \cite{ogilvie17}...
 
