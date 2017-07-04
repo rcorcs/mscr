@@ -256,16 +256,12 @@ Figure~\ref{} shows the average window size for each benchmark and configuration
     \label{fig:speedups}
 \end{figure*}
 
-For the purpose of evaluating the use of the work-based performance metric for guiding the optimisation search, we collected in advance a fixed set of optimisations.
-This set contains 500 optimisations collected in a random search using the training benchmarks.
-These optimisations contain an average of 40 passes, including repetitions, with a maximum of 119 optimisation passes and minimum, but it also contains optimisations which consists of a single flag, such as the default optimisations \texttt{-O1}, \texttt{-O2}, \texttt{-O3}, \texttt{-Os}, and \texttt{-Oz}.
 
-  \begin{minipage}{0.9\textwidth}
-     \vspace{1em}
-     \singlespace
-     \noindent\textbf{Example of a long optimisation sequence:}\vspace{-1ex}
-     \justify{\usefont{T1}{cmr}{m}{n} -globalopt -reassociate -instcombine -loop-rotate -block-freq -deadargelim -early-cse -sroa -argpromotion -sccp -tbaa -barrier -constmerge \mbox{-loop-vectorize} -domtree -basicaa -memdep -basiccg -memcpyopt \mbox{-constprop} -adce -globaldce -mem2reg -constmerge \mbox{-globaldce} -constprop -instsimplify -dse -dce -simplifycfg -loop-unroll -reassociate -constprop \mbox{-globaldce} -instsimplify -adce -constmerge -bb-vectorize -dce -mergefunc -simplifycfg -dse -loop-unroll -globaldce}
-  \end{minipage}
+\subsection{The Optimisation Set}
+
+For the purpose of evaluating the use of the work-based performance metric with {\itercomp}, we collected in advance a fixed set of optimisations.
+This set contains 500 optimisations collected in a random search using the training benchmarks.
+These optimisations contain an average of 40 transformation, including repetitions, with a maximum of 119 optimisation passes, but it also contains optimisations which consists of a single flag, such as the default optimisations \texttt{-O1}, \texttt{-O2}, \texttt{-O3}, \texttt{-Os}, and \texttt{-Oz}.
 
   \begin{minipage}{0.9\textwidth}
      \vspace{1em}
@@ -277,10 +273,30 @@ These optimisations contain an average of 40 passes, including repetitions, with
   \begin{minipage}{0.9\textwidth}
      \vspace{1em}
      \singlespace
+     \noindent\textbf{Example of a long optimisation sequence:}\vspace{-1ex}
+     \justify{\usefont{T1}{cmr}{m}{n} -globalopt -reassociate -instcombine -loop-rotate -block-freq -deadargelim -early-cse -sroa -argpromotion -sccp -tbaa -barrier -constmerge \mbox{-loop-vectorize} -domtree -basicaa -memdep -basiccg -memcpyopt \mbox{-constprop} -adce -globaldce -mem2reg -constmerge \mbox{-globaldce} -constprop -instsimplify -dse -dce -simplifycfg -loop-unroll -reassociate -constprop \mbox{-globaldce} -instsimplify -adce -constmerge -bb-vectorize -dce -mergefunc -simplifycfg -dse -loop-unroll -globaldce}
+  \end{minipage}
+
+  \begin{minipage}{0.9\textwidth}
+     \vspace{1em}
+     \singlespace
      \noindent\textbf{Example of an optimisation sequence which includes {-O3}:}\vspace{-1ex}
      \justify{\usefont{T1}{cmr}{m}{n} -O3 -adce -globaldce -simplifycfg -memcpyopt -reassociate -mergefunc \mbox{-dce} -dse}
      \vspace{2em}
   \end{minipage}
+
+Repeating the same optimisation pass can be beneficial and usually expected by other passes.
+For example, the {\usefont{T1}{cmr}{m}{n} -loop-simplify} pass is used for transforming loops into a canonical form by inserting pre-header and exit basic blocks.
+Although this pass inserts jumps due to redundant basic blocks, this canonical form can be favourable to other loop optimisations.
+Because of the redundant basic blocks, this optimisation pass expects that the {\usefont{T1}{cmr}{m}{n} -simplifycfg} will eventually be executer later on the optimisation pipeline.
+Another example of such inter-relation between transformations concerns the {\usefont{T1}{cmr}{m}{n} -licm} and {\usefont{T1}{cmr}{m}{n} -mem2reg} passes.
+The {\usefont{T1}{cmr}{m}{n} -licm} pass is responsible for moving invariant code out from the loop body. 
+It usually creates new local variables, using memory access operations, for assisting with the code manipulation, which means that the executing the {\usefont{T1}{cmr}{m}{n} -mem2reg} pass afterwards would be useful as a cleanup pass for removing the extra memory accesses generated.
+However, many of the analysis required for identifying loop invariant also benefit from the transformations performed by the {\usefont{T1}{cmr}{m}{n} -mem2reg} pass.
+These examples illustrate the importance of repeating optimisation passes.
+Moreover, they illustrate the intricate relation amongst several transformations. 
+
+\subsection{Performance Evaluation}
 
 In order to evaluate the quality of the final optimisation selected by the {\itercomp} search, we compare their speedup by measuring wall-clock time of the benchmarks when compiled with the default \texttt{-O3} optimisation.
 For each benchmark, after selecting the final optimisation, we compute the average speedup over all the 1000 input dataset.
