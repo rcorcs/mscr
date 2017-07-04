@@ -554,8 +554,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.959798"
-     inkscape:cx="164.22133"
-     inkscape:cy="814.66452"
+     inkscape:cx="83.255983"
+     inkscape:cy="907.22131"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -739,25 +739,6 @@
        height="18.998377"
        x="139.38715"
        y="218.38232" />
-    <rect
-       y="143.6748"
-       x="70.469177"
-       height="10.101525"
-       width="10.101525"
-       id="rect4622"
-       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
-    <text
-       sodipodi:linespacing="125%"
-       id="text4624"
-       y="151.54303"
-       x="75.524323"
-       style="font-style:normal;font-weight:normal;font-size:12.5px;line-height:125%;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       xml:space="preserve"><tspan
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8.75px;font-family:'Latin Modern Roman';-inkscape-font-specification:'Latin Modern Roman, '"
-         y="151.54303"
-         x="75.524323"
-         id="tspan4626"
-         sodipodi:role="line">0</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:12.5px;line-height:125%;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -811,7 +792,7 @@
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker7870)"
-       d="M 75.157702,143.27687 C 79.853602,90.148986 116.14444,65.844396 185.541,65.127036"
+       d="M 75.76421,141.61294 C 80.46011,88.485054 116.14444,65.844396 185.541,65.127036"
        id="path7862"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
@@ -956,5 +937,11 @@
        id="path4520"
        d="M 242.83627,270.41973 C 198.01477,262.9199 200.59972,226.84762 200.87198,125.5983"
        style="fill:none;fill-rule:evenodd;stroke:#ff0000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none" />
+    <circle
+       style="opacity:1;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.9188323;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4497"
+       cx="76.056114"
+       cy="147.83031"
+       r="5.972827" />
   </g>
 </svg>

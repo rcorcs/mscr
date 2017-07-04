@@ -18,7 +18,7 @@ For the experimental evaluation we have used a subset of the \textit{KDataSets} 
 The KDataSets contains 1000 different inputs for each one of its benchmark programs.
 These benchmarks cover a broad spectrum of application scenarios, ranging from simple embedded signal-processing tasks to common mobile-phone and desktop tasks.
 The different inputs try to capture distinct characteristics in terms of workload sizes and how these workloads exercise different control flow paths.
-A summary of the benchmark and dataset suit is shown in Table~\ref{tab:kdatasets}.
+A summary of the benchmarks and dataset suit is shown in Table~\ref{tab:kdatasets}.
 
 \begin{table}[h]
 \centering
@@ -73,6 +73,10 @@ bzip2d        & 5125   & 0.2K-25M                   & Compressed files          
 \caption{Description of the KDataSets with 1000 inputs for each benchmark (Chen~\etal~\cite{chen10,chen12a}).}
 \label{tab:kdatasets}
 \end{table}
+
+The shaded (grey) benchmarks in Table~\ref{tab:kdatasets} represent the benchmarks used for training the cost model used for computing the weight of the instructions for the work metric.
+These same training benchmarks were also used for collecting a fixed set of optimisations for the {\itercomp}.
+The remaining (white) benchmarks are used for the experimental evaluation.
 
 \section{Evaluation of the Instrumentation}
 
@@ -141,6 +145,14 @@ Figure~\ref{fig:overhead-improvement-O3} shows the improvement of the relaxation
 
 Figure~\ref{fig:overhead-improvement-O3} shows that the relaxation algorithm, with 5\% threshold, is able to improve an average of 48\% over the optimal instrumentation, improving about $4.5\times$ for both the \texttt{adpcm\_d} and \texttt{susan\_e} benchmarks.
 %If we disconsider the exceptional improvement for the \texttt{adpcm\_d} benchmark, the relaxation algorithm with a 5\% threshold is able to improve an average of about 20\% over the optimal instrumentation.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{figs/instr-all-thresholds.pdf}
+    \caption{.}
+    \label{fig:instr-all-thresholds}
+\end{figure}
+
 
 \textbf{Profile-guided Instrumentation.}
 
@@ -247,14 +259,14 @@ The remaining executes are used for measuring the wall-clock time without using 
 In all configurations, the same optimisation is used for multiple distinct inputs, using a dynamic window size, as explained in Section~\ref{sec:oic-infra}.
 This window size provides an estimate for the optimisation performance across inputs.
 When selecting the best optimisation, they are ranked by the average of their performance measurement, using the work-based performance metric, except for the Oracle-RM which uses the real speedup over \texttt{-O0}.
-Figure~\ref{} shows the average window size for each benchmark and configuration.
+Figure~\ref{fig:window-size} shows the average window size for each benchmark and configuration.
 
-\begin{figure*}[htb]
+\begin{figure}[htb]
     \centering
     \includegraphics[width=\textwidth]{figs/window-size.pdf}
     \caption{Average window size observed during the online {\itercomp}.}
-    \label{fig:speedups}
-\end{figure*}
+    \label{fig:window-size}
+\end{figure}
 
 
 \subsection{The Optimisation Set}
