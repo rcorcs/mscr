@@ -121,6 +121,22 @@ This conservatism will be specially evident in the dynamic evaluation.
     \label{fig:static-instr-error}
 \end{figure}
 
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{figs/instr-all-thresholds.pdf}
+    \caption{.}
+    \label{fig:instr-all-thresholds}
+\end{figure}
+
+In order to investigate the effects caused to the instrumentation when varying the relaxation threshold, we performed a full analysis of the reduction in the number of probes varying the threshold from 0\% up to 100\%, as presented in Figure~\ref{fig:instr-all-thresholds}.
+This figure shows the percentage of probes, instrumented basic blocks, over the total number of basic blocks.
+It is interesting to understand some of the aspects of these results.
+In some cases, when increasing the threshold, the number of probes also increased, e.g., as it is clearly noticable in the \texttt{qsort} benchmark.
+This happens when the larger threshold allows the 0-1 knapsack solver exchange a large probes for fewer probes with higher execution frequency value but also higher static error.
+Figure~\ref{fig:instr-all-thresholds} also shows the 
+It is also interesting to notice the highly conservative aspect of the relaxation algorithm, as most benchmarks remain with more than 30\% of basic blocks instrumented, even with a 100\% relaxation threshold.
+This happens as the static error is computed based on the path with the minimum amount of work possible in the DAG, which can be very conservative in most cases.
+
 \subsection{Dynamic Evaluation}
 
 For the evaluation of the performance overhead that the instrumentation incur to the benchmarks, we measure the wall-clock time of the benchmarks when compiled with the default \texttt{-O3} optimisation.
@@ -148,11 +164,10 @@ Figure~\ref{fig:overhead-improvement-O3} shows that the relaxation algorithm, wi
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=\textwidth]{figs/instr-all-thresholds.pdf}
+    \includegraphics[width=\textwidth]{figs/error-O3.pdf}
     \caption{.}
     \label{fig:instr-all-thresholds}
 \end{figure}
-
 
 \textbf{Profile-guided Instrumentation.}
 
@@ -252,9 +267,14 @@ Although it uses the work-based performance metric for comparing optimisation, t
 The first execution is used for profiling the work metric.
 The remaining executes are used for measuring the wall-clock time without using the work profiling.
 \item \textbf{Real-OP} corresponds to the online {\itercomp} as it would be applied in a real online scenario.
-      For each optimisation, a random sample of input is selected, and the program is executed only once with each input.
-      The average of the work-based performance metric, $\frac{\Delta W}{\Delta t}$, for the sample of input is then used for selecting the best optimisation.
-\item \textbf{Real-R5}
+      For each optimisation, a random sample of inputs is selected, and the program is executed only once with each input.
+      When executing each input, it uses the optimal work instrumentation for profiling the work metric.
+      The average of the work-based performance metric, $\frac{\Delta W}{\Delta t}$, for the sample of inputs is then used for selecting the best optimisation.
+\item \textbf{Real-R5} is similar to the {Real-OP}.
+      It also corresponds to the online {\itercomp} as it would be applied in a real online scenario.
+      For each optimisation, a random sample of inputs is selected, and the program is executed only once with each input.
+      When executing each input, it uses the relaxed work instrumentation, with a 5\% threshold, for profiling the work metric.
+      The average of the work-based performance metric for the sample of inputs is then used for selecting the best optimisation.
 \end{itemize}
 In all configurations, the same optimisation is used for multiple distinct inputs, using a dynamic window size, as explained in Section~\ref{sec:oic-infra}.
 This window size provides an estimate for the optimisation performance across inputs.
@@ -308,6 +328,11 @@ However, many of the analysis required for identifying loop invariant also benef
 These examples illustrate the importance of repeating optimisation passes.
 Moreover, they illustrate the intricate relation amongst several transformations. 
 
+However, all optimisations in the set of optimisations were generated completely at random, without using any knowlege of individual transformations.
+Each optimisation was generated in two steps: \textit{(1)} randomly selects the number of flags; \textit{(2)} randomly selects the flags, allowing repetitions.
+Afterwards, this randomly generated optimisation would be included in the set of optimisations only if it was able to improve the performance of a training benchmark, also selected at random, in respect of the {\usefont{T1}{cmr}{m}{n} -O3} optimisation.
+This process was repeated until we obtained the 500 distinct optimisations.
+
 \subsection{Performance Evaluation}
 
 In order to evaluate the quality of the final optimisation selected by the {\itercomp} search, we compare their speedup by measuring wall-clock time of the benchmarks when compiled with the default \texttt{-O3} optimisation.
@@ -315,12 +340,11 @@ For each benchmark, after selecting the final optimisation, we compute the avera
 When measuring the wall-clock time for each input, in order to reduce noise, we execute the same input until we have a statistically sound measurement, i.e. we execute until we have an interval no larger than 1\% with 99\% confidence.
 Figure~\ref{fig:speedups-per-input} shows the histogram of the speedups obtained for each benchmark with all their respective 1000 inputs.
 This figure shows the speedups of the best optimisation found by the oracle with real measurements of execution time (Oracle-RM).
-It illustrates the expected upper bound by the online {\itercomp}.
-
+%It illustrates the expected upper bound by the online {\itercomp}.
 
 \begin{figure*}[htb]
     \centering
-    %\includegraphics[width=\textwidth]{figs/speedups.pdf}
+    \includegraphics[width=\textwidth]{figs/speedups.pdf}
     \caption{Speedups obtained from the final optimisation selected by the online {\itercomp}.
 	         The speedups reported for each benchmark represents the average speedup across their complete 1000 input datasets.}
     \label{fig:speedups}
