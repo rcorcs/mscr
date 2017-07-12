@@ -220,7 +220,9 @@ Figure~\ref{fig:overhead-improvement-O3} shows that the relaxation algorithm, wi
 \end{figure*}
 
 The \texttt{adpcm\_d} benchmark is the most critical case amongst the evaluated benchmarks, with an overhead of about 59\% for the optimal instrumentation.
-This benchmark consists mainly of a single hot loop with several branches inside it, as depicted by Figure~\ref{fig:adpcm_d-cfg-instr}.
+Figure~\ref{fig:adpcm_d-heat-callgraph} shows the \textit{heat} call-graph of the \texttt{adpcm\_d} benchmark, with each function coloured based on their maximum basic block frequency, using a cool/warm colour map.
+This benchmarks has a single hot function, namely the function called \verb|adpcm_decoder|.
+Moreover, it consists mainly of a single hot loop with several branches inside it, as depicted by Figure~\ref{fig:adpcm_d-cfg-instr}.
 The relaxation algorithm is able to reduce this overhead down to about 47\% (with a static error threshold of 2\%) and 14\% (with a static error threshold of 5\%) by removing only one and two probes from the hot loop, respectively.
 These overhead reductions represent a 20\% and 4.5$\times$ improvement over the optimal algorithm, with 2\% and 5\% relaxation threshold respectively.
 The two relaxed probes were placed in branches, inside the hot loop, with a high probability of being taken, but with a small contribution to the total amount of work measured in the loop.
