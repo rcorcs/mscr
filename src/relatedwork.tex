@@ -13,8 +13,9 @@ For this reason, researchers have been studying the impact of using multiple inp
 \cite{chen10,chen12a} evaluate the effectiveness of iterative compilations across a large number of input test cases.
 Their main motivation is to answer the question:
 \textit{How data input dependent is {\itercomp}?}
-Their results show that it is possible to find a combination of compiler optimisations that achieves at least 86\% of the maximum speedup across all input test cases.
-These optimal combinations are program-specific and yield average speedups up to 3.75$\times$ over the highest optimisation level of compilers.
+When selecting the best optimisation sequence for each input of each program, these optimal optimisation sequences are program-specific and yield average speedups up to 3.75$\times$ over the highest optimisation level of compilers, namely \verb|-O3|.
+Their results show that, for all the evaluated benchmarks, it is possible to find an optimisation sequence that achieves at least 83\% of the maximum speedup across all input test cases.
+In other words, although the best optimisation sequences are both program and input-dependent, it is possible to find a program-specific optimisation sequence that achieves good performance on average.
 
 When optimising a program, the main method for {\itercomp} used by \cite{chen10,chen12a} evaluates each combination of compiler optimisations across all the available inputs, i.e., if $N$ is the number of input test cases and $M$ is the total number of combinations of compiler optimisations, they perform a total of $O(NM)$ runs of the program being optimised.
 Furthermore, they use a pre-defined set of only 300 different combinations of compiler optimisations, which represents a very small sample of the optimisation search space for most modern compilers, e.g.
