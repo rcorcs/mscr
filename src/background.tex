@@ -252,5 +252,11 @@ Progrma profiling is particularly useful for providing
 
 The \textit{0-1 knapsack problem} is a well known \textit{NP-hard} problem in combinatorial optimisation~\cite{martello00}.
 For a given set of items, where each item has a profit and a weight, the problem consists of selecting a sub-set of the items, such that the total weight of the sub-set does not exceed a pre-defined maximum capacity and whose total profit is a maximum.
+Although the general knapsack problem allows to repeatedly \textit{pack} the same item, in the 0-1 knapsack problem each item can only be selected once, always considering the maximum capacity.
+
+Because it is an NP-hard problem, there is no algorithm with polynomial-time complexity on all cases.
+There are many heuristics for efficiently selecting the sub-set of item while trying and maximise the total profit.
+For example, a \textit{greedy} heuristic tries to maximise the total profit by sorting all items based on their profit-weight ratio and then eagerly selecting all items allowed by the maximum capacity as it iterates over the sorted items\citep{dantzig57}.
+Although heuristics are not guaranteed to find the best solution, they usually tend to efficiently find good or close to optimal solutions.
 
 \section{Summary}
