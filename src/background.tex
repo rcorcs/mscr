@@ -154,9 +154,10 @@ if.end:
 
 \subsection{Analysis and Transformation Passes}
 
-The LLVM optimiser offers several of different passes in order to provide analysis and transformation capabilities.
+The LLVM optimiser offers several passes in order to provide analysis and transformation capabilities.
 These passes are written using the LLVM Core libraries and they are as loosely coupled as possible.
 In other words, each pass is either a stand-alone pass or it explicitly declares its dependencies among other passes, in the case where it depend on some other analysis.
+A pass can also specify the analysis passes that will be invalidated by its execution.
 
 The LLVM Core libraries provide both analysis and transformation passes for different levels of the input program.
 These levels, in hierarchical order, are: module, call-graph SCC, function, loop, single-entry single-exit region (or only region for short), and basic block.
@@ -181,21 +182,19 @@ Similarly, a loop and a region are particular patterns on the CFG of a function.
 %\item[Basic Block Pass:] This pass level considers one basic block at a time.
 %\end{description}
 
-The LLVM Pass Manager is responsible for scheduling the passes to be executed efficiently.
-It also makes sure that the interactions among the passes are correctly fulfilled.
+The LLVM Pass Manager is responsible for scheduling the passes and make sure that the interactions among the passes are correctly fulfilled.
 For that purpose, when given a series of passes to execute, the Pass Manager uses the explicit dependency information to satisfy these dependencies and optimise the execution of passes.
-
-A pass specifies its dependency on other passes, i.e., which other passes need to be executed before its own execution,
-Moreover, it can also specify the passes that will be invalidated by its execution.
-
 The Pass Manager aims at avoiding to repeat the execution of analysis passes.
 It keeps track of which analyses are already available, which are invalidated, and which analyses are pending.
 It also tracks the lifetimes of the analysis results and frees memory of the analysis results, when appropriate, managing memory usage.
+%The Pass Manager pipelines the passes together to get a better memory and cache usage, improving the overall cache behaviour of the compiler.
+For example, when performing a series of function-level passes, it executes all these passes in only one function, before moving to the next function, in order to improve the overall cache behaviour of the compiler.
 
-The Pass Manager pipelines the passes together to get a better memory and cache usage, improving the overall cache behaviour of the compiler.
-When performing a series of function-level passes, it executes all these passes in only one function, before moving to the next function, in order to improve cache usage.
+Notice however, that the Pass Manager executes the transformation passes in the exact same order as they were requested, as changing this order may result in a different code.
+Deciding on the best order to execute the transformation passes is a well known problem called the phase-ordering problem~\citep{touati06,kulkarni12,jantz14}.
+The phase-odering problem is not addressed by the Pass Manager.
 
-\section{Early Work in {\IterComp}}
+\section{{\IterComp} and its Optimisation-Space Exploration}
 
 
 In this section we present the basic concepts of {\itercomp} and discuss some of the early work on this research topic.
