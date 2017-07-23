@@ -59,12 +59,15 @@ In other words, $N_B(i)$ is a static value known at compile-time and $f(B)$ is a
 
 \subsection{Estimating a Cost Model of the Instructions}
 
-Similarly to previous work~\citep{giusto01,powell09,brandolese11}, we derive the cost model for the instruction set by modelling the problem as a multi-variable linear regression, where the \textit{regression coefficients} are the costs of the instructions and the \textit{regressors} (or \textit{explanatory variables}) are computed as $\sum_B N_B(i)f(B)$ for each instruction $i$.
+Similarly to previous work~\citep{giusto01,powell09,brandolese11}, we derive the cost model of the instruction set by modelling the problem as a multi-variable linear regression, where the \textit{regression coefficients} are the costs of the instructions and the \textit{regressors} (or \textit{explanatory variables}) are computed as $\sum_B N_B(i)f(B)$ for each instruction $i$.
 \[
 \Delta W = \varepsilon + \sum_{i} \left(w_i \sum_{B} N_B(i)f(B)\right)
 \]
 
 By having some empirical data after executing several benchmarks with different inputs, we can fit the linear model with this empirical data in order to obtain the costs of the instructions.
+In order to fit the linear model, we measure the wall-clock time when executing the training benchmarks described in Section\ref{} with their respective 1000 input datasets.
+For these measurements, the training benchmarks are compiled without optimisation.
+The reason for using no optimisation is because it allows to use the trained cost model for computing a work metric which is independent of optimisations, as we explained in Section~\ref{}.
 
 \begin{figure}[htb]
     \centering
@@ -73,6 +76,10 @@ By having some empirical data after executing several benchmarks with different 
     \label{fig:cost-model}
 \end{figure}
 
+Because we fit the linear model based on the wall-clock execution time, the derived cost model can be interpreted as an estimate of the execution time when the program is compiled without optimisations.
+Figure~\ref{fig:cost-model} compare the work metric with the corresponding execution time for some instances of the test benchmarks.
+Notice how the fitted model has a higher relative error for the instances with very short execution time, namely those that run for less than one tenth of a second.
+The mean absolute error (MAE) for the fitted curve is of 7 milliseconds.
 
 \subsection{Comparison with Instructions Per Cycle}
 
