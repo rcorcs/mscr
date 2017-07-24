@@ -266,29 +266,31 @@ Because these probes were placed in basic blocks with a considerable execution f
 
 \section{Evaluation of the Online {\IterComp}}
 
+
 In this section we evaluate the online {\itercomp} guided by the work-based performance metric.
-For comparison, we use the following baselines and configurations:
+For comparison, we use four configurations.
+In all configurations, the same optimisation sequence is used for multiple inputs, using a dynamic window size, as explained in Section~\ref{sec:oic-infra}.
+The average performance over the input window provides an estimate for the overall performance of the optimisation sequence across distinct inputs.
+The optimisation sequences are ranked based on their average performance and the best optimisation sequence is selected.
+%When selecting the best optimisation sequence, they are ranked by the average of their performance measurement, using the work-based performance metric, except for the Oracle-RM which uses the real speedup over \texttt{-O0}.
 \begin{itemize}
 \item \textbf{Oracle-RM} executes the program multiple times for each input, measuring the real speedup for each compiler optimisation, and then uses the real speedup over \texttt{-O0} for comparing the optimisations.
 The speedups are computed based on the wall-clock time.
 In order to reduce noise, the program is executed several times for the same input, until the confidence interval no larger than 1\% for a 99\% confidence.
 \item \textbf{Oracle-PP} represents an oracle with a \textit{perfect} non-intrusive profiling.
-Although it uses the work-based performance metric for comparing optimisation, this oracle also avoids noise in its measurements by also executing the program multiple times for each input.
-The first execution is used for profiling the work metric.
-The remaining executes are used for measuring the wall-clock time without using the work profiling.
+  Although it uses the work-based performance metric for comparing optimisation, this oracle also avoids noise in its measurements by also executing the program multiple times for each input.
+  The first execution is used for profiling the work metric.
+  The remaining executes are used for measuring the wall-clock time without using the work profiling.
 \item \textbf{Real-OP} corresponds to the online {\itercomp} as it would be applied in a real online scenario.
-      For each optimisation, a random sample of inputs is selected, and the program is executed only once with each input.
-      When executing each input, it uses the optimal work instrumentation for profiling the work metric.
-      The average of the work-based performance metric, $\frac{\Delta W}{\Delta t}$, for the sample of inputs is then used for selecting the best optimisation.
+  For each optimisation, a random sample of inputs is selected, and the program is executed only once with each input.
+  When executing each input, it uses the optimal work instrumentation for profiling the work metric.
+  The average of the work-based performance metric, $\frac{\Delta W}{\Delta t}$, for the sample of inputs is then used for selecting the best optimisation.
 \item \textbf{Real-R5} is similar to the {Real-OP}.
-      It also corresponds to the online {\itercomp} as it would be applied in a real online scenario.
-      For each optimisation, a random sample of inputs is selected, and the program is executed only once with each input.
-      When executing each input, it uses the relaxed work instrumentation, with a 5\% threshold, for profiling the work metric.
-      The average of the work-based performance metric for the sample of inputs is then used for selecting the best optimisation.
+  It also corresponds to the online {\itercomp} as it would be applied in a real online scenario.
+  For each optimisation, a random sample of inputs is selected, and the program is executed only once with each input.
+  When executing each input, it uses the relaxed work instrumentation, with a 5\% threshold, for profiling the work metric.
+  The average of the work-based performance metric for the sample of inputs is then used for selecting the best optimisation.
 \end{itemize}
-In all configurations, the same optimisation is used for multiple distinct inputs, using a dynamic window size, as explained in Section~\ref{sec:oic-infra}.
-This window size provides an estimate for the optimisation performance across inputs.
-When selecting the best optimisation, they are ranked by the average of their performance measurement, using the work-based performance metric, except for the Oracle-RM which uses the real speedup over \texttt{-O0}.
 Figure~\ref{fig:window-size} shows the average window size for each benchmark and configuration.
 
 \begin{figure}[htb]

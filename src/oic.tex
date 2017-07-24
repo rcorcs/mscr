@@ -110,10 +110,17 @@ IPC                    & 1  & 0.5 \\
 \label{tab:ipc-example}
 \end{table}
 
-
 \section{Online {\IterComp} Infrastructure} \label{sec:oic-infra}
 
-\textbf{Talk about LLVM as a lifelong optimisation framework. Talks about idle-time (between runs) optimisations in the online scenario.}
+Although {\itercomp} had been originally proposed as an \textit{offline} optimisation strategy it can also be adapted to work in the online scenario.
+Instead of selecting the best optimisation sequence as part of the development time (pre-shiping) of a program, a first version of the program is shipped together with a {\itercomp} mechanism.
+In the online scenario, the program is shipped with a initial optimisation sequence and different optimisation sequences are evaluated as the end-user executes the program.
+This optimisation strategy is also known as idle-time optimisation, as the re-compilation happens between runs of the program.
+
+LLVM is particularly suitable for iterative compilation as it makes possible to cache a pre-compiled, but still unoptimised, version of the input program in the bitcode format of the LLVM IR.  
+This caching allows to speedup the time required for re-compilation as it is able to bypass the frontend phase.
+If re-compilation time is critical, it would also be possible to keep only the hot portion of the code in the LLVM bitcode format, while the remaining portion of the code is already in the format of object code.
+However, this is out of the scope of this work and we always re-compile the whole program.
 
 \begin{figure}[htb]
     \centering
@@ -121,23 +128,35 @@ IPC                    & 1  & 0.5 \\
     \caption{Overview of the execution engine for applying {\itercomp}.}
     \label{fig:infra-diagram}
 \end{figure}
-\textbf{Describe the process step by step.}
+%\textbf{Describe the process step by step.}
 
-Figure~\ref{fig:infra-diagram} shows an overview of the infrastructure required for applying online {\itercomp}.
+Figure~\ref{fig:infra-diagram} shows an overview of the infrastructure required for applying online {\itercomp},
+using the work-based performance metric as the metric of choice for evaluating optimisation sequences.
+The online {\itercomp} follows as described bellow:
+\begin{enumerate}
+\item The program is pre-compiled to the LLVM bitcode format without optimisation.
+\item The unoptimised program is instrumented for work profiling.
+\item Execution-based optimisation seach:
+ \begin{enumerate}
+   \item The current optimisation sequence is used for the re-compilation of the program.
+   \item The program is executed with any input provided by the end-user.
+         During the execution of the program, wall-clock time and the work metric are recorded by profiling instrumentation.
+   \item If the recorded profiling for the current optimisation can be used to compute an average performance measurement within a small confidence interval,
+         then a new optimisation sequence is generated.
+         Otherwise, the same optimisation sequence is used for the next execution.
+ \end{enumerate}
+\end{enumerate}
+
 In this work we focus mainly on the two highlighted components.
 In both phases the goal is to improve the performance of the execution phase, but from different perspectives.
 \textit{(i.)} In the compilation phase we focused on providing a low-overhead instrumentation for profiling the work metric. This phase is responsible to improve performance by lowering the overhead of the work profiling.
 \textit{(ii.)} In the evaluation phase we proposed the use of the work-based metric in order to enable {\itercomp} in an online scenario. This phase is responsible to improve performance by being able to properly assess different optimisations such that the best optimisation can be selected.
 Chapter~\ref{chap:instr} describes our work profiling strategy and Section~\ref{sec:metric} describes the work-based metric.
 
-LLVM is particularly useful for iterative compilation as it makes possible to cache a pre-compiled, but still unoptimised, version of the input program in the bitcode format of the LLVM IR.  
-This caching allows to speedup the time required for re-compilation as it is able to bypass the frontend phase.
-If re-compilation time is critical, it would also be possible to keep only the hot portion of the code in the LLVM bitcode format, while the remaining portion of the code is already in the format of object code.
-However, this is out of the scope of this work and we will always re-compile the whole program.
-
-\textbf{Talk about the process of keeping the same optimization for a given input-window and how the optimizations as selected based on the evaluation of these "evidences". Perhaps we could suggest using the Theory of Evidences at this point?!}
+%\textbf{Talk about the process of keeping the same optimization for a given input-window and how the optimizations as selected based on the evaluation of these "evidences". Perhaps we could suggest using the Theory of Evidences at this point?!}
 
 In most online scenarios, it is common for periods of peak usage and idle periods.
 For example, mobile devices are usually intensely used during the day, with some idle periods at night while its battery is being re-charged.
 The proposed infrastructure is very well suited for these online scenarios as multiple runs of the program can be monitored during peak time, by collecting the work profiling and measuring its execution time, while at the idle time, the profiling statistics can be used for selecting better optimisations and re-compiling the program.
 However, if idle time is almost non-existent, the proposed infrastructure can still be used by re-compiling the program with a different optimisation while multiple runs of the program are being executed.
+
