@@ -83,11 +83,37 @@ The mean absolute error (MAE) for the fitted curve is of 7 milliseconds.
 
 \subsection{Comparison with Instructions Per Cycle}
 
-The IPC metric have been 
+The IPC metric have been widely used for studying performance benefits of hardware optimisations.
+
+The proposed work-based performance metric differs from IPC in a key aspect:
+the IPC metric is computed soley on the final optimised program.
+For different optimisations of the same program, both the number of instructions and the number of cycles can change for the same input.
+On the other hand, the work-based performance metric computes the amount of work based on the unoptimised program, which means that it always consider the same amount of work for the same input, regardless of the optimisations applied on the program.
+
+For this reason, higher IPC does not necessarily translates to shorter execution time.
+We can illustrate this fact with an example as shown in Table~\ref{}.
+Although program P1 has twice the IPC of P2, P1 is one cycle slower than P2.
+As this example illustrates, the IPC metric can be misleading when compared different versions of the same program.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+                       & P1 & P2  \\
+\hline
+Number of Instructions & 5  & 2   \\
+Number of Cycles       & 5  & 4   \\
+IPC                    & 1  & 0.5 \\
+\hline
+\end{tabular}
+\caption{Example that illustrates that a higher IPC does not necessarily translates to shorter execution time.}
+\label{tab:ipc-example}
+\end{table}
+
 
 \section{Online {\IterComp} Infrastructure} \label{sec:oic-infra}
 
-\textbf{Talk about LLVM as a lifelong optimisation framework. Talks about idle-time (between run) optimisations in the online scenario.}
+\textbf{Talk about LLVM as a lifelong optimisation framework. Talks about idle-time (between runs) optimisations in the online scenario.}
 
 \begin{figure}[htb]
     \centering
