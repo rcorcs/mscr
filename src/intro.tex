@@ -4,16 +4,19 @@
 Modern optimising compilers have reached a high level of sophistication, providing a large number of optimisations.
 Because of the unpredictability of optimisation interactions, in addition to the growing complexity of processor architectures and applications, the correct choice of optimisations and their ordering can have a significant impact on the performance of the code being optimised~\citep{pan06,fursin07,kulkarni12}.
 
-Each of these optimisations interacts with the code in complicated ways, depending on all other optimisations and the order they were applied to the code being optimised.
+Each of these optimisation passes interacts with the code in complicated ways, depending on all other optimisations and the order they were applied to the code being optimised.
 Understanding the interactions of optimisations is very important in determining a good solution to the phase-ordering problem~\citep{touati06,kulkarni12}.
 Because of all those dependencies and interactions, although most compiler optimisations yield significant improvements in many programs, the potential for performance degradation in certain program patterns is known to compiler writers and many users~\citep{pan06,zhou12,kulkarni12}.
 %Traditional compilers typically apply the same set of optimisation in a fixed order to all functions in a program, without regard the code being optimised.
 
-Efficiently selecting the best combination of compiler optimisations for a given program or program section remains an open problem.
-Compiler writers typically use a combination of experience and insight to construct the default sequences of prearranged optimisations found in compilers.
-However, these default pre-arranged set of optimisations do not include all possible optimisations and they are always applied in the same pre-defined fixed order, without regard the code being optimised~\citep{pan06,cavazos07,zhou12,kulkarni12}.
+Compiler writers typically use a combination of experience, insight, and experimentation on benchmark programs to construct a set of default optimisation sequences,
+which are commonly associated with the optimisation options like \verb|-O1|, \verb|-O2|, \verb|-O3|, \verb|-Os|, and \verb|-Oz|.
+Although these default optimisation sequences are expected to provide good performance on average, they are often sub-optimal for individual programs.
+Moreover, they usually do not include all the available optimisation passes and they are always applied in the same pre-defined order, without regard to the program being optimised~\citep{pan06,cavazos07,zhou12,kulkarni12}.
+Another major drawback concerns the fact that these default optimisation sequences should be re-constructed whenever the backend of the compiler re-targerted to a new processor architecture or new analysis and optimisations are implemented in the compiler.
 %in hopes that a programmer will know which combination of optimisations will benefit their code~\cite{pan06,cavazos07,zhou12,kulkarni12}.
 
+Efficiently selecting the best optimisation sequence for a given program or program section remains an open problem.
 A well known compilation technique that addresses this challenge is {\itercomp}.
 {\Itercomp} has the ability to adapt to new platforms, program and workload while still having a systematic and simple optimisation process.
 It works by repeatedly evaluating a large number of compiler optimisations until the best combination is found for a particular program~\citep{fursin07,chen10}.
