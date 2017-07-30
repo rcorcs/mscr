@@ -398,9 +398,12 @@ These results corroborate the claim that performing {\itercomp} on a single inpu
 Figure~\ref{fig:ipc-vs-work} presents a comparison between IPC and the work-based performance metric regarding their correlation with the actual speedup over \verb|-O0| observed during {\itercomp}.
 Each point in the figure correspond to each metric averaged over input windows collected during multiple executions of the {\itercomp}.
 The vertical lines correspond to the optimisation sequence selected by the {\itercomp} search, which either represents the highest IPC or the highest value of work-based performance.
-In all cases, the optimisation sequence selected based on the work-based performance is much closer to the best speedup than the optimisation sequence selected based on IPC.
-This fact can be explained by the work-based performance having a stronger correlation with speedup.
-In all cases, IPC shows little to no correlation with speedup, which corroborates the argument given in Section~\ref{sec:ipc-vs-work-metric}.
+In all cases, the optimisation sequence selected based on the work-based performance is much closer to the best speedup than the optimisation sequence selected based on IPC, which can be attributed to the fact that the work-based performance have a stronger correlation with the speedup.
+In all cases, IPC shows little to no correlation with the speedup, which corroborates the argument given in Section~\ref{sec:ipc-vs-work-metric}.
+
+For some cases, namely for the tiff-related benchmarks, the work-based performance shows a worse correlation with speedup.
+We believe these cases could be improved by improving the cost model used to compute the work metric.
+However, even in these cases, the optimisation sequence selected based on the work-based performance outperforms those selected based on IPC.
 
 \subsection{Contribution of individual optimisation passes}
 

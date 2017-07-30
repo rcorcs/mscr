@@ -74,8 +74,8 @@ Because the edge frequencies satisfy Kirchhoff's first law, each edge flow can b
 
 The optimal block frequency instrumentation happens in two main stages:
 \textit{(i.) Before execution.} The code is instrumented with the edge counters, i.e., it requires one global counter for each edge selected to contain a probe.
-\textit{(ii.) After execution.} The information from the recorded probes is propagated in the CFGs of the program, in a post-processing phase.
-\lstlistingname~\ref{lst:populateEdgeFlows} shows the algorithm for the post-processing of a CFG, once we have the profiling information collected by the probes.
+\textit{(ii.) After execution.} The information from the recorded probes is propagated in the CFGs of the program.
+\lstlistingname~\ref{lst:populateEdgeFlows} shows the algorithm for the post-processing of a CFG, which requires the profiling information collected by the probes.
 
 \begin{lstlisting}[caption={Post-processing of the CFG for populating all edge flows based on the collected probes.}, label={lst:populateEdgeFlows}, float]
 // Inputs: CFG with the known edges flows from the cotree (collected probes).
