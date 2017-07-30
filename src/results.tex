@@ -301,49 +301,49 @@ Figure~\ref{fig:window-size} shows the average window size for each benchmark an
 \end{figure}
 
 
-\subsection{The Optimisation Set}
+\subsection{The Set of Optimisation Sequences}
 
-For the purpose of evaluating the use of the work-based performance metric with {\itercomp}, we collected in advance a fixed set of optimisations.
-This set contains 500 optimisations collected in a random search using the training benchmarks.
-These optimisations contain an average of 40 transformation, including repetitions, with a maximum of 119 optimisation passes, but it also contains optimisations which consists of a single flag, such as the default optimisations \texttt{-O1}, \texttt{-O2}, \texttt{-O3}, \texttt{-Os}, and \texttt{-Oz}.
+For the purpose of evaluating the use of the WP metric with {\itercomp}, we collected in advance a fixed set of optimisation sequences.
+This set contains 500 optimisation sequences collected in a random search using the training benchmarks.
+These optimisation sequences contain an average of 40 individual optimisation passes, including repetitions, with a maximum of 119 optimisation passes, but it also contains optimisation sequences which consist of a single flag, such as the default optimisations {\flagstype -O1}, {\flagstype -O2}, {\flagstype -O3}, {\flagstype -Os}, and {\flagstype -Oz}.
 
   \begin{minipage}{0.9\textwidth}
      \vspace{1em}
      \singlespace
      \noindent\textbf{Example of a short optimisation sequence:}\vspace{-1ex}
-     \justify{\usefont{T1}{cmr}{m}{n} -mem2reg -simplifycfg -constprop -dce}
+     \justify{\flagstype -mem2reg -simplifycfg -constprop -dce}
   \end{minipage}
 
   \begin{minipage}{0.9\textwidth}
      \vspace{1em}
      \singlespace
      \noindent\textbf{Example of a long optimisation sequence:}\vspace{-1ex}
-     \justify{\usefont{T1}{cmr}{m}{n} -globalopt -reassociate -instcombine -loop-rotate -block-freq -deadargelim -early-cse -sroa -argpromotion -sccp -tbaa -barrier -constmerge \mbox{-loop-vectorize} -domtree -basicaa -memdep -basiccg -memcpyopt \mbox{-constprop} -adce -globaldce -mem2reg -constmerge \mbox{-globaldce} -constprop -instsimplify -dse -dce -simplifycfg -loop-unroll -reassociate -constprop \mbox{-globaldce} -instsimplify -adce -constmerge -bb-vectorize -dce -mergefunc -simplifycfg -dse -loop-unroll -globaldce}
+     \justify{\flagstype -globalopt -reassociate -instcombine -loop-rotate -block-freq -deadargelim -early-cse -sroa -argpromotion -sccp -tbaa -barrier -constmerge \mbox{-loop-vectorize} -domtree -basicaa -memdep -basiccg -memcpyopt \mbox{-constprop} -adce -globaldce -mem2reg -constmerge \mbox{-globaldce} -constprop -instsimplify -dse -dce -simplifycfg -loop-unroll -reassociate -constprop \mbox{-globaldce} -instsimplify -adce -constmerge -bb-vectorize -dce -mergefunc -simplifycfg -dse -loop-unroll -globaldce}
   \end{minipage}
 
   \begin{minipage}{0.9\textwidth}
      \vspace{1em}
      \singlespace
      \noindent\textbf{Example of an optimisation sequence which includes {-O3}:}\vspace{-1ex}
-     \justify{\usefont{T1}{cmr}{m}{n} -O3 -adce -globaldce -simplifycfg -memcpyopt -reassociate -mergefunc \mbox{-dce} -dse}
+     \justify{\flagstype -O3 -adce -globaldce -simplifycfg -memcpyopt -reassociate -mergefunc \mbox{-dce} -dse}
      \vspace{2em}
   \end{minipage}
 
 Repeating the same optimisation pass can be beneficial and usually expected by other passes.
-For example, the {\usefont{T1}{cmr}{m}{n} -loop-simplify} pass is used for transforming loops into a canonical form by inserting pre-header and exit basic blocks.
+For example, the {\flagstype -loop-simplify} pass is used for transforming loops into a canonical form by inserting pre-header and exit basic blocks.
 Although this pass inserts jumps due to redundant basic blocks, this canonical form can be favourable to other loop optimisations.
-Because of the redundant basic blocks, this optimisation pass expects that the {\usefont{T1}{cmr}{m}{n} -simplifycfg} will eventually be executer later on the optimisation pipeline.
-Another example of such inter-relation between transformations concerns the {\usefont{T1}{cmr}{m}{n} -licm} and {\usefont{T1}{cmr}{m}{n} -mem2reg} passes.
-The {\usefont{T1}{cmr}{m}{n} -licm} pass is responsible for moving invariant code out from the loop body. 
-It usually creates new local variables, using memory access operations, for assisting with the code manipulation, which means that the executing the {\usefont{T1}{cmr}{m}{n} -mem2reg} pass afterwards would be useful as a cleanup pass for removing the extra memory accesses generated.
-However, many of the analysis required for identifying loop invariant also benefit from the transformations performed by the {\usefont{T1}{cmr}{m}{n} -mem2reg} pass.
+Because of the redundant basic blocks, this optimisation pass expects that the {\flagstype -simplifycfg} will eventually be executer later on the optimisation pipeline.
+Another example of such inter-relation between transformations concerns the {\flagstype -licm} and {\flagstype -mem2reg} passes.
+The {\flagstype -licm} pass is responsible for moving invariant code out from the loop body. 
+It usually creates new local variables, using memory access operations, for assisting with the code manipulation, which means that the executing the {\flagstype -mem2reg} pass afterwards would be useful as a cleanup pass for removing the extra memory accesses generated.
+However, many of the analysis required for identifying loop invariant also benefit from the transformations performed by the {\flagstype -mem2reg} pass.
 These examples illustrate the importance of repeating optimisation passes.
 Moreover, they illustrate the intricate relation amongst several transformations. 
 
-However, all optimisations in the set of optimisations were generated completely at random, without using any knowlege of individual transformations.
-Each optimisation was generated in two steps: \textit{(1)} randomly selects the number of flags; \textit{(2)} randomly selects the flags, allowing repetitions.
-Afterwards, this randomly generated optimisation would be included in the set of optimisations only if it was able to improve the performance of a training benchmark, also selected at random, in respect of the {\usefont{T1}{cmr}{m}{n} -O3} optimisation.
-This process was repeated until we obtained the 500 distinct optimisations.
+However, all optimisation sequences in the set of optimisations were generated completely at random, without using any knowlege of individual transformations.
+Each optimisation sequence was generated in two steps: \textit{(1)} randomly selects the number of flags; \textit{(2)} randomly selects the flags, allowing repetitions.
+Afterwards, this randomly generated optimisation sequence would be included in the set of optimisation sequences only if it was able to improve the performance of a training benchmark, also selected at random, in respect of the {\flagstype -O3} default optimisation.
+This process was repeated until we obtained all the 500 distinct optimisation sequences.
 
 \subsection{Performance Evaluation}
 
