@@ -98,7 +98,7 @@ While Figure~\ref{fig:num-probes} compares the different instrumentation algorit
 \end{figure}
 
 Even a small threshold of 2\% is able to reduce the number of probes by an average of 5\% compared to the optimal algorithm. 
-The \texttt{sha} benchmark was the only benchmark for which a 2\% threshold was not sufficient for further reducing the number of probes.
+The {\flagstype sha} benchmark was the only benchmark for which a 2\% threshold was not sufficient for further reducing the number of probes.
 With a 10\% threshold the relaxation algorithm was able to improve over the optimal instrumentation by an average of 11\%, in terms of the amount of instrumented basic blocks.
 
 \begin{figure}[ht]
@@ -131,7 +131,7 @@ This conservatism will be specially evident in the dynamic evaluation.
 In order to investigate the effects caused to the instrumentation when varying the relaxation threshold, we performed a full analysis of the reduction in the number of probes varying the threshold from 0\% up to 100\%, as presented in Figure~\ref{fig:instr-all-thresholds}.
 This figure shows the percentage of probes, instrumented basic blocks, over the total number of basic blocks.
 It is interesting to understand some of the aspects of these results.
-In some cases, when increasing the threshold, the number of probes also increased, e.g., as it is clearly noticable in the \texttt{qsort} benchmark.
+In some cases, when increasing the threshold, the number of probes also increased, e.g., as it is clearly noticable in the {\flagstype qsort} benchmark.
 This happens when the larger threshold allows the 0-1 knapsack solver exchange a large probes for fewer probes with higher execution frequency value but also higher static error.
 Figure~\ref{fig:instr-all-thresholds} also shows the 
 It is also interesting to notice the highly conservative aspect of the relaxation algorithm, as most benchmarks remain with more than 30\% of basic blocks instrumented, even with a 100\% relaxation threshold.
@@ -139,7 +139,7 @@ This happens as the static error is computed based on the path with the minimum 
 
 \subsection{Dynamic Evaluation}
 
-For the evaluation of the performance overhead that the instrumentation incur to the benchmarks, we measure the wall-clock time of the benchmarks when compiled with the default \texttt{-O3} optimisation.
+For the evaluation of the performance overhead that the instrumentation incur to the benchmarks, we measure the wall-clock time of the benchmarks when compiled with the default {\flagstype -O3} optimisation.
 For each benchmark, we compute the average overhead over all its 1000 input dataset.
 When measuring the wall-clock time for each input, in order to reduce noise, we execute the same input until we have a statistically sound measurement, i.e. we execute until we have an interval no larger than 1\% with 99\% confidence.
 Figure~\ref{fig:overhead-O3} shows the performance overhead imposed by the work instrumentation on the benchmarks when compared to their non-instrumented counterparts.
@@ -148,19 +148,19 @@ Figure~\ref{fig:overhead-improvement-O3} shows the improvement of the relaxation
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{figs/overhead-O3.pdf}
-    \caption{Overhead of the instrumentations compiled with {\texttt{-O3}}.}
+    \caption{Overhead of the instrumentations compiled with {\flagstype -O3}.}
     \label{fig:overhead-O3}
 \end{figure}
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{figs/overhead-improvement-O3.pdf}
-    \caption{Overhead of the instrumentations compiled with {\texttt{-O3}}.
+    \caption{Overhead of the instrumentations compiled with {\flagstype -O3}.
              Notice that the average of the ratios does not equal the ratio of the averages.}
     \label{fig:overhead-improvement-O3}
 \end{figure}
 
-Figure~\ref{fig:overhead-improvement-O3} shows that the relaxation algorithm, with 5\% threshold, is able to improve an average of 48\% over the optimal instrumentation, improving about $4.5\times$ for both the \texttt{adpcm\_d} and \texttt{susan\_e} benchmarks.
+Figure~\ref{fig:overhead-improvement-O3} shows that the relaxation algorithm, with 5\% threshold, is able to improve an average of 48\% over the optimal instrumentation, improving about $4.5\times$ for both the {\flagstype adpcm\_d} and {\flagstype susan\_e} benchmarks.
 %If we disconsider the exceptional improvement for the \texttt{adpcm\_d} benchmark, the relaxation algorithm with a 5\% threshold is able to improve an average of about 20\% over the optimal instrumentation.
 
 \begin{figure}[h!]
@@ -211,7 +211,7 @@ Figure~\ref{fig:overhead-improvement-O3} shows that the relaxation algorithm, wi
 
 \subsection{Case Studies}
 
-\noindent \textbf{Analysis of the Best Improvement in Overhead: \texttt{adpcm\_d}}
+\noindent \textbf{Analysis of the Best Improvement in Overhead: {\flagstype adpcm\_d}}
 
 \begin{figure*}[htb]
     \centering
@@ -221,7 +221,7 @@ Figure~\ref{fig:overhead-improvement-O3} shows that the relaxation algorithm, wi
 \end{figure*}
 
 The \texttt{adpcm\_d} benchmark is the most critical case amongst the evaluated benchmarks, with an overhead of about 59\% for the optimal instrumentation.
-Figure~\ref{fig:adpcm_d-heat-callgraph} shows the \textit{heat} call-graph of the \texttt{adpcm\_d} benchmark, with each function coloured based on their maximum basic block frequency, using a cool/warm colour map.
+Figure~\ref{fig:adpcm_d-heat-callgraph} shows the \textit{heat} call-graph of the {\flagstype adpcm\_d} benchmark, with each function coloured based on their maximum basic block frequency, using a cool/warm colour map.
 This benchmarks has a single hot function, namely the function called \verb|adpcm_decoder|.
 Moreover, it consists mainly of a single hot loop with several branches inside it, as depicted by Figure~\ref{fig:adpcm_d-cfg-instr}.
 The relaxation algorithm is able to reduce this overhead down to about 47\% (with a static error threshold of 2\%) and 14\% (with a static error threshold of 5\%) by removing only one and two probes from the hot loop, respectively.
@@ -231,28 +231,28 @@ The two relaxed probes were placed in branches, inside the hot loop, with a high
 \begin{figure*}[htb]
     \centering
     \includegraphics[width=0.8\textwidth]{figs/adpcm_d-cfg-instr.pdf}
-    \caption{CFG of the function that contains the hot loop of the \texttt{adpcm\_d} benchmark.}
+    \caption{CFG of the function that contains the hot loop of the {\flagstype adpcm\_d} benchmark.}
     \label{fig:adpcm_d-cfg-instr}
 \end{figure*}
 
-Figure~\ref{fig:adpcm_d-probes-err-freq} shows all the probes necessary for the function that contains the hot loop of the \texttt{adpcm\_d} benchmark.
+Figure~\ref{fig:adpcm_d-probes-err-freq} shows all the probes necessary for the function that contains the hot loop of the {\flagstype adpcm\_d} benchmark.
 Notice that the relaxation was able to remove all probes with an static error lower than the 5\% threshold.
 Because these probes were placed in basic blocks with a considerable execution frequency, their removal resulted in a significant reduction in performance overhead.
 
 \begin{figure*}[htb]
     \centering
     \includegraphics[width=0.8\textwidth]{figs/adpcm_d.pdf}
-    \caption{Comparison between probe frequency and static error for the \texttt{adpcm\_d} benchmark. The red line marks the 5\% threshold limit.}
+    \caption{Comparison between probe frequency and static error for the {\flagstype adpcm\_d} benchmark. The red line marks the 5\% threshold limit.}
     \label{fig:adpcm_d-probes-err-freq}
 \end{figure*}
 
 
-\noindent \textbf{Analysis of the Abnormal Regression: \texttt{susan\_c}}
+\noindent \textbf{Analysis of the Abnormal Regression: {\flagstype susan\_c}}
 
 \begin{figure*}[htb]
     \centering
     \includegraphics[width=0.8\textwidth]{figs/susan_c.pdf}
-    \caption{Comparison between probe frequency and static error for the \texttt{susan\_c} benchmark. The red line marks the 5\% threshold limit.}
+    \caption{Comparison between probe frequency and static error for the {\flagstype susan\_c} benchmark. The red line marks the 5\% threshold limit.}
     \label{fig:speedups}
 \end{figure*}
 
@@ -274,7 +274,7 @@ The average performance over the input window provides an estimate for the overa
 The optimisation sequences are ranked based on their average performance and the best optimisation sequence is selected.
 %When selecting the best optimisation sequence, they are ranked by the average of their performance measurement, using the work-based performance metric, except for the Oracle-RM which uses the real speedup over \texttt{-O0}.
 \begin{itemize}
-\item \textbf{Oracle-RM} executes the program multiple times for each input, measuring the real speedup for each compiler optimisation, and then uses the real speedup over \texttt{-O0} for comparing the optimisations.
+\item \textbf{Oracle-RM} executes the program multiple times for each input, measuring the real speedup for each compiler optimisation, and then uses the real speedup over {\flagstype -O0} for comparing the optimisations.
 The speedups are computed based on the wall-clock time.
 In order to reduce noise, the program is executed several times for the same input, until the confidence interval no larger than 1\% for a 99\% confidence.
 \item \textbf{Oracle-PP} represents an oracle with a \textit{perfect} non-intrusive profiling.
@@ -347,7 +347,7 @@ This process was repeated until we obtained all the 500 distinct optimisation se
 
 \subsection{Performance Evaluation}
 
-In order to evaluate the quality of the final optimisation selected by the {\itercomp} search, we compare their speedup by measuring wall-clock time of the benchmarks when compiled with the default \texttt{-O3} optimisation.
+In order to evaluate the quality of the final optimisation selected by the {\itercomp} search, we compare their speedup by measuring wall-clock time of the benchmarks when compiled with the default {\flagstype -O3} optimisation.
 For each benchmark, after selecting the final optimisation, we compute the average speedup over all the 1000 input dataset.
 When measuring the wall-clock time for each input, in order to reduce noise, we execute the same input until we have a statistically sound measurement, i.e. we execute until we have an interval no larger than 1\% with 99\% confidence.
 Figure~\ref{fig:speedups-per-input} shows the histogram of the speedups obtained for each benchmark with all their respective 1000 inputs.
@@ -364,16 +364,16 @@ This figure shows the speedups of the best optimisation found by the oracle with
  
 Figure~\ref{fig:speedups-per-input} is also important for showing that, although some of the benchmarks have a very consistent speedup for all their inputs,
 other benchmarks are highly sensitive to the input.
-For example, the optimisation with best average performance for the \texttt{adpcm\_d} benchmark presents a wide range of speedups across all its inputs,
+For example, the optimisation with best average performance for the {\flagstype adpcm\_d} benchmark presents a wide range of speedups across all its inputs,
 varying from 0.7 up to about 1.5 of speedup.
-On the other hand, although the best optimisation selected for the \texttt{jpeg\_d} benchmark has a much shorter range of speedups, there is a clear concentration of inputs around two different speedups.
+On the other hand, although the best optimisation selected for the {\flagstype jpeg\_d} benchmark has a much shorter range of speedups, there is a clear concentration of inputs around two different speedups.
 These results corroborate the claim that performing {\itercomp} on a single input can be misleading and cause the optimisation search to overfit.
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{figs/speedups-per-input.pdf}
-    \caption{Histograms for the speedups over \texttt{-O3} with the complete dataset of 1000 inputs for each benchmark.
-             In each case, we are using the optimisation with the best average speedup over \texttt{-O3}.
+    \caption{Histograms for the speedups over {\flagstype -O3} with the complete dataset of 1000 inputs for each benchmark.
+             In each case, we are using the optimisation with the best average speedup over {\flagstype -O3}.
              This figure shows how the performance for some of the benchmarks are highly sensitive to the input.}
     \label{fig:speedups-per-input}
 \end{figure}
@@ -408,7 +408,7 @@ However, even in these cases, the optimisation sequence selected based on the wo
 \subsection{Contribution of individual optimisation passes}
 
 Figure~\ref{fig:flagsfreq} shows an aggregated view of the final combination of compiler optimisations that were selected by {\itercomp} search.
-The figure presents the individual optimisation passes with at least 1\% of frequency in the selected combination of compiler optimisations that improved the performance over {\texttt{-O3}}.
+The figure presents the individual optimisation passes with at least 1\% of frequency in the selected combination of compiler optimisations that improved the performance over {\flagstype -O3}.
 
 \begin{figure*}[htb]
     \centering
@@ -421,13 +421,13 @@ The figure presents the individual optimisation passes with at least 1\% of freq
 
 \subsubsection{Inter-Procedural Optimisations}
 %\begin{description}
-\noindent\textbf{Dead Global Elimination (\texttt{-globaldce}):}
+\noindent\textbf{Dead Global Elimination ({\flagstype -globaldce}):}
 It is an inter-procedural optimisation that eliminates unreachable internal globals from the program.
 It uses an aggressive algorithm that searches for global definitions that are known to be alive.
 After finding all live global definitions, it deletes all remaining globals.
 %This allows it to delete recursive chunks of the program which are unreachable.
 
-\noindent\textbf{Merge Functions \texttt{-mergefunc}:}
+\noindent\textbf{Merge Functions {\flagstype -mergefunc}:}
 This pass looks for equivalent functions that are mergable and folds them.
 It introduces a function encoding which allows it to provide a total-ordering for the function set.
 The total-ordering allows to arrange functions into the binary tree.
@@ -438,46 +438,46 @@ This pass focus mainly on improving code size and memory footprint.
 
 \subsubsection{Transformations of the CFG}
 
-\noindent\textbf{Simplify the CFG \texttt{-simplifycfg}:}
+\noindent\textbf{Simplify the CFG {\flagstype -simplifycfg}:}
 This optimisation simplifies the CFG by basic blocks merging and dead code elimination, such as:
 eliminates a basic block that only contains an unconditional branch;
 removes basic blocks with no predecessors;
 eliminates PHI nodes for basic blocks with a single predecessor; etc.
 This pass makes use of LLVM's built-in cost model to decide when it is beneficial for performing such transformations.
 
-\noindent\textbf{Canonicalize Natural Loops \texttt{-loop-simplify}:}
+\noindent\textbf{Canonicalize Natural Loops {\flagstype -loop-simplify}:}
 This pass performs several transformations to convert natural loops into a simpler form, which makes subsequent analyses and transformations simpler and more effective.
 Loop pre-header insertion guarantees that there is a single, non-critical entry edge from outside of the loop to the loop header.
 This simplifies a number of analyses and transformations, such as Loop Invariant Code Motion (LICM).
 Loop exit-block insertion guarantees that all exit blocks from the loop (blocks which are outside of the loop that have predecessors inside of the loop) only have predecessors from inside of the loop (and are thus dominated by the loop header). This simplifies transformations such as store-sinking that are built into LICM.
 This pass also guarantees that loops will have exactly one backedge.
-Note that the \texttt{-simplifycfg} pass will clean up blocks which are split out but end up being unnecessary, so usage of this pass should not pessimize generated code.
+Note that the {\flagstype -simplifycfg} pass will clean up blocks which are split out but end up being unnecessary, so usage of this pass should not pessimize generated code.
 
-\noindent\textbf{Unroll Loops \texttt{-loop-unroll}:}
+\noindent\textbf{Unroll Loops {\flagstype -loop-unroll}:}
 This pass implements a simple loop unroller.
-It works best when loops have been canonicalized by the \texttt{-indvars} pass, allowing it to determine the trip counts of loops easily.
+It works best when loops have been canonicalized by the {\flagstype -indvars} pass, allowing it to determine the trip counts of loops easily.
 This pass makes use of LLVM's built-in cost model to estimate the computational cost of both rolled and unrolled loops, which enables it to perform loop unrolling only when it is profitable.
 
 \subsubsection{Dead Code Elimination}
 
-\noindent\textbf{Dead Instruction Elimination \texttt{-die}:}
+\noindent\textbf{Dead Instruction Elimination {\flagstype -die}:}
 Dead instruction elimination performs a single pass over the function, removing instructions that are obviously dead.
 
-\noindent\textbf{Dead Store Elimination \texttt{-dse}:}
+\noindent\textbf{Dead Store Elimination {\flagstype -dse}:}
 A trivial dead store elimination that only considers basic-block local redundant stores.
 
-\noindent\textbf{Dead Code Elimination \texttt{-dce}:}
+\noindent\textbf{Dead Code Elimination {\flagstype -dce}:}
 Dead code elimination is similar to dead instruction elimination, but it rechecks instructions that were used by removed instructions to see if they are newly dead.
 In other words, it performs dead instruction elimination until it reaches a fixed point.
 
-\noindent\textbf{Aggressive Dead Code Elimination \texttt{-adce}:}
+\noindent\textbf{Aggressive Dead Code Elimination {\flagstype -adce}:}
 ADCE aggressively tries to eliminate code.
 This pass is similar to DCE but it assumes that values are dead until proven otherwise.
 This is similar to SCCP, except applied to the liveness of values.
 
 \subsubsection{Simplification of Expressions}
 
-\noindent\textbf{Combine redundant instructions \texttt{-instcombine}:}
+\noindent\textbf{Combine redundant instructions {\flagstype -instcombine}:}
 Combine instructions to form fewer, simple instructions, by means of algebraic simplifications.
 This is a simple worklist driven algorithm, in a peephole fashion.
 Some of the simplifications and canonicalizations are:
@@ -487,14 +487,14 @@ All compare instructions on boolean values are replaced with logical operations.
 This pass can also simplify calls to specific well-known function calls (e.g. runtime library functions).
 For example, a call exit(3) that occurs within the main() function can be transformed into simply return 3.
 
-\noindent\textbf{Reassociate expressions \texttt{-reassociate}:}
+\noindent\textbf{Reassociate expressions {\flagstype -reassociate}:}
 This pass reassociates commutative expressions in an order that is designed to promote better constant propagation, Global Common Subexpression Elimination (GCSE), LICM, etc.
 It performs a canonical reordering of the operands of commutative binary operations.
 
-\noindent\textbf{Merge Duplicate Global Constants \texttt{-constmerge}:}
+\noindent\textbf{Merge Duplicate Global Constants {\flagstype -constmerge}:}
 Merges duplicate global constants together into a single constant that is shared. This is useful because some passes (i.e., TraceValues) insert a lot of string constants into the program, regardless of whether or not an existing string is available.
 
-\noindent\textbf{Simple constant propagation \texttt{-constprop}:}
+\noindent\textbf{Simple constant propagation {\flagstype -constprop}:}
 This pass implements constant propagation and merging.
 It looks for instructions involving only constant operands and replaces them with a constant value instead of an instruction
 This pass has a habit of making definitions be dead.
@@ -502,14 +502,14 @@ It is a good idea to run a Dead Instruction Elimination pass sometime after runn
 
 \subsubsection{Other Frequent Transformations}
 
-\noindent\textbf{MemCpy Optimization \texttt{-memcpyopt}:}
-This pass performs various transformations related to eliminating \texttt{memcpy} calls, or transforming sets of stores into \texttt{memsets}.
+\noindent\textbf{MemCpy Optimization {\flagstype -memcpyopt}:}
+This pass performs various transformations related to eliminating {\flagstype memcpy} calls, or transforming sets of stores into \texttt{memsets}.
 
-\noindent\textbf{Promote Memory to Register \texttt{-mem2reg}:}
+\noindent\textbf{Promote Memory to Register {\flagstype -mem2reg}:}
 This file promotes memory references to be register references. It promotes alloca instructions which only have loads and stores as uses. An alloca is transformed by using dominator frontiers to place phi nodes, then traversing the function in depth-first order to rewrite loads and stores as appropriate. This is just the standard SSA construction algorithm to construct “pruned” SSA form.
 
 
-\noindent\textbf{Basic-Block Vectorization \texttt{-bb-vectorize}:}
+\noindent\textbf{Basic-Block Vectorization {\flagstype -bb-vectorize}:}
 This pass combines instructions inside basic blocks to form vector instructions.
 The algorithm was inspired by that used by \cite{franchetti05}.
 It iterates over each basic block, attempting to pair compatible instructions, repeating this process until no additional pairs are selected for vectorization.

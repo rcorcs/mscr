@@ -10,7 +10,7 @@ Because of all those dependencies and interactions, although most compiler optim
 %Traditional compilers typically apply the same set of optimisation in a fixed order to all functions in a program, without regard the code being optimised.
 
 Compiler writers typically use a combination of experience, insight, and experimentation on benchmark programs to construct a set of default optimisation sequences,
-which are commonly associated with the optimisation options like \verb|-O1|, \verb|-O2|, \verb|-O3|, \verb|-Os|, and \verb|-Oz|.
+which are commonly associated with the optimisation options like {\flagstype -O1}, {\flagstype -O2}, {\flagstype -O3}, {\flagstype -Os}, and {\flagstype -Oz}.
 Although these default optimisation sequences are expected to provide good performance on average, they are often sub-optimal for individual programs.
 Moreover, they usually do not include all the available optimisation passes and they are always applied in the same pre-defined order, without regard to the program being optimised~\citep{pan06,cavazos07,zhou12,kulkarni12}.
 Another major drawback concerns the fact that these default optimisation sequences should be re-constructed whenever the backend of the compiler re-targerted to a new processor architecture or new analysis and optimisations are implemented in the compiler.
