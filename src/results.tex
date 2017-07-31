@@ -427,7 +427,7 @@ It uses an aggressive algorithm that searches for global definitions that are kn
 After finding all live global definitions, it deletes all remaining globals.
 %This allows it to delete recursive chunks of the program which are unreachable.
 
-\noindent\textbf{Merge Functions {\flagstype -mergefunc}:}
+\noindent\textbf{Merge Functions ({\flagstype -mergefunc}):}
 This pass looks for equivalent functions that are mergable and folds them.
 It introduces a function encoding which allows it to provide a total-ordering for the function set.
 The total-ordering allows to arrange functions into the binary tree.
@@ -438,14 +438,14 @@ This pass focus mainly on improving code size and memory footprint.
 
 \subsubsection{Transformations of the CFG}
 
-\noindent\textbf{Simplify the CFG {\flagstype -simplifycfg}:}
+\noindent\textbf{Simplify the CFG ({\flagstype -simplifycfg}):}
 This optimisation simplifies the CFG by basic blocks merging and dead code elimination, such as:
 eliminates a basic block that only contains an unconditional branch;
 removes basic blocks with no predecessors;
 eliminates PHI nodes for basic blocks with a single predecessor; etc.
 This pass makes use of LLVM's built-in cost model to decide when it is beneficial for performing such transformations.
 
-\noindent\textbf{Canonicalize Natural Loops {\flagstype -loop-simplify}:}
+\noindent\textbf{Canonicalize Natural Loops ({\flagstype -loop-simplify}):}
 This pass performs several transformations to convert natural loops into a simpler form, which makes subsequent analyses and transformations simpler and more effective.
 Loop pre-header insertion guarantees that there is a single, non-critical entry edge from outside of the loop to the loop header.
 This simplifies a number of analyses and transformations, such as Loop Invariant Code Motion (LICM).
@@ -453,31 +453,31 @@ Loop exit-block insertion guarantees that all exit blocks from the loop (blocks 
 This pass also guarantees that loops will have exactly one backedge.
 Note that the {\flagstype -simplifycfg} pass will clean up blocks which are split out but end up being unnecessary, so usage of this pass should not pessimize generated code.
 
-\noindent\textbf{Unroll Loops {\flagstype -loop-unroll}:}
+\noindent\textbf{Unroll Loops ({\flagstype -loop-unroll}):}
 This pass implements a simple loop unroller.
 It works best when loops have been canonicalized by the {\flagstype -indvars} pass, allowing it to determine the trip counts of loops easily.
 This pass makes use of LLVM's built-in cost model to estimate the computational cost of both rolled and unrolled loops, which enables it to perform loop unrolling only when it is profitable.
 
 \subsubsection{Dead Code Elimination}
 
-\noindent\textbf{Dead Instruction Elimination {\flagstype -die}:}
+\noindent\textbf{Dead Instruction Elimination ({\flagstype -die}):}
 Dead instruction elimination performs a single pass over the function, removing instructions that are obviously dead.
 
-\noindent\textbf{Dead Store Elimination {\flagstype -dse}:}
+\noindent\textbf{Dead Store Elimination ({\flagstype -dse}):}
 A trivial dead store elimination that only considers basic-block local redundant stores.
 
-\noindent\textbf{Dead Code Elimination {\flagstype -dce}:}
+\noindent\textbf{Dead Code Elimination ({\flagstype -dce}):}
 Dead code elimination is similar to dead instruction elimination, but it rechecks instructions that were used by removed instructions to see if they are newly dead.
 In other words, it performs dead instruction elimination until it reaches a fixed point.
 
-\noindent\textbf{Aggressive Dead Code Elimination {\flagstype -adce}:}
+\noindent\textbf{Aggressive Dead Code Elimination ({\flagstype -adce}):}
 ADCE aggressively tries to eliminate code.
 This pass is similar to DCE but it assumes that values are dead until proven otherwise.
 This is similar to SCCP, except applied to the liveness of values.
 
 \subsubsection{Simplification of Expressions}
 
-\noindent\textbf{Combine redundant instructions {\flagstype -instcombine}:}
+\noindent\textbf{Combine redundant instructions ({\flagstype -instcombine}):}
 Combine instructions to form fewer, simple instructions, by means of algebraic simplifications.
 This is a simple worklist driven algorithm, in a peephole fashion.
 Some of the simplifications and canonicalizations are:
@@ -487,14 +487,14 @@ All compare instructions on boolean values are replaced with logical operations.
 This pass can also simplify calls to specific well-known function calls (e.g. runtime library functions).
 For example, a call exit(3) that occurs within the main() function can be transformed into simply return 3.
 
-\noindent\textbf{Reassociate expressions {\flagstype -reassociate}:}
+\noindent\textbf{Reassociate expressions ({\flagstype -reassociate}):}
 This pass reassociates commutative expressions in an order that is designed to promote better constant propagation, Global Common Subexpression Elimination (GCSE), LICM, etc.
 It performs a canonical reordering of the operands of commutative binary operations.
 
-\noindent\textbf{Merge Duplicate Global Constants {\flagstype -constmerge}:}
+\noindent\textbf{Merge Duplicate Global Constants ({\flagstype -constmerge}):}
 Merges duplicate global constants together into a single constant that is shared. This is useful because some passes (i.e., TraceValues) insert a lot of string constants into the program, regardless of whether or not an existing string is available.
 
-\noindent\textbf{Simple constant propagation {\flagstype -constprop}:}
+\noindent\textbf{Simple constant propagation ({\flagstype -constprop}):}
 This pass implements constant propagation and merging.
 It looks for instructions involving only constant operands and replaces them with a constant value instead of an instruction
 This pass has a habit of making definitions be dead.
@@ -502,14 +502,13 @@ It is a good idea to run a Dead Instruction Elimination pass sometime after runn
 
 \subsubsection{Other Frequent Transformations}
 
-\noindent\textbf{MemCpy Optimization {\flagstype -memcpyopt}:}
+\noindent\textbf{MemCpy Optimization ({\flagstype -memcpyopt}):}
 This pass performs various transformations related to eliminating {\flagstype memcpy} calls, or transforming sets of stores into \texttt{memsets}.
 
-\noindent\textbf{Promote Memory to Register {\flagstype -mem2reg}:}
+\noindent\textbf{Promote Memory to Register ({\flagstype -mem2reg}):}
 This file promotes memory references to be register references. It promotes alloca instructions which only have loads and stores as uses. An alloca is transformed by using dominator frontiers to place phi nodes, then traversing the function in depth-first order to rewrite loads and stores as appropriate. This is just the standard SSA construction algorithm to construct “pruned” SSA form.
 
-
-\noindent\textbf{Basic-Block Vectorization {\flagstype -bb-vectorize}:}
+\noindent\textbf{Basic-Block Vectorization ({\flagstype -bb-vectorize}):}
 This pass combines instructions inside basic blocks to form vector instructions.
 The algorithm was inspired by that used by \cite{franchetti05}.
 It iterates over each basic block, attempting to pair compatible instructions, repeating this process until no additional pairs are selected for vectorization.
@@ -517,8 +516,6 @@ When the outputs of some pair of compatible instructions are used as inputs by s
 Instruction pairs are only fused into vector instructions when they are part of a chain longer than some threshold length.
 Moreover, the pass attempts to find the best possible chain for each pair of compatible instructions.
 These heuristics are intended to prevent vectorization in cases where it would not yield a performance increase of the resulting code.
-
-
 
 %\end{description}
 

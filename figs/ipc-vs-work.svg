@@ -31707,6 +31707,56 @@
          id="path18120"
          d="m 72,43.56 446.4,0 0,304.92 -446.4,0 0,-304.92 z" />
     </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath13158">
+      <rect
+         style="opacity:1;fill:#ff0000;fill-opacity:0.62745098;stroke:#c6c6c6;stroke-width:7.58419895;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="rect13160"
+         width="525.36523"
+         height="417.13556"
+         x="-549.0733"
+         y="-405.73856"
+         ry="0"
+         transform="scale(-1,-1)" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath13162">
+      <rect
+         transform="scale(-1,-1)"
+         ry="0"
+         y="-392.1622"
+         x="-549.0733"
+         height="417.13556"
+         width="525.36523"
+         id="rect13164"
+         style="opacity:1;fill:#ff0000;fill-opacity:0.62745098;stroke:#c6c6c6;stroke-width:7.58419895;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath13168">
+      <rect
+         style="opacity:1;fill:#ff0000;fill-opacity:0.62745098;stroke:#c6c6c6;stroke-width:3.08782315;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="rect13170"
+         width="536.37036"
+         height="439.10498"
+         x="8.9270506"
+         y="-418.24243"
+         transform="scale(1,-1)" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath13174">
+      <rect
+         style="opacity:1;fill:#ff0000;fill-opacity:0.62745098;stroke:#c6c6c6;stroke-width:2.88000011;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="rect13176"
+         width="552.3429"
+         height="427.88571"
+         x="5.3485842"
+         y="-425.7652"
+         transform="scale(1,-1)" />
+    </clipPath>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -31715,9 +31765,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="455.39151"
-     inkscape:cy="574.3794"
+     inkscape:zoom="2.8"
+     inkscape:cx="439.74069"
+     inkscape:cy="688.32077"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -31734,7 +31784,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -32367,7 +32417,8 @@
     <g
        transform="matrix(0.34722222,0,0,-0.34722222,451,164.3622)"
        inkscape:label="qsort"
-       id="g14326">
+       id="g14326"
+       clip-path="url(#clipPath13168)">
       <path
          inkscape:connector-curvature="0"
          id="path14328"
@@ -34746,7 +34797,8 @@
     <g
        transform="matrix(0.34722222,0,0,-0.34722222,451,301.3622)"
        inkscape:label="rsynth"
-       id="g15278">
+       id="g15278"
+       clip-path="url(#clipPath13158)">
       <path
          inkscape:connector-curvature="0"
          id="path15280"
@@ -35479,7 +35531,8 @@
     <g
        transform="matrix(0.34722222,0,0,-0.34722222,451,439.8402)"
        inkscape:label="susan_e"
-       id="g16331">
+       id="g16331"
+       clip-path="url(#clipPath13174)">
       <path
          inkscape:connector-curvature="0"
          id="path16333"
@@ -35876,7 +35929,8 @@
     <g
        transform="matrix(0.34722222,0,0,-0.34722222,451,576.6482)"
        inkscape:label="tiff2dither"
-       id="g17312">
+       id="g17312"
+       clip-path="url(#clipPath13162)">
       <path
          inkscape:connector-curvature="0"
          id="path17314"
@@ -36317,11 +36371,7 @@
              y="744.2193"
              x="274.70105"
              id="image13204"
-             xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAAARCAYAAAB3h0oCAAAABHNCSVQICAgIfAhkiAAAAJRJREFU
-WIVj/P///3+GUUA0YBpoBww1MBpgJILRACMRjAYYiWA0wEgELMQo2n3qEcPi7dfJtsRQTZShMNII
-q9z+s08Y5m+5SrbZusoiDKUxxljlDl94yjB74xWizerJs2UQE+TCq2Y0hZEIRgOMRDAaYCSC0QAj
-ETCOdo1IA6MpjEQwGmAkgtEAIxGMBhiJYDTASAQAVaIaG7uMmwoAAAAASUVORK5CYII=
-"
+             xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAAARCAYAAAB3h0oCAAAABHNCSVQICAgIfAhkiAAAAJRJREFU WIVj/P///3+GUUA0YBpoBww1MBpgJILRACMRjAYYiWA0wEgELMQo2n3qEcPi7dfJtsRQTZShMNII q9z+s08Y5m+5SrbZusoiDKUxxljlDl94yjB74xWizerJs2UQE+TCq2Y0hZEIRgOMRDAaYCSC0QAj ETCOdo1IA6MpjEQwGmAkgtEAIxGMBhiJYDTASAQAVaIaG7uMmwoAAAAASUVORK5CYII= "
              preserveAspectRatio="none"
              height="17"
              width="45" />
@@ -36329,13 +36379,7 @@ ETCOdo1IA6MpjEQwGmAkgtEAIxGMBhiJYDTASAQAVaIaG7uMmwoAAAAASUVORK5CYII=
              y="743.7193"
              x="384.77246"
              id="image13266"
-             xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAAASCAYAAADxEzisAAAABHNCSVQICAgIfAhkiAAAAN1JREFU
-WIVj/P///3+GUUA0YBpoBww1MBpgJILRACMRjAYYiWA0wEgELPgk//z7y7Dt1l6G66/vMPz594de
-bhowwMnCyWCrYMZgKq2PUw3eAFt9ZQvD/vvHqO6wwQxuvLnDwM7MxqAnoYlVHm+WPPf8Mk0cNdjB
-uedXcMrhDTAhTgGqO2YoAHz+xhtg4bp+DNxsXFR30GAGCgIyDK7KtjjlGQl1jX7++cnw+NNzht9/
-h3+hz8XKySDHL8XAyMiIUw3BABsFqGC0HUYiGA0wEsFogJEIRgOMRDAaYCQCAJU5MBX6A6BxAAAA
-AElFTkSuQmCC
-"
+             xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAAASCAYAAADxEzisAAAABHNCSVQICAgIfAhkiAAAAN1JREFU WIVj/P///3+GUUA0YBpoBww1MBpgJILRACMRjAYYiWA0wEgELPgk//z7y7Dt1l6G66/vMPz594de bhowwMnCyWCrYMZgKq2PUw3eAFt9ZQvD/vvHqO6wwQxuvLnDwM7MxqAnoYlVHm+WPPf8Mk0cNdjB uedXcMrhDTAhTgGqO2YoAHz+xhtg4bp+DNxsXFR30GAGCgIyDK7KtjjlGQl1jX7++cnw+NNzht9/ h3+hz8XKySDHL8XAyMiIUw3BABsFqGC0HUYiGA0wEsFogJEIRgOMRDAaYCQCAJU5MBX6A6BxAAAA AElFTkSuQmCC "
              preserveAspectRatio="none"
              height="18"
              width="45" />
