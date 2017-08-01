@@ -1,6 +1,20 @@
 \chapter{Background}
 
+This chapter provides a description of basic concepts and theory used in this thesis.
+The first section presents basic concepts of graph theory.
+Graph theory is largely used throughout the literature of compiler construction and compilation techniques.
+
 \section{Basic Concepts of Graph Theory}
+
+In graph theory, a \textit{graph} is an ordered pair $G = (V,E)$ comprising a vertex-set $V$ and an edge-set $E$, where $E \subset V\times V$.
+For any two vertices $u,v\in V$, vertices $u$ and $v$ are said to be adjacent vertices if and only if $\{u,v\}\in E$.
+A graph is directed when each edge is represented by an ordered pair, in which case a directed edge $(u,v)\in E$ contains a source vertex $u$ and a target vertex $v$.
+
+A \textit{path} in a graph is a sequence of edges that compose a chain of adjacent vertices.
+An undirected graph is connected if there is a path between any two vertices of the graph.
+If an undirected graph is called a \textit{tree} if and only if it is both connected and acyclic.
+
+
 
 \section{LLVM Compiler Infrastructure}
 
