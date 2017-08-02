@@ -290,6 +290,9 @@ In order to reduce noise, the program is executed several times for the same inp
   For each optimisation, a random sample of inputs is selected, and the program is executed only once with each input.
   When executing each input, it uses the relaxed work instrumentation, with a 5\% threshold, for profiling the work metric.
   The average of the work-based performance metric for the sample of inputs is then used for selecting the best optimisation.
+\item \textbf{Real-IPC} corresponds to the online {\itercomp} based on the IPC metric.
+  For each optimisation, a random sample of inputs is selected, and the program is executed only once with each input.
+  The average of the IPC metric for the sample of inputs is then used for selecting the best optimisation.
 \end{itemize}
 Figure~\ref{fig:window-size} shows the average window size for each benchmark and configuration.
 
