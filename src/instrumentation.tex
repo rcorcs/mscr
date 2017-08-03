@@ -136,8 +136,8 @@ populateEdgeInfo(G) {
   //the instrumented edges are the only known edge flows
   for e in instrumentedEdges(G):
     B = instrumentedBlock(e)
-    inc[e] = set( {B} )
-    dec[e] = set()
+    inc[e] = set{B}
+    dec[e] = set{}
     knownInfo[e] = true
 
   changed = true
@@ -148,8 +148,8 @@ populateEdgeInfo(G) {
       unOUT = count( G.unknownOutgoingEdges(B,knownInfo) )
       if unIN==0 and unOUT==1:
         //sum known incoming and outgoing edges in B
-        incSum = set()
-        decSum = set()
+        incSum = set{}
+        decSum = set{}
         for predB in G.predecessors(B):
           incSum = incSum union dec[G.getEdge(predB, B)]
           decSum = decSum union inc[G.getEdge(predB, B)]
@@ -164,8 +164,8 @@ populateEdgeInfo(G) {
         changed = true
       if unIN==1 and unOUT==0:
         //sum known incoming and outgoing edges in B
-        incSum = set()
-        decSum = set()
+        incSum = set{}
+        decSum = set{}
         for predB in G.predecessors(B):
           incSum = incSum union inc[G.getEdge(predB, B)]
           decSum = decSum union dec[G.getEdge(predB, B)]
@@ -454,6 +454,3 @@ if $\Delta W$ is the work value for the whole program's execution, computed from
 Contrary to the per DAG relaxation, the whole program relaxation is not guaranteed to be bounded by the error threshold $M$,
 as it is dependent on the representativity of the profiling information that was provided.
 
-\section{Other Possible Uses}
-
-\textbf{Talk about how this instrumentation techniques (relaxation) could be applied to other profiling-based mechanism to estimate input sizes~\citep{zaparanuks12,coppa14}, namely \textit{read memory size}}

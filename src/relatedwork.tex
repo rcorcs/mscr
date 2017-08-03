@@ -120,6 +120,8 @@ It works by considering a weighting that assigns a non-negative value to each ed
 The overhead cost of profiling a set of edges is considered to be proportional to the sum of the weights of the edges.
 These weights can be obtained either by empirical measurements from previous executions or by static heuristic estimations at compile-time.
 In order to minimise the profiling overhead, the instrumentation computes the maximum spanning tree in order to avoid probing in frequently executed edges.
+LLVM implements Kruskal's algorithm using the union-find data structure~(see \lstlistingname~\ref{lst:kruskalMST})
+for computing the maximum spanning tree of the CFG.
 
 Notice that when instrumentation is performed guided by empirical measurements from previous executions, it means that edge profiling information is used in order to produce a better edge profiling instrumentation.
 The next section presents the main algorithms for producing static estimates for the weights of the edges in a CFG.

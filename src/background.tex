@@ -14,8 +14,43 @@ A graph is directed when each edge is represented by an ordered pair, in which c
 A \textit{path} in a graph is a sequence of edges that compose a chain of adjacent vertices.
 An undirected graph is connected if there is a path between any two vertices of the graph.
 If an undirected graph is called a \textit{tree} if and only if it is both connected and acyclic.
+For any graph $G = (V,E)$, if a subgraph $H$ of $G$ is a tree and contains all vertices in $V$, then $H$ is called a \textit{spanning tree}.
 
+\subsection{Maximum Spanning Tree}
 
+For weighted graphs, i.e., graphs for which their edges have weights associated with them, a minimum or maximum spanning tree is a spanning tree for which
+the sum of the weights that comprise the spanning tree is minimum or maximum, respectively.
+The problem of finding the maximum (or minimum) spanning tree is a polynomial-time function problem~\citep{kruskal56,bazlamacci01}.
+
+There are several efficient algorithms for solving the problem of finding a maximum (or minimum) spanning tree in a greedy manner\footnote{The problem of finding a maximum spanning tree can be solved by the same solution that finds a minimum spanning tree just by negating the edge weights.} \citep{bazlamacci01}.
+A well-known efficient algorithm is Kruskal's algorithm~\citep{kruskal56}.
+Kruskal's algorithm works in a greedy manner with a single pass over the edges sorted in increasing order.
+It starts with a forest of singleton graphs, i.e., a set of disjoint trees where each tree comprises a single vertex.
+The algorithm evaluates all edges in increasing order, joining disconnected trees into larger trees.
+In the end, there is a single tree connecting all vertices of the graph with minimum total weight.
+
+\begin{lstlisting}[caption={Kruskal's algorithm for finding a minimum spanning tree}, label={lst:kruskalMST}, float]
+// Input: Undirected Graph
+// Output: Minimum Spanning Tree
+kruskalMST(G) {
+  MST = set{}
+  UF = unionFindSet()
+  for v in G.vertices():
+    UF.makeSet(v)
+  sortedEdges = sortByWeight(G.edges(), order=increasing)
+  for {u,v} in sortedEdges:
+    //if u and v belong to distinct trees,
+    //join the trees with the edge {u,v}
+    if UF.find(u) != UF.find(v):
+       MST = MST union set{ {u,v} }
+       UF.@union@(u,v)
+  return MST
+}
+\end{lstlisting}
+
+\lstlistingname~\ref{lst:kruskalMST} shows an implementation of Kruskal's algorithm using an efficient data structure called the union-find data structure~\citep{hopcroft73,tarjan75}.
+The union-find data structure provides three near-constant-time operations, namely \verb|makeSet|, \verb|find| and \verb|union|.
+It allows the Kruskal's algorithm to efficiently keep track of the trees contained in the forest and efficiently join two disconnected trees into a single larger tree~\citep{galil91}.
 
 \section{LLVM Compiler Infrastructure}
 
