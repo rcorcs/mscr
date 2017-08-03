@@ -24,7 +24,7 @@ The problem of finding the maximum (or minimum) spanning tree is a polynomial-ti
 
 There are several efficient algorithms for solving the problem of finding a maximum (or minimum) spanning tree in a greedy manner\footnote{The problem of finding a maximum spanning tree can be solved by the same solution that finds a minimum spanning tree just by negating the edge weights.} \citep{bazlamacci01}.
 A well-known efficient algorithm is Kruskal's algorithm~\citep{kruskal56}.
-Kruskal's algorithm works in a greedy manner with a single pass over the edges sorted in increasing order.
+Kruskal's algorithm works in a greedy manner with a single pass over the edges sorted in order of increasing weights.
 It starts with a forest of singleton graphs, i.e., a set of disjoint trees where each tree comprises a single vertex.
 The algorithm evaluates all edges in increasing order, joining disconnected trees into larger trees.
 In the end, there is a single tree connecting all vertices of the graph with minimum total weight.
@@ -244,7 +244,7 @@ Notice however, that the Pass Manager executes the transformation passes in the 
 Deciding on the best order to execute the transformation passes is a well known problem called the phase-ordering problem~\citep{touati06,kulkarni12,jantz14}.
 The phase-odering problem is not addressed by the Pass Manager.
 
-\section{{\IterComp} and its Optimisation-Space Exploration}
+\section{{\IterComp} and its Space Exploration}
 
 In this section we present the basic concepts of {\itercomp} and discuss some of the early work on this research topic.
 We also consider some of the challenges on reducing its compilation time and present recent work that addresses these challenges.
@@ -294,6 +294,11 @@ More recently, \cite{ogilvie17}...
 \textbf{Basic background about profiling in general}
 
 Progrma profiling concerns with the acquisition of dynamic information collected during the program's execution.
+Since early work, program profiling has been used mainly to find performance bottleneck and to focus optimisations.
+\cite{knuth71} introduces program profiling as a table of frequency counts that records execution frequency of each statement during a typical run of a program.
+This program profiling 
+\cite{knuth71} profiles the execution frequency of each FORTRAN statement during the execution of representative programs.
+
 Progrma profiling is particularly useful for providing 
 
 \section{0-1 Knapsack Problem}
