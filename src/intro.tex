@@ -51,8 +51,20 @@ Having a low overhead instrumentation is essential in this online scenario for t
 $(i)$ the user is directly affected by large overheads;
 $(ii)$ a highly intrusive instrumentation can have a significant impact on the effect of the optimisations.
 
-Our main contributions are the following:
+\section{Contributions}
+
+%Our main contributions are the following:
+%\begin{itemize}
+%\item The use of a work-based performance metric in order to enable \textit{online} {\itercomp} by comparing different combination of compiler optimisations even when executed with distinct inputs.
+%\item We propose a relaxed instrumentation for low overhead profiling, with a controlled trade-off between accuracy and overhead.
+%\end{itemize}
+
+The main contributions of this thesis are the following:
 \begin{itemize}
-\item The use of a work-based performance metric in order to enable \textit{online} {\itercomp} by comparing different combination of compiler optimisations even when executed with distinct inputs.
+\item We propose the use of a work-based performance (WP) metric for comparing different optimised versions of a program.
+      In particular, we use the WP metric to guide {\itercomp} in an online scenario, where the program is expected to execute only once for distinct inputs.
+\item We adapt the block frequency profiling to measure in order to profile the WP.
 \item We propose a relaxed instrumentation for low overhead profiling, with a controlled trade-off between accuracy and overhead.
+\item We lower the work profiling futher by performing a whole program relaxation.
+
 \end{itemize}
