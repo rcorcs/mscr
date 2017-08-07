@@ -1,7 +1,7 @@
 
 \chapter{Online {\IterComp}}
 
-\section{Work-based Metric}\label{sec:metric}
+\section{Work-based Performance Metric}\label{sec:metric}
 
 In this section we define the work-based performance metric proposed for comparing different optimised versions of a program when executing with different inputs.
 We define the performance metric as the ratio between the amount of \textit{work}, $\Delta W$, performed during a period of time, $\Delta t$.
@@ -19,7 +19,7 @@ For this metric, the main challenge is to precisely define what represents \text
 %potentially be used for applying {\itercomp} \textit{online}.
 %However, the overhead for estimating the amount of \textit{work} must be low enough for the performance gains to be beneficial.
 
-We model the computational work $\Delta W$ as a linear equation based on block frequency information and a cost-model of the instruction set.
+We model the computational work $\Delta W$ as a linear equation based on block frequency information and a cost model of the instruction set.
 \[
 \Delta W = \varepsilon + \sum_{B} w(B)f(B)
 \]
@@ -65,7 +65,7 @@ Similarly to previous work~\citep{giusto01,powell09,brandolese11}, we derive the
 \]
 
 By having some empirical data after executing several benchmarks with different inputs, we can fit the linear model with this empirical data in order to obtain the costs of the instructions.
-In order to fit the linear model, we measure the wall-clock time when executing the training benchmarks described in Section\ref{} with their respective 1000 input datasets.
+In order to fit the linear model, we measure the wall-clock time when executing the training benchmarks described in Section\ref{sec:benchmarks} with their respective 1000 input datasets.
 For these measurements, the training benchmarks are compiled without optimisation.
 The reason for using no optimisation is because it allows to use the trained cost model for computing a work metric which is independent of optimisations, as we explained in Section~\ref{}.
 

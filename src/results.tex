@@ -9,7 +9,7 @@ Finally we present the results of the online {\itercomp}.
 We implemented the instrumentations in LLVM 4.0.
 The target platform is a Linux-4.4.27 system with an Intel Core i7-4770 3.40GHz Skylake~CPU with 16~GiB RAM.
 
-\section{Benchmarks}
+\section{Benchmarks and Datasets} \label{sec:benchmarks}
 
 %{\Itercomp} is essentially based on repeatedly trying out a large number of compiler optimisations until the best combination of compiler optimisations is found for a particular program.
 %Our main goal is to speed up {\itercomp} while targeting optimal performance across large input datasets.
@@ -166,11 +166,11 @@ Figure~\ref{fig:overhead-improvement-O3} shows that the relaxation algorithm, wi
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{figs/error-O3.pdf}
-    \caption{.}
-    \label{fig:instr-all-thresholds}
+    \caption{Dynamic error of the work profiling averaged over the 1000 inputs, after relaxing the number of probes.}
+    \label{fig:error-O3}
 \end{figure}
 
-\textbf{Profile-guided Instrumentation.}
+%\textbf{Profile-guided Instrumentation.}
 
 %\textbf{Code size.}
 %\begin{figure}[ht]
