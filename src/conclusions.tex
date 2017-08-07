@@ -1,18 +1,29 @@
-\chapter{Conclusions and Future Work}
+\chapter{Conclusions}
 
 
+\section{Future Work}
 
-Create a context-aware instrumentation in order to avoid updates to the global counter inside function calls in tight loops, for which function cloning could be employed.
-\textbf{Elaborate}
+%\textbf{Elaborate}Create a context-aware instrumentation in order to avoid updates to the global counter inside function calls in tight loops, for which function cloning could be employed.
+As future work one could improve the work instrumentation by developing a context-aware instrumentation in order to avoid updates to the global counter in function calls inside tight loops.
+Function cloning could be employed to address this issue.
+Updates to the global counter could be avoided by exchanging the local counter with the specialised version of cloned functions via argument and return values.
+This transformation creates opportunities for future optimisations, e.g., after applying function inlining, while updates to global variables tend to prevent optimisations.
 
-Merge probes in branches with similar work value.
-\textbf{Elaborate}
+%\textbf{Elaborate}Merge probes in branches with similar work value.
+Regarding the relaxed instrumentation,
+one could merge probes in branching paths for which the difference between the amount of work computed in each path stays within a given threshold.
+In this case, the branch could be considered as a straight-line code for which the amount of work is a weighted average, based on the branching probability, of the work for each path.
+%\textbf{Elaborate}Perform a loop-aware relaxation which is able to considering inner loops where the upper bound of the trip count is known.
+Another improvement to the relaxed instrumentation would be to perform a loop-aware relaxation.
+In other words, loops for which the trip count has a known upper bound could be considered as if it was unrolled when performing relaxation on the outer scope, hence the whole region could be perceived as a single DAG.
 
-Perform a loop-aware relaxation which is able to considering inner loops where the upper bound of the trip count is known.
-\textbf{Elaborate}
+A mechanism similar to the one used for the online {\itercomp} with the work-based performance (WP) metric can also be applied to perform
+runtime auto-tuning or multi-versioning optimisations.
+This mechanism would be particularly useful for irregular programs.
+In the case of multi-versioning optimisations, one could have multiple instrumented and non-instrumented versions of hop loops or functions.
+Initially the instrumented version would be executed in order to collect the WP metric and then be able to select which optimised version to use in future executions, 
+for which the non-instrumented version would be used.
 
-Use the work-based metric with the work instrumentation in order to perform run-time auto-tuning or multi-versioning optimisations.
-
-
-\textbf{Talk about how this instrumentation techniques (relaxation) could be applied to other profiling-based mechanism to estimate input sizes~\citep{zaparanuks12,coppa14}, namely \textit{read memory size}}
-
+In the area of experimental algorithmics, work-based metrics are largely used in order to empirically estimate the asymptotical complexity of programs.
+These estimates usually comprise measuring the input size and the computational cost during the execution of a program.
+To that end, the work instrumentation, with the proposed relaxation algorithms, could be adapted to these other work-based metrics, resulting in low-overhead algorithmic profiling.
