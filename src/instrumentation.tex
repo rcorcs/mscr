@@ -1,10 +1,10 @@
 \chapter{Work Instrumentation} \label{chap:instr}
 
 In this section we describe how the computation of the work-metric can be performed during runtime by means of instrumenting the code.
-In particular, we adapt the optimal algorithm proposed originally for profiling block frequency~\citep{nahapetian73,knuth73,ball94}.
+In particular, we adapt the optimal algorithm proposed originally for block-frequency profiling~\citep{nahapetian73,knuth73,ball94}.
 Afterwards, we propose a relaxed instrumentation that focus on further reducing the overhead by considering the trade-off between profiling accuracy and instrumentation overhead.
 
-Because we define work as a linear equation on the block frequency counters, it is possible to embed its computation into the execution of the program.
+Because we define work as a linear equation on the block-frequency counters, it is possible to embed its computation into the execution of the program.
 A naive instrumentation would consist basically of having a global counter that starts with the interception value, $\varepsilon$, and each basic block increments its own cost into the global counter.
 Although this instrumentation is easily implemented, it imposes a large overhead on the instrumented program.
 However, it is possible to insert fewer probes by carefully placing the probes in a way that is possible to reconstruct the complete profiling information~\cite{knuth73,ball94}.
@@ -16,8 +16,8 @@ However, it is possible to insert fewer probes by carefully placing the probes i
   \label{fig:instr-diagram}
 \end{figure}
 
-We adapt the optimal block frequency instrumentation in order to perform the work profiling efficiently.
-The proposed work instrumentation differs from the optimal block frequency instrumentation as the latter occurs in two stages:
+We adapt the optimal block-frequency instrumentation in order to perform the work profiling efficiently.
+The proposed work instrumentation differs from the optimal block-frequency instrumentation as the latter occurs in two stages:
 \textit{(i.) Before execution.} The code is instrumented with counters for each probe.
 \textit{(ii.) After execution.} The information from the recorded probes is propagated in the CFGs of the program.
 In contrast, the work instrumentation has a single counter and it only requires the instrumentation before execution, without any post-processing of the recorded profiling.
@@ -413,7 +413,32 @@ If $N = max\{n_i$ for every $i\}$, then
 \end{proof}
 
 While the optimal placement of probes tries to place probes in edges that are less likely to be executed, the relaxation focus on removing probes that are more likely to be executed.
-The necessary block frequency information for optimising both the placement of probes can be acquired from profiles of previous executions of the program or by a static heuristic of the CFG during compilation.
+The necessary block-frequency information for optimising both the placement of probes can be acquired from profiles of previous executions of the program or by a static heuristic of the CFG during compilation.
+
+
+\begin{lstlisting}[caption={Optimal placement of probes for block frequency.}, label={lst:instrumentCFG}]
+// Input: CFG	
+relaxInstrumentation(G) {
+  for loop in G:
+     DAG = colapseInnerLoops(loop)
+     relaxInstrumentedDAG(DAG)
+  DAG = colapseInnerLoops(G)
+  relaxInstrumentedDAG(DAG)
+}
+\end{lstlisting}
+
+
+\begin{lstlisting}[caption={Optimal placement of probes for block frequency.}, label={lst:instrumentCFG}]
+// Input: CFG	
+relaxInstrumentedDAG(DAG){
+   P = ProbesIn(DAG)
+   m = minWork(DAG,P)
+   K = createKnapsackModel(P,m)
+   Bag = solveKnapsack(K)
+   for B in (P-Bag):
+     removeProbe(B)
+}
+\end{lstlisting}
 
 For our experiments, we implemented two solvers for the 0-1 Knapsack problem:
 the optimal brute-force solver;
@@ -431,7 +456,7 @@ For these cases, we propose an adapted version of the relaxation algorithm that 
 Traditionally, compilers optimisations are performed on the function-level, or at best on a per module basis.
 Whole program optimisation (WPO) means that the compiler considers all compilation units of the program and optimises them using the combined knowledge of how they are used together.
 
-The whole program relaxation works by using block frequency profiling from previous executions.
+The whole program relaxation works by using block-frequency profiling from previous executions.
 By having this profiling information, the \textit{whole program relaxation} is able to compute the error of removing a given probe in terms of the whole program's execution,
 and then use this error values for selecting a subset of all the probes to be removed.
 
