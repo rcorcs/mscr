@@ -153,7 +153,7 @@ xleftmargin=2em,                % Left margin
 frame=lines,                   % adds a frame around the code. none|leftline|topline|bottomline|lines|single|shadowbox
 framexleftmargin=1.5em,         % Margin from frame to line numbers
 framexbottommargin=0em,         % Distance from last text to frame
-morekeywords={in,true,false,and,or,set},
+morekeywords={in,true,false,and,or,set,is,not},
 %% prebreak=\mbox{\tiny$\searrow$},
 prebreak=\space,                % Line break: insert this character at the end of the top line
 %% postbreak=\mbox{{\color{blue}\scriptsize$\hookrightarrow$}}, % Line break: blue arrow at the beginning of the bottom line
@@ -173,6 +173,13 @@ escapeinside={\@}{\@}             % Escape sequence \@ESCAPED STUFF\@
 %% Information about the title, etc.
 \title{Online {\IterComp}\\Guided by Work-based Profiling}
 \author{Rodrigo Caetano de Oliveira Rocha}
+
+\pdfinfo{
+   /Author (Rodrigo Caetano de Oliveira Rocha)
+   /Title  (Online Iterative Compilation Guided by Work-based Profiling)
+   /Subject (Optimising Compilers)
+   /Keywords (Iterative Compilation;Profiling;Compiler Optimisation)
+}
 
 %% If the year of submission is not the current year, uncomment this line and 
 %% specify it here:
@@ -212,8 +219,8 @@ This work was supported in part by the EPSRC Centre for Doctoral Training in Per
 \tableofcontents
 
 %% If you want a list of figures or tables, uncomment the appropriate line(s)
- \listoffigures
- \listoftables
+\listoffigures
+\listoftables
 
 \end{preliminary}
 

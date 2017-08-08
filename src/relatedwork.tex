@@ -55,7 +55,15 @@ However, in the context of comparing different optimisations, although block fre
 Because of that, we extend the idea of using basic block frequency to measure computational work by also considering the computational cost of each basic block.
 The computational cost of a basic block is given by weighting the instructions that it contains.
 
-\section{Optimal Instrumentation} \label{subsec:optimalInstrumentation}
+\section{Progrma Profiling} \label{subsec:optimalInstrumentation}
+
+\textbf{TODO: }
+Progrma profiling concerns with the acquisition of dynamic information collected during the program's execution.
+Since early work, program profiling has been used mainly to find performance bottleneck and to focus optimisations.
+\cite{knuth71} introduces program profiling as a table of frequency counts that records execution frequency of each statement during a typical run of a program.
+This program profiling 
+\cite{knuth71} profiles the execution frequency of each FORTRAN statement during the execution of representative programs.
+
 
 In order to profile  block frequency, the program can be instrumented with counters that determine how many times each basic block in a program executes.
 A naive instrumentation would consist basically of having a counter for each basic block which is incremented every time the basic block is reached.
@@ -124,6 +132,37 @@ These weights can be obtained either by empirical measurements from previous exe
 In order to minimise the profiling overhead, the instrumentation computes the maximum spanning tree in order to avoid probing in frequently executed edges.
 LLVM implements Kruskal's algorithm using the union-find data structure~(see \lstlistingname~\ref{lst:kruskalMST})
 for computing the maximum spanning tree of the CFG.
+
+\begin{lstlisting}[caption={}, label={lst:instrumentCFG}, float]
+// Input: CFG
+instrumentCFG(G) {
+  if not hasEdgeFrequency(G):
+    estimateEdgeFrequency(G)
+  
+  T = MaxSpanningTree(G)
+  for e in G.edges()-T.edges():
+    placeProbe(e)
+}
+\end{lstlisting}
+
+\begin{lstlisting}[caption={For a given edge, this procedure selects which basic block to place the instrumented code.
+                            If the edge is critical, an intermediate basic block is created for the instrumentation.}, label={lst:placeProbe}, float]
+// Input: edge selected for instrumentation
+placeProbe(e){
+  (B1, B2) = e
+  if B1 is virtual:
+    insertProbe(B2)
+  else if B2 is virtual:
+    insertProbe(B1)
+  else if countSuccessors(B1)<=1:
+    insertProbe(B1)
+  else if e is not critical:
+    insertProbe(B2)
+  else
+    B = splitCriticalEdge(e)
+    insertProbe(B)
+}
+\end{lstlisting}
 
 Notice that when instrumentation is performed guided by empirical measurements from previous executions, it means that edge profiling information is used in order to produce a better edge profiling instrumentation.
 The next section presents the main algorithms for producing static estimates for the weights of the edges in a CFG.

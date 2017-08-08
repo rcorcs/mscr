@@ -12,8 +12,13 @@ For any two vertices $u,v\in V$, vertices $u$ and $v$ are said to be adjacent ve
 A graph is directed when each edge is represented by an ordered pair, in which case a directed edge $(u,v)\in E$ contains a source vertex $u$ and a target vertex $v$.
 
 A \textit{path} in a graph is a sequence of edges that compose a chain of adjacent vertices.
+A path comprised by the edges $\{v_1,v_2\}, \{v_2,v_3\}, \ldots, \{v_{k-1},v_k\}$ is usually denoted by a sequence of the adjacent vertices such as $(v_1,v_2,v_3,\ldots,v_{k-1},v_k)$.
+A \textit{cycle} is a path $(v_1,v_2,\ldots,v_k)$ in which all vertices except the origin $v_1$ and the terminus $v_k$ are distinct, with $v_1=v_k$.
+Graphs with no cycles are called acyclic graphs.
+\textit{Directed acyclic graphs} are usually shortened to DAGs.
+
 An undirected graph is connected if there is a path between any two vertices of the graph.
-If an undirected graph is called a \textit{tree} if and only if it is both connected and acyclic.
+An undirected graph is called a \textit{tree} if and only if it is both connected and acyclic.
 For any graph $G = (V,E)$, if a subgraph $H$ of $G$ is a tree and contains all vertices in $V$, then $H$ is called a \textit{spanning tree}.
 
 \subsection{Maximum Spanning Tree}
@@ -110,9 +115,13 @@ Vectors are not considered to be aggregate types.
 In addition to type information, LLVM IR also provides other high-level information that are useful for effectively performing several code analysis and transformations.
 This includes explicit control flow graphs (CFG)~\citep{allen70} and an explicit dataflow representation, by means of the infinite register set in \textit{static single assignment} (SSA) form~\citep{alpern88,cytron89,cytron91}.
 
+\subsubsection{Control Flow Graph}
+
 A control flow graph (CFG) is a directed graph in which the nodes represent basic blocks and the edges represent control flow paths, i.e. edges represent transfers of control (jumps) between basic blocks.
 A basic block is a straight-line sequence of instructions having only one entry point, i.e. the first instruction to be executed in the basic block, and only one exit point, i.e. the last instruction executed~\citep{allen70,cytron91}.
 Figure~\ref{fig:cfg-odd_inc} shows an example of a CFG constructed from the code in Listing~\ref{lst:ex:odd_inc}.
+
+\subsubsection{Static Single Assignment Form}
 
 An IR is in SSA form if and only if each virtual register is assigned exactly once and every use of registers occur after their definition.
 The primary advantage of using the SSA form is that it simultaneously simplifies and improves several compiler optimisations and analysis~\citep{alpern88,cytron91}.
@@ -202,6 +211,30 @@ if.end:
 %The GCC back end has similar problems, so they also need to know bits and pieces of how the RTL back end works as well.
 %Finally, GCC doesn't have a way to dump out "everything representing my code", or a way to read and write GIMPLE (and the related data structures that form the representation of the code) in text form. The result is that it is relatively hard to experiment with GCC, and therefore it has relatively few front ends.
 
+\subsubsection{Dominators and Natural Loops}
+
+A basic block $u$ dominates another basic block $v$ if and only if all paths 
+to $v$ must also contain $u$.
+In other words, any basic block that dominates all predecessors of $v$ also dominates $v$.
+
+Natural loops are the cyclic structure in a CFG.
+First we define a backedge, which is an edge $(u,v)$ such that $v$ dominates $u$.
+Hence, a natural loop can be defined by the subgraph encompassed by its backedge.
+That is, for any given backedge $(u,v)$, the subgraph consisting of all paths with origin $v$ and terminus $u$, in addition to the backedge itself, is a natural loop.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=1]{figs/natural-loop.pdf}
+  \caption{Example of natural loop.}
+  \label{fig:natural-loops}
+\end{figure}
+
+Figure~\ref{fig:natural-loops} shows an example of a natural loop.
+Natural loops contain a \textit{header} basic block, which is the entry basic block of the loop,
+a \textit{latch} basic block, which is the origin of the backedge to the header of the loop.
+It also contains one or more exit basic blocks, which are not part of the loop themselves but successors of basic blocks from the loop.
+All basic blocks that comprise the natural loop can be found by a backwards \textit{depth-first search} that starts at the latch basic block and stops at the header.
+ 
 \subsection{Analysis and Transformation Passes}
 
 The LLVM optimiser offers several passes in order to provide analysis and transformation capabilities.
@@ -289,17 +322,14 @@ Their approach is able to significantly reduce the number of executions necessar
 
 More recently, \cite{ogilvie17}...
 
-\section{Program Profiling}
-
-\textbf{Basic background about profiling in general}
-
-Progrma profiling concerns with the acquisition of dynamic information collected during the program's execution.
-Since early work, program profiling has been used mainly to find performance bottleneck and to focus optimisations.
-\cite{knuth71} introduces program profiling as a table of frequency counts that records execution frequency of each statement during a typical run of a program.
-This program profiling 
-\cite{knuth71} profiles the execution frequency of each FORTRAN statement during the execution of representative programs.
-
-Progrma profiling is particularly useful for providing 
+%\section{Program Profiling}
+%\textbf{Basic background about profiling in general}
+%Progrma profiling concerns with the acquisition of dynamic information collected during the program's execution.
+%Since early work, program profiling has been used mainly to find performance bottleneck and to focus optimisations.
+%\cite{knuth71} introduces program profiling as a table of frequency counts that records execution frequency of each statement during a typical run of a program.
+%This program profiling 
+%\cite{knuth71} profiles the execution frequency of each FORTRAN statement during the execution of representative programs.
+%Progrma profiling is particularly useful for providing 
 
 \section{0-1 Knapsack Problem}
 
