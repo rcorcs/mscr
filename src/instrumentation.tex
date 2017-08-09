@@ -322,8 +322,7 @@ The only explicit access to memory is performed when updating the global work co
 
 Although the optimal instrumentation significantly reduces the profiling overhead when compared to the naive instrumentation, from an average overhead of 79\% to 13\%, in some critical cases, even the optimal instrumentation can have an overhead of about 70\% (see benchmark \texttt{adpcm\_d} in Figure~\ref{fig:overhead-O3}).
 In order to further reduce the overhead in these critical cases, we propose a relaxed instrumentation by trading off accuracy and overhead.
-Figure~\ref{fig:relax-instr-diagram} shows an overview of the relaxed instrumentation algorithm.
-The highlighted section is introduced by the relaxed instrumentation on top of the previously defined optimal work instrumentation algorithm.
+While the optimal placement of probes tries to place probes in edges that are less likely to be executed, the relaxation focus on removing probes that are more likely to be executed.
 
 \begin{figure}[h]
   \centering
@@ -341,7 +340,8 @@ The highlighted section is introduced by the relaxed instrumentation on top of t
 %\end{figure*}
 
 %Define an DAG of a CFG as a directed graph which may contain cycles if they have known constant trip counts.
-
+Figure~\ref{fig:relax-instr-diagram} shows an overview of the relaxed instrumentation algorithm.
+The highlighted step is introduced by the relaxed instrumentation on top of the previously defined optimal work instrumentation algorithm.
 The relaxed instrumentation performs a post-processing on the resulting instrumentation of the optimal algorithm.
 The relaxation starts by extracting DAGs (directed acyclic graphs) from the CFG, as illustrated in Figure~\ref{fig:cfg-relax-example}.
 The algorithm extracts all the subgraphs that represent a loop or the outer most region of the function.
@@ -361,6 +361,18 @@ Figure~\ref{fig:cfg-relax-example} shows a CFG partitioned into two DAGs (consid
   \label{fig:cfg-relax-example}
 \end{figure}
 
+
+\begin{lstlisting}[caption={Optimal placement of probes for block frequency.}, label={lst:instrumentCFG}]
+// Input: CFG	
+relaxInstrumentation(G) {
+  for loop in G:
+     DAG = colapseInnerLoops(loop)
+     relaxInstrumentedDAG(DAG)
+  DAG = colapseInnerLoops(G)
+  relaxInstrumentedDAG(DAG)
+}
+\end{lstlisting}
+
 For every DAG with a set of probes $\{P_0, P_1, \ldots, P_k\}$, we relax the profiling accuracy by selecting a subset of the probes to be removed, subject to the maximum allowed percentage error, $M$.
 
 We model the relaxation as a 0-1 Knapsack problem:
@@ -375,9 +387,9 @@ x_i\in\{0,1\}, i\in\{0,\ldots,k\}
 \]
 where $f(P_i)$ is the execution frequency of probe $P_i$, $x_i$ denotes the probes selected for removal, and $\varepsilon(P_i)$ is the percentage error of removing probe $P_i$ relative to the minimum work value possible to compute in the DAG, i.e., if $m$ is the minimum amount of work possible to be computed when executing the DAG, then $\varepsilon(P_i) = \frac{\omega(P_i)}{m}$.
 Because the percentage error is computed based on the path with the minimum amount of work, $\varepsilon(P_i)$ represents the maximum error possible that would be incurred when removing probe $P_i$.
-Furthermore, by constraining the percentage error of every DAG below a given threshold we guarantee that the final error of the relaxation will always be bounded by the threshold.
+Furthermore, by constraining the percentage error of every DAG below a given threshold we guarantee that the final error of the relaxation will always be bounded by the threshold, as demonstrated by Proposition~\ref{prop:relax-bound}.
 
-\begin{prop}
+\begin{prop}\label{prop:relax-bound}
 Let $n_i$ be the number of times a given DAG $i$ is executed, $r_i$ be the total relaxation (amount of work removed) in DAG $i$, and $m_i$ be its minimum amount of work.
 If $\frac{r_i}{m_i} \leq M$ for every $i$,
 then the final error of the relaxation will always be bounded by the same threshold.
@@ -412,21 +424,6 @@ If $N = max\{n_i$ for every $i\}$, then
 \end{equation*}
 \end{proof}
 
-While the optimal placement of probes tries to place probes in edges that are less likely to be executed, the relaxation focus on removing probes that are more likely to be executed.
-The necessary block-frequency information for optimising both the placement of probes can be acquired from profiles of previous executions of the program or by a static heuristic of the CFG during compilation.
-
-
-\begin{lstlisting}[caption={Optimal placement of probes for block frequency.}, label={lst:instrumentCFG}]
-// Input: CFG	
-relaxInstrumentation(G) {
-  for loop in G:
-     DAG = colapseInnerLoops(loop)
-     relaxInstrumentedDAG(DAG)
-  DAG = colapseInnerLoops(G)
-  relaxInstrumentedDAG(DAG)
-}
-\end{lstlisting}
-
 
 \begin{lstlisting}[caption={Optimal placement of probes for block frequency.}, label={lst:instrumentCFG}]
 // Input: CFG	
@@ -439,6 +436,8 @@ relaxInstrumentedDAG(DAG){
      removeProbe(B)
 }
 \end{lstlisting}
+
+The necessary block-frequency information for optimising both the placement of probes can be acquired from profiles of previous executions of the program or by a static heuristic of the CFG during compilation.
 
 For our experiments, we implemented two solvers for the 0-1 Knapsack problem:
 the optimal brute-force solver;
