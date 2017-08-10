@@ -3,7 +3,9 @@
 This chapter provides a description of basic concepts and theory used in this thesis.
 The first section presents basic concepts of graph theory.
 Graph theory is largely used throughout the literature of compiler construction and compilation techniques.
-Second is an overview of the LLVM compiler infrastructure.
+Second is an overview of the LLVM compiler infrastructure, including the description of compiler concepts useful for this thesis.
+In the sequence, it presents some of the early work on {\itercomp} and some of the work that address the challenges of its optimisation-space exploration.
+Finally, this chapter also introduces the 0-1 knapsack problem, some basic concepts of statics and linear regression.
 
 \section{Basic Concepts of Graph Theory}
 
@@ -34,7 +36,7 @@ It starts with a forest of singleton graphs, i.e., a set of disjoint trees where
 The algorithm evaluates all edges in increasing order, joining disconnected trees into larger trees.
 In the end, there is a single tree connecting all vertices of the graph with minimum total weight.
 
-\begin{lstlisting}[caption={Kruskal's algorithm for finding a minimum spanning tree}, label={lst:kruskalMST}, float]
+\begin{lstlisting}[caption={Kruskal's algorithm for finding a minimum spanning tree}, label={lst:kruskalMST}]
 // Input: Undirected Graph
 // Output: Minimum Spanning Tree
 kruskalMST(G) {
@@ -113,7 +115,7 @@ Aggregated types consist of arrays and structures.
 Vectors are not considered to be aggregate types.
 
 In addition to type information, LLVM IR also provides other high-level information that are useful for effectively performing several code analysis and transformations.
-This includes explicit control flow graphs (CFG)~\citep{allen70} and an explicit dataflow representation, by means of the infinite register set in \textit{static single assignment} (SSA) form~\citep{alpern88,cytron89,cytron91}.
+This includes explicit control flow graphs (CFG)~\citep{allen70} and an explicit dataflow representation, by means of the infinite register set in \textit{static single assignment} form~\citep{alpern88,cytron89,cytron91}.
 
 \subsubsection{Control Flow Graph}
 
@@ -123,7 +125,7 @@ Figure~\ref{fig:cfg-odd_inc} shows an example of a CFG constructed from the code
 
 \subsubsection{Static Single Assignment Form}
 
-An IR is in SSA form if and only if each virtual register is assigned exactly once and every use of registers occur after their definition.
+An IR is in \textit{static single assignment} (SSA) form if and only if each virtual register is assigned exactly once and every use of registers occur after their definition.
 The primary advantage of using the SSA form is that it simultaneously simplifies and improves several compiler optimisations and analysis~\citep{alpern88,cytron91}.
 Most of the industrial-strength compilers for imperative programming language rely heavily on the SSA form.
 
@@ -320,7 +322,7 @@ They propose a mechanism that learns a predictive model from a training set of b
 This predictive model will later be used for predicting regions of the optimisation space that are more likely to contain promissing results.
 Their approach is able to significantly reduce the number of executions necessary for achieving good performance improvements with the iterative search.
 
-More recently, \cite{ogilvie17}...
+More recently, \cite{ogilvie17} 
 
 %\section{Program Profiling}
 %\textbf{Basic background about profiling in general}
@@ -362,4 +364,26 @@ For example, a \textit{greedy} heuristic tries to maximise the total profit by s
 This \textit{greedy} heuristic have a complexity of $O(n\log{n} + n)$, or just $O(n\log{n})$ for short.
 Although heuristics are not guaranteed to find the best solution, they usually tend to efficiently find good or close to optimal solutions.
 
+\section{Statistics}
+
+\subsection{Linear Regression}
+
+In statistics, for a known dataset $\{y_i, x_{i,1}, x_{i,2}, \ldots, x_{i,k}\}_{i=1}^n$ of size $n$, a regression model creates a relation between the \textit{dependent variables} $y_i$ and the input variables $x_{i,j}$, also called \textit{regressors}, such that
+\[
+y_i \approx f(x_{i,1}, x_{i,2}, \ldots, x_{i,k})
+\]
+
+A well known regression model is the linear regression model, which assumes that there is a linear relation between regressors and the dependent variables.
+In other words, it assumes that function $f$ has the form
+\[
+y_i = \varepsilon_i + \sum_{j=1}^k \beta_j x_{i,j}
+\]
+where $\beta_j$ are unknown parameters, also called \textit{regression coefficients},
+and $\varepsilon_i$ is the error term.
+
+For a given dataset, the \textit{regression coefficients} and a single intercept term $\varepsilon$ can be estimated by a mathematical optimisation approach that tries to optimise for a given objective function. For example, it can minimise for the \textit{mean squared error}, i.e.,
+\[
+\min \quad MSE = \frac{1}{n} \sum_{i=1}^n\left(f(x_{i,1}, x_{i,2}, \ldots, x_{i,k}) - y_i\right)^2
+\]
+where $f$ is the linear function.
 \section{Summary}
