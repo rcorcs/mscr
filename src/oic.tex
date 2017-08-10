@@ -3,7 +3,7 @@
 
 \section{Work-based Performance Metric}\label{sec:metric}
 
-In this section we define the work-based performance metric proposed for comparing different optimised versions of a program when executing with different inputs.
+In this section we define the work-based performance (WP) metric proposed for comparing different optimised versions of a program when executing with different inputs.
 We define the performance metric as the ratio between the amount of \textit{work}, $\Delta W$, performed during a period of time, $\Delta t$.
 \[
    P = \frac{\Delta W}{\Delta t}
@@ -85,10 +85,10 @@ The mean absolute error (MAE) for the fitted curve is of 7 milliseconds.
 
 The IPC metric have been widely used for studying performance benefits of hardware optimisations.
 
-The proposed work-based performance metric differs from IPC in a key aspect:
+The proposed WP metric differs from IPC in a key aspect:
 the IPC metric is computed soley on the final optimised program.
 For different optimisations of the same program, both the number of instructions and the number of cycles can change for the same input.
-On the other hand, the work-based performance metric computes the amount of work based on the unoptimised program, which means that it always consider the same amount of work for the same input, regardless of the optimisations applied on the program.
+On the other hand, WP computes the amount of work based on the unoptimised program, which means that it always consider the same amount of work for the same input, regardless of the optimisations applied on the program.
 
 For this reason, higher IPC does not necessarily translates to shorter execution time.
 We can illustrate this fact with an example as shown in Table~\ref{}.
@@ -131,7 +131,7 @@ However, this is out of the scope of this work and we always re-compile the whol
 %\textbf{Describe the process step by step.}
 
 Figure~\ref{fig:infra-diagram} shows an overview of the infrastructure required for applying online {\itercomp},
-using the work-based performance metric as the metric of choice for evaluating optimisation sequences.
+using WP as the metric of choice for evaluating optimisation sequences.
 The online {\itercomp} follows as described bellow:
 \begin{enumerate}
 \item The program is pre-compiled to the LLVM bitcode format without optimisation.
@@ -152,10 +152,11 @@ The \textit{Work Instrumentation} phase focuses on providing a low-overhead inst
 The instrumentation consists in adding a global counter to the program which is used to accumulate the amount of work computed during the program's execution, by means of the cost model of the instruction set.
 A detailed description of the work instrumentation is presented in Section~\ref{chap:instr}.
 
-In both phases the goal is to improve the performance of the execution phase, but from different perspectives.
-\textit{(i.)} In the compilation phase we focused on providing a low-overhead instrumentation for profiling the work metric. This phase is responsible to improve performance by lowering the overhead of the work profiling.
-\textit{(ii.)} In the evaluation phase we proposed the use of the work-based metric in order to enable {\itercomp} in an online scenario. This phase is responsible to improve performance by being able to properly assess different optimisations such that the best optimisation can be selected.
-Chapter~\ref{chap:instr} describes our work profiling strategy and Section~\ref{sec:metric} describes the work-based metric.
+%In both phases the goal is to improve the performance of the execution phase, but from different perspectives.
+%\textit{(i.)} In the compilation phase we focused on providing a low-overhead instrumentation for profiling the work metric. This phase is responsible to improve performance by lowering the overhead of the work profiling.
+%\textit{(ii.)} In the evaluation phase we proposed the use of the WP metric in order to enable {\itercomp} in an online scenario.
+%This phase is responsible to improve performance by being able to properly assess different optimisations such that the best optimisation can be selected.
+%Chapter~\ref{chap:instr} describes our work profiling strategy and Section~\ref{sec:metric} describes the work-based metric.
 
 %\textbf{Talk about the process of keeping the same optimization for a given input-window and how the optimizations as selected based on the evaluation of these "evidences". Perhaps we could suggest using the Theory of Evidences at this point?!}
 

@@ -267,29 +267,29 @@ Because these probes were placed in basic blocks with a considerable execution f
 \section{Evaluation of the Online {\IterComp}}
 
 
-In this section we evaluate the online {\itercomp} guided by the work-based performance metric.
+In this section we evaluate the online {\itercomp} guided by the WP metric.
 For comparison, we use four configurations.
 In all configurations, the same optimisation sequence is used for multiple inputs, using a dynamic window size, as explained in Section~\ref{sec:oic-infra}.
 The average performance over the input window provides an estimate for the overall performance of the optimisation sequence across distinct inputs.
 The optimisation sequences are ranked based on their average performance and the best optimisation sequence is selected.
-%When selecting the best optimisation sequence, they are ranked by the average of their performance measurement, using the work-based performance metric, except for the Oracle-RM which uses the real speedup over \texttt{-O0}.
+%When selecting the best optimisation sequence, they are ranked by the average of their performance measurement, using the WP metric, except for the Oracle-RM which uses the real speedup over \texttt{-O0}.
 \begin{itemize}
 \item \textbf{Oracle-RM} executes the program multiple times for each input, measuring the real speedup for each compiler optimisation, and then uses the real speedup over {\flagstype -O0} for comparing the optimisations.
 The speedups are computed based on the wall-clock time.
 In order to reduce noise, the program is executed several times for the same input, until the confidence interval no larger than 1\% for a 99\% confidence.
 \item \textbf{Oracle-PP} represents an oracle with a \textit{perfect} non-intrusive profiling.
-  Although it uses the work-based performance metric for comparing optimisation, this oracle also avoids noise in its measurements by also executing the program multiple times for each input.
+  Although it uses the WP metric for comparing optimisation, this oracle also avoids noise in its measurements by also executing the program multiple times for each input.
   The first execution is used for profiling the work metric.
   The remaining executes are used for measuring the wall-clock time without using the work profiling.
 \item \textbf{Real-OP} corresponds to the online {\itercomp} as it would be applied in a real online scenario.
   For each optimisation, a random sample of inputs is selected, and the program is executed only once with each input.
   When executing each input, it uses the optimal work instrumentation for profiling the work metric.
-  The average of the work-based performance metric, $\frac{\Delta W}{\Delta t}$, for the sample of inputs is then used for selecting the best optimisation.
+  The average of the WP for the sample of inputs is then used for selecting the best optimisation.
 \item \textbf{Real-R5} is similar to the {Real-OP}.
   It also corresponds to the online {\itercomp} as it would be applied in a real online scenario.
   For each optimisation, a random sample of inputs is selected, and the program is executed only once with each input.
   When executing each input, it uses the relaxed work instrumentation, with a 5\% threshold, for profiling the work metric.
-  The average of the work-based performance metric for the sample of inputs is then used for selecting the best optimisation.
+  The average of the WP for the sample of inputs is then used for selecting the best optimisation.
 \item \textbf{Real-IPC} corresponds to the online {\itercomp} based on the IPC metric.
   For each optimisation, a random sample of inputs is selected, and the program is executed only once with each input.
   The average of the IPC metric for the sample of inputs is then used for selecting the best optimisation.
@@ -393,20 +393,20 @@ These results corroborate the claim that performing {\itercomp} on a single inpu
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{figs/ipc-vs-work.pdf}
-    \caption{Comparison between {\itercomp} using IPC or the work-based performance metric.}
+    \caption{Comparison between {\itercomp} using IPC or the WP metric.}
     \label{fig:ipc-vs-work}
 \end{figure}
 
 
-Figure~\ref{fig:ipc-vs-work} presents a comparison between IPC and the work-based performance metric regarding their correlation with the actual speedup over \verb|-O0| observed during {\itercomp}.
+Figure~\ref{fig:ipc-vs-work} presents a comparison between IPC and the WP metric regarding their correlation with the actual speedup over \verb|-O0| observed during {\itercomp}.
 Each point in the figure correspond to each metric averaged over input windows collected during multiple executions of the {\itercomp}.
-The vertical lines correspond to the optimisation sequence selected by the {\itercomp} search, which either represents the highest IPC or the highest value of work-based performance.
-In all cases, the optimisation sequence selected based on the work-based performance is much closer to the best speedup than the optimisation sequence selected based on IPC, which can be attributed to the fact that the work-based performance have a stronger correlation with the speedup.
+The vertical lines correspond to the optimisation sequence selected by the {\itercomp} search, which either represents the highest IPC or the highest value of WP.
+In all cases, the optimisation sequence selected based on the WP is much closer to the best speedup than the optimisation sequence selected based on IPC, which can be attributed to the fact that the WP have a stronger correlation with the speedup.
 In all cases, IPC shows little to no correlation with the speedup, which corroborates the argument given in Section~\ref{sec:ipc-vs-work-metric}.
 
-For some cases, namely for the tiff-related benchmarks, the work-based performance shows a worse correlation with speedup.
+For some cases, namely for the tiff-related benchmarks, the WP shows a worse correlation with speedup.
 We believe these cases could be improved by improving the cost model used to compute the work metric.
-However, even in these cases, the optimisation sequence selected based on the work-based performance outperforms those selected based on IPC.
+However, even in these cases, the optimisation sequence selected based on the WP outperforms those selected based on IPC.
 
 \subsection{Contribution of individual optimisation passes}
 
