@@ -379,11 +379,18 @@ In other words, it assumes that function $f$ has the form
 y_i = \varepsilon_i + \sum_{j=1}^k \beta_j x_{i,j}
 \]
 where $\beta_j$ are unknown parameters, also called \textit{regression coefficients},
-and $\varepsilon_i$ is the error term.
+and $\varepsilon_i$ are error terms.
 
-For a given dataset, the \textit{regression coefficients} and a single intercept term $\varepsilon$ can be estimated by a mathematical optimisation approach that tries to optimise for a given objective function. For example, it can minimise for the \textit{mean squared error}, i.e.,
-\[
-\min \quad MSE = \frac{1}{n} \sum_{i=1}^n\left(f(x_{i,1}, x_{i,2}, \ldots, x_{i,k}) - y_i\right)^2
-\]
-where $f$ is the linear function.
+%For a given dataset, the \textit{regression coefficients} and a single intercept term $\varepsilon$ can be estimated by a mathematical optimisation approach that tries to optimise for a given objective function. For example, it can minimise for the \textit{mean squared error}, i.e.,
+%\[
+%\min \quad MSE = \frac{1}{n} \sum_{i=1}^n\left(f(x_{i,1}, x_{i,2}, \ldots, x_{i,k}) - y_i\right)^2
+%\]
+%where $f$ is the linear function.
+
+For a given dataset, the regression coefficients and an intercept term $\varepsilon$ can be estimated.
+These estimated parameters can then be used to predict the dependent variable $y_i$ for new input variables $x_{i,j}$, not in the dataset.
+
+There are many algorithms for parameter estimation, with different aspects and trade-offs~\citep{seber12}.
+The linear regression model have been widely studied in the literature and describing specific algorithms for fitting the regression is out of the scope of this thesis.
+
 \section{Summary}
