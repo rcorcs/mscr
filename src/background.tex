@@ -302,7 +302,7 @@ The optimisation generator can be a fixed sequence of optimisations or a dynamic
     \label{fig:itercomp-diagram}
 \end{figure}
 
-Early work on {\itercomp} demonstrated its use for determining simultaneously optimal tile sizes and unroll factors for any given loop nest~\cite{kisuki00,knijnenburg04}.
+Early work on {\itercomp} have demonstrated its use for determining simultaneously optimal tile sizes and unroll factors for any given loop nest~\cite{kisuki00,knijnenburg04}.
 These two transformations are highly interdependent with a very irregular optimisation space, as both of them affect, in different ways, cache behaviour and instruction-level parallelism.
 Because of their close interaction, with non-trivial trade-offs, designing a static cost model, that enables the compiler to automatically select the best configuration, is a very laborious and impractical task.
 \cite{kisuki00} propose the use of {\itercomp} to address this problem, where it is able to outperform several static techniques.
@@ -322,7 +322,12 @@ They propose a mechanism that learns a predictive model from a training set of b
 This predictive model will later be used for predicting regions of the optimisation space that are more likely to contain promissing results.
 Their approach is able to significantly reduce the number of executions necessary for achieving good performance improvements with the iterative search.
 
-More recently, \cite{ogilvie17} 
+More recently, \cite{ogilvie17} have proposed a strategy based on active learning techniques in order to focus the search on promissing optimisation candidates.
+It avoids redundant candidates 
+by using high-quality models which based on a combination of optimisation settings to predict the runtime of the training benchmarks.
+
+The problem of reducing the optimisation space is out of the scope of this thesis.
+Having a better search strategy would only improve our mechanism for online {\itercomp}.
 
 %\section{Program Profiling}
 %\textbf{Basic background about profiling in general}
@@ -365,6 +370,8 @@ This \textit{greedy} heuristic have a complexity of $O(n\log{n} + n)$, or just $
 Although heuristics are not guaranteed to find the best solution, they usually tend to efficiently find good or close to optimal solutions.
 
 \section{Statistics}
+
+Confidence Intervals ...
 
 \subsection{Linear Regression}
 

@@ -27,7 +27,7 @@ Each worker performs the same the method for {\itercomp} used by \cite{chen10,ch
 However, because the optimisation is performed online, they usually consider a small evaluation dataset and a small number of compiler optimisations.
 
 \cite{fursin07} addressed the problem of comparing the effect of two optimisations on two distinct inputs.
-For that purpose, they proposed to use instruction per cycle (IPC) as the metric for performing such comparison.
+For that purpose, they proposed to use instructions per cycle (IPC) as the metric for performing such comparison.
 Their result show that using IPC seems promising as a robust metric for {\itercomp} across large input datasets.
 However, some specific optimisation techniques may affect the use of IPC as a robust metric, and specially IPC has been shown to provide poor performance estimation for multi-threaded programs~\citep{alameldeen06,eyerman08}.
 In particular, IPC can give a skewed performance measure if threads spend time in \textit{spin-lock loops} or other synchronisation mechanisms. 
