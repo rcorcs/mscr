@@ -450,7 +450,7 @@ Some of the benchmarks have DAGs with several hundreds of probes, which could re
 In some cases, the proposed relaxation can be very conservative, because it considers the static error of removing probe $P_i$ relative to the minimum work possible of a DAG, in order to be able to guarantee that the dynamic error will be bounded by a given threshold.
 This conservatism can be overly restrictive in some cases, resulting in a negligible overhead reduction but also causing only negligible dynamic error to the work profiling.
 
-In some cases, this overly restrictive conservatism may be unecessary.
+In some cases, this overly restrictive conservatism may be unnecessary.
 For these cases, we propose an adapted version of the relaxation algorithm that operates on the whole program.
 Traditionally, compilers optimisations are performed on the function-level, or at best on a per module basis.
 Whole program optimisation (WPO) means that the compiler considers all compilation units of the program and optimises them using the combined knowledge of how they are used together.
@@ -476,5 +476,6 @@ if $\Delta W$ is the work value for the whole program's execution, computed from
 \]
 
 Contrary to the per DAG relaxation, the whole program relaxation is not guaranteed to be bounded by the error threshold $M$,
-as it is dependent on the representativity of the profiling information that was provided.
+as it is dependent on the representativity%representativeness
+ of the profiling information that was provided.
 

@@ -95,7 +95,7 @@ It is common for the backend to also perform some low-level optimisations that t
 
 LLVM IR is a low-level RISC-like virtual instruction set.
 It differs from other intermediate representations (e.g. GCC's GENERICS or the most recent GCC's GIMPLE) as it is defined as a first class language with well-defined semantics.
-Beyond being implemented as a language, LLVM IR is actually defined in three isomorphic forms: the textual format above, an in-memory data structure inspected and modified by optimizations themselves, and an efficient and dense on-disk binary \textit{bitcode} format.
+Beyond being implemented as a language, LLVM IR is actually defined in three isomorphic forms: the textual format above, an in-memory data structure inspected and modified by optimisations themselves, and an efficient and dense on-disk binary \textit{bitcode} format.
 %The LLVM Project also provides tools to convert the on-disk format from text to binary: llvm-as assembles the textual .ll file into a .bc file containing the bitcode goop and llvm-dis turns a .bc file into a .ll file.
 
 Unlike most RISC instruction sets, LLVM is strongly typed with a simple language-independent type system.
@@ -104,7 +104,7 @@ This type system includes the type information used by sophisticated techniques,
 LLVM also offers instructions for performing type conversions and low-level address arithmetic while preserving type information.
 Furthermore, LLVM IR also differs from RISC instruction sets as some details of the machine are abstracted away.
 For example, the calling convention is abstracted through call and ret instructions and explicit arguments.
-Another significant difference from machine code is that the LLVM IR has an infinite set of virtual registers (which are named with a \% character), insted of having just a fixed set of named registers.
+Another significant difference from machine code is that the LLVM IR has an infinite set of virtual registers (which are named with a \% character), instead of having just a fixed set of named registers.
 
 The LLVM type system is considered one of the most important features of its intermediate representation, as it enables several optimisations to be performed directly on the IR, without having to do extra analyses on the side before the transformation.
 The main first class types supported are: single value types, aggregate types, and labels.
@@ -227,7 +227,7 @@ That is, for any given backedge $(u,v)$, the subgraph consisting of all paths wi
 \begin{figure}[h]
   \centering
   \includegraphics[scale=1]{figs/natural-loop.pdf}
-  \caption{Example of natural loop.}
+  \caption{Example of a natural loop.}
   \label{fig:natural-loops}
 \end{figure}
 
@@ -277,7 +277,7 @@ For example, when performing a series of function-level passes, it executes all 
 
 Notice however, that the Pass Manager executes the transformation passes in the exact same order as they were requested, as changing this order may result in a different code.
 Deciding on the best order to execute the transformation passes is a well known problem called the phase-ordering problem~\citep{touati06,kulkarni12,jantz14}.
-The phase-odering problem is not addressed by the Pass Manager.
+The phase-ordering problem is not addressed by the Pass Manager.
 
 \section{{\IterComp} and its Space Exploration}
 
@@ -319,10 +319,10 @@ Their results show that it is possible to reduce the number of executions by up 
 
 \cite{agakov06} suggest using machine learning techniques to speed up {\itercomp}.
 They propose a mechanism that learns a predictive model from a training set of benchmarks.
-This predictive model will later be used for predicting regions of the optimisation space that are more likely to contain promissing results.
+This predictive model will later be used for predicting regions of the optimisation space that are more likely to contain promising results.
 Their approach is able to significantly reduce the number of executions necessary for achieving good performance improvements with the iterative search.
 
-More recently, \cite{ogilvie17} have proposed a strategy based on active learning techniques in order to focus the search on promissing optimisation candidates.
+More recently, \cite{ogilvie17} have proposed a strategy based on active learning techniques in order to focus the search on promising optimisation candidates.
 It avoids redundant candidates 
 by using high-quality models which based on a combination of optimisation settings to predict the runtime of the training benchmarks.
 
@@ -362,7 +362,7 @@ These exact algorithms are mainly based on two approaches, namely branch-and-bou
 
 The branch-and-bound approaches usually consist in computing an upper bound for each node of the tree.
 This upper bound is then used to prune unpromising branches by comparing it to the current best solution.
-A common strategy is to sort all items in decreasing order of ratio of profit per unit weight, whcih allows for efficiently computing upper bounds using a \textit{greedy} approach and also tends to maximise pruning opportunities~\citep{martello77,martello00}.
+A common strategy is to sort all items in decreasing order of ratio of profit per unit weight, which allows for efficiently computing upper bounds using a \textit{greedy} approach and also tends to maximise pruning opportunities~\citep{martello77,martello00}.
 
 There are also many heuristics for efficiently selecting the sub-set of item while trying and maximise the total profit.
 For example, a \textit{greedy} heuristic tries to maximise the total profit by sorting all items based on their profit-weight ratio and then eagerly selecting all items allowed by the maximum capacity as it iterates over the sorted items, in a single pass~\citep{dantzig57}.

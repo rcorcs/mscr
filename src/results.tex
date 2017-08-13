@@ -88,7 +88,7 @@ In this section we evaluate the performance of the work instrumentation presente
 We first compare static aspects of the instrumentation algorithms.
 The naive instrumentation always has 100\% of the basic blocks instrumented, by definition.
 Figure~\ref{fig:num-probes} shows percentage of instrumented basic blocks for the optimal and the relaxed instrumentation with different relaxation thresholds.
-While Figure~\ref{fig:num-probes} compares the different instrumentation algorithms in respect of the naive instrumentation, Figure~\ref{fig:num-probes-improvement} shows the improvement of the relaxation algorithm over the optimial instrumentation.
+While Figure~\ref{fig:num-probes} compares the different instrumentation algorithms in respect of the naive instrumentation, Figure~\ref{fig:num-probes-improvement} shows the improvement of the relaxation algorithm over the optimal instrumentation.
 
 \begin{figure}[ht]
     \centering
@@ -131,7 +131,7 @@ This conservatism will be specially evident in the dynamic evaluation.
 In order to investigate the effects caused to the instrumentation when varying the relaxation threshold, we performed a full analysis of the reduction in the number of probes varying the threshold from 0\% up to 100\%, as presented in Figure~\ref{fig:instr-all-thresholds}.
 This figure shows the percentage of probes, instrumented basic blocks, over the total number of basic blocks.
 It is interesting to understand some of the aspects of these results.
-In some cases, when increasing the threshold, the number of probes also increased, e.g., as it is clearly noticable in the {\flagstype qsort} benchmark.
+In some cases, when increasing the threshold, the number of probes also increased, e.g., as it is clearly noticeable in the {\flagstype qsort} benchmark.
 This happens when the larger threshold allows the 0-1 knapsack solver exchange a large probes for fewer probes with higher execution frequency value but also higher static error.
 Figure~\ref{fig:instr-all-thresholds} also shows the 
 It is also interesting to notice the highly conservative aspect of the relaxation algorithm, as most benchmarks remain with more than 30\% of basic blocks instrumented, even with a 100\% relaxation threshold.
@@ -143,7 +143,7 @@ For the evaluation of the performance overhead that the instrumentation incur to
 For each benchmark, we compute the average overhead over all its 1000 input dataset.
 When measuring the wall-clock time for each input, in order to reduce noise, we execute the same input until we have a statistically sound measurement, i.e. we execute until we have an interval no larger than 1\% with 99\% confidence.
 Figure~\ref{fig:overhead-O3} shows the performance overhead imposed by the work instrumentation on the benchmarks when compared to their non-instrumented counterparts.
-Figure~\ref{fig:overhead-improvement-O3} shows the improvement of the relaxation algorithm over the optimial instrumentation, regarding the reduction in overhead.
+Figure~\ref{fig:overhead-improvement-O3} shows the improvement of the relaxation algorithm over the optimal instrumentation, regarding the reduction in overhead.
 
 \begin{figure}[ht]
     \centering
@@ -335,7 +335,7 @@ These optimisation sequences contain an average of 40 individual optimisation pa
 Repeating the same optimisation pass can be beneficial and usually expected by other passes.
 For example, the {\flagstype -loop-simplify} pass is used for transforming loops into a canonical form by inserting pre-header and exit basic blocks.
 Although this pass inserts jumps due to redundant basic blocks, this canonical form can be favourable to other loop optimisations.
-Because of the redundant basic blocks, this optimisation pass expects that the {\flagstype -simplifycfg} will eventually be executer later on the optimisation pipeline.
+Because of the redundant basic blocks, this optimisation pass expects that the {\flagstype -simplifycfg} will eventually be executor later on the optimisation pipeline.
 Another example of such inter-relation between transformations concerns the {\flagstype -licm} and {\flagstype -mem2reg} passes.
 The {\flagstype -licm} pass is responsible for moving invariant code out from the loop body. 
 It usually creates new local variables, using memory access operations, for assisting with the code manipulation, which means that the executing the {\flagstype -mem2reg} pass afterwards would be useful as a cleanup pass for removing the extra memory accesses generated.
@@ -343,7 +343,7 @@ However, many of the analysis required for identifying loop invariant also benef
 These examples illustrate the importance of repeating optimisation passes.
 Moreover, they illustrate the intricate relation amongst several transformations. 
 
-However, all optimisation sequences in the set of optimisations were generated completely at random, without using any knowlege of individual transformations.
+However, all optimisation sequences in the set of optimisations were generated completely at random, without using any knowledge of individual transformations.
 Each optimisation sequence was generated in two steps: \textit{(1)} randomly selects the number of flags; \textit{(2)} randomly selects the flags, allowing repetitions.
 Afterwards, this randomly generated optimisation sequence would be included in the set of optimisation sequences only if it was able to improve the performance of a training benchmark, also selected at random, in respect of the {\flagstype -O3} default optimisation.
 This process was repeated until we obtained all the 500 distinct optimisation sequences.
@@ -448,17 +448,17 @@ removes basic blocks with no predecessors;
 eliminates PHI nodes for basic blocks with a single predecessor; etc.
 This pass makes use of LLVM's built-in cost model to decide when it is beneficial for performing such transformations.
 
-\noindent\textbf{Canonicalize Natural Loops ({\flagstype -loop-simplify}):}
+\noindent\textbf{Canonicalise Natural Loops ({\flagstype -loop-simplify}):}
 This pass performs several transformations to convert natural loops into a simpler form, which makes subsequent analyses and transformations simpler and more effective.
 Loop pre-header insertion guarantees that there is a single, non-critical entry edge from outside of the loop to the loop header.
 This simplifies a number of analyses and transformations, such as Loop Invariant Code Motion (LICM).
 Loop exit-block insertion guarantees that all exit blocks from the loop (blocks which are outside of the loop that have predecessors inside of the loop) only have predecessors from inside of the loop (and are thus dominated by the loop header). This simplifies transformations such as store-sinking that are built into LICM.
 This pass also guarantees that loops will have exactly one backedge.
-Note that the {\flagstype -simplifycfg} pass will clean up blocks which are split out but end up being unnecessary, so usage of this pass should not pessimize generated code.
+Note that the {\flagstype -simplifycfg} pass will clean up blocks which are split out but end up being unnecessary, so usage of this pass should not pessimise generated code.
 
 \noindent\textbf{Unroll Loops ({\flagstype -loop-unroll}):}
 This pass implements a simple loop unroller.
-It works best when loops have been canonicalized by the {\flagstype -indvars} pass, allowing it to determine the trip counts of loops easily.
+It works best when loops have been canonicalised by the {\flagstype -indvars} pass, allowing it to determine the trip counts of loops easily.
 This pass makes use of LLVM's built-in cost model to estimate the computational cost of both rolled and unrolled loops, which enables it to perform loop unrolling only when it is profitable.
 
 \subsubsection{Dead Code Elimination}
@@ -483,7 +483,7 @@ This is similar to SCCP, except applied to the liveness of values.
 \noindent\textbf{Combine redundant instructions ({\flagstype -instcombine}):}
 Combine instructions to form fewer, simple instructions, by means of algebraic simplifications.
 This is a simple worklist driven algorithm, in a peephole fashion.
-Some of the simplifications and canonicalizations are:
+Some of the simplifications and canonicalisations are:
 Constant operands are moved to the right-hand side of commutative binary operations;
 Multiplications with a constant power-of-two argument are transformed into shifts;
 All compare instructions on boolean values are replaced with logical operations.
@@ -505,20 +505,20 @@ It is a good idea to run a Dead Instruction Elimination pass sometime after runn
 
 \subsubsection{Other Frequent Transformations}
 
-\noindent\textbf{MemCpy Optimization ({\flagstype -memcpyopt}):}
+\noindent\textbf{MemCpy Optimisation ({\flagstype -memcpyopt}):}
 This pass performs various transformations related to eliminating {\flagstype memcpy} calls, or transforming sets of stores into \texttt{memsets}.
 
 \noindent\textbf{Promote Memory to Register ({\flagstype -mem2reg}):}
 This file promotes memory references to be register references. It promotes alloca instructions which only have loads and stores as uses. An alloca is transformed by using dominator frontiers to place phi nodes, then traversing the function in depth-first order to rewrite loads and stores as appropriate. This is just the standard SSA construction algorithm to construct “pruned” SSA form.
 
-\noindent\textbf{Basic-Block Vectorization ({\flagstype -bb-vectorize}):}
+\noindent\textbf{Basic-Block Vectorisation ({\flagstype -bb-vectorize}):}
 This pass combines instructions inside basic blocks to form vector instructions.
 The algorithm was inspired by that used by \cite{franchetti05}.
-It iterates over each basic block, attempting to pair compatible instructions, repeating this process until no additional pairs are selected for vectorization.
-When the outputs of some pair of compatible instructions are used as inputs by some other pair of compatible instructions, those pairs are part of a potential vectorization chain.
+It iterates over each basic block, attempting to pair compatible instructions, repeating this process until no additional pairs are selected for vectorisation.
+When the outputs of some pair of compatible instructions are used as inputs by some other pair of compatible instructions, those pairs are part of a potential vectorisation chain.
 Instruction pairs are only fused into vector instructions when they are part of a chain longer than some threshold length.
 Moreover, the pass attempts to find the best possible chain for each pair of compatible instructions.
-These heuristics are intended to prevent vectorization in cases where it would not yield a performance increase of the resulting code.
+These heuristics are intended to prevent vectorisation in cases where it would not yield a performance increase of the resulting code.
 
 %\end{description}
 
