@@ -509,7 +509,9 @@ It is a good idea to run a Dead Instruction Elimination pass sometime after runn
 This pass performs various transformations related to eliminating {\flagstype memcpy} calls, or transforming sets of stores into \texttt{memsets}.
 
 \noindent\textbf{Promote Memory to Register ({\flagstype -mem2reg}):}
-This file promotes memory references to be register references. It promotes alloca instructions which only have loads and stores as uses. An alloca is transformed by using dominator frontiers to place phi nodes, then traversing the function in depth-first order to rewrite loads and stores as appropriate. This is just the standard SSA construction algorithm to construct “pruned” SSA form.
+This file promotes memory references to be register references.
+It promotes \lstinline[language=llvm,style=nasm]{alloca} instructions which only have loads and stores as uses.
+An \lstinline[language=llvm,style=nasm]{alloca} is transformed by using dominator frontiers to place phi nodes, then traversing the function in depth-first order to rewrite loads and stores as appropriate. This is just the standard SSA construction algorithm to construct ``pruned'' SSA form.
 
 \noindent\textbf{Basic-Block Vectorisation ({\flagstype -bb-vectorize}):}
 This pass combines instructions inside basic blocks to form vector instructions.

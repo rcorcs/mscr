@@ -344,8 +344,9 @@ Figure~\ref{fig:relax-instr-diagram} shows an overview of the relaxed instrument
 The highlighted step is introduced by the relaxed instrumentation on top of the previously defined optimal work instrumentation algorithm.
 The relaxed instrumentation performs a post-processing on the resulting instrumentation of the optimal algorithm.
 The relaxation starts by extracting DAGs (directed acyclic graphs) from the CFG, as illustrated in Figure~\ref{fig:cfg-relax-example}.
-The algorithm extracts all the subgraphs that represent a loop or the outer most region of the function.
-These subgraphs are transformed into DAGs by ignoring the back edge and also by considering that any loop within the subgraph is never executed, i.e., only the headers of the inner loops are actually included into the DAG.
+First, the algorithm extracts all the subgraphs that represent a loop or the outer most region of the function.
+Section~\ref{sec:natural-loops} explains how loops can be identified in the CFG.
+Afterwards, these subgraphs are transformed into DAGs by ignoring the backedge and also by considering that any loop within the subgraph is never executed, i.e., only the headers of the inner loops are actually included into the DAG.
 Figure~\ref{fig:cfg-relax-example} shows a CFG partitioned into two DAGs (consider only basic blocks and edges completely inside the yellow and green boundaries).
 %
 %LLVM has a Scalar Evolution Analysis which is used primarily to analyse expressions involving induction variables in loops~\cite{pop05}.

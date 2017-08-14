@@ -174,8 +174,8 @@ This implementation avoids using the $\phi$-function by keeping the answer on th
 This is the preferred way of generating LLVM code by most frontends, as it simplifies the frontend's own implementation without incurring any serious detriment to the generated code.
 
 LLVM provides an optimisation pass for promoting memory references to be register references (called \texttt{-mem2reg}).
-It promotes alloca instructions which only have loads and stores as uses.
-An alloca is transformed by using dominator frontiers to place phi nodes, then traversing the function in depth-first order to rewrite loads and stores as appropriate.
+It promotes \lstinline[language=llvm,style=nasm]{alloca} instructions which only have loads and stores as uses.
+An \lstinline[language=llvm,style=nasm]{alloca} is transformed by using dominator frontiers to place phi nodes, then traversing the function in depth-first order to rewrite loads and stores as appropriate.
 
 \begin{lstlisting}[language=llvm,style=nasm,caption={An example of the odd\_inc function implemented using data allocated on the stack frame.}, label={lst:ex:odd_inc_stack}]
 define i32 @odd_inc_stack(i32 %arg) {
@@ -213,7 +213,7 @@ if.end:
 %The GCC back end has similar problems, so they also need to know bits and pieces of how the RTL back end works as well.
 %Finally, GCC doesn't have a way to dump out "everything representing my code", or a way to read and write GIMPLE (and the related data structures that form the representation of the code) in text form. The result is that it is relatively hard to experiment with GCC, and therefore it has relatively few front ends.
 
-\subsubsection{Dominators and Natural Loops}
+\subsubsection{Dominators and Natural Loops} \label{sec:natural-loops}
 
 A basic block $u$ dominates another basic block $v$ if and only if all paths 
 to $v$ must also contain $u$.
