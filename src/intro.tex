@@ -32,24 +32,34 @@ Because programs can exhibit behaviours that differ greatly depending on the inp
 %We can extend the same argument when optimising the code for performance.
 using a single input for {\itercomp} can produce poor performance when executed with different inputs.
 
-Recent work have been studying the impact of using multiple input datasets
-for performing {\itercomp}.
+Recent work have been studying the impact of using multiple input datasets for performing {\itercomp}.
 This previous work suggests that optimising based on a representative range of input datasets allows for selecting a robust compiler optimisation that produces good performance in real scenarios where the input is expected to change constantly~\citep{haneda06,fursin07,chen10,chen12a,chen12b,fang15,mpeis16}.
 Their results show that a limited number of input datasets may be sufficient to obtain a well optimised program for a wider range of different inputs~\citep{haneda06,fursin07,chen10,chen12a}.
-
 Finding such a robust combination of compiler optimisations by means of {\itercomp} across a large range of inputs may be very time consuming.
-In order to speed up this process we intend to reduce the number of actual executions during the exploration of the optimisation space without much degradation of the final selected optimisation.
+%In order to speed up this process we intend to reduce the number of actual executions during the exploration of the optimisation space without much degradation of the final selected optimisation.
 
-In this work, our main goal is to enable {\itercomp} in \textit{online} scenarios with the restriction of executing distinct inputs only once, while targeting optimal performance across different inputs.
+\section{{\IterComp} in Online Scenarios}
+
+In this work, our main goal is to enable {\itercomp} in \textit{online} scenarios.
+For the purposes of this thesis, we define the online scenario as having the restriction that programs execute multiple inputs and distinct inputs are executed only once.
+%while targeting optimal performance across different inputs.
 This online aspect is usually found in mobile and data centre platforms~\citep{chen12b,fang15,mpeis16}, where the goal is to optimise programs based on the workload of a particular user (or group of users) between executions.
+Online {\itercomp} must target optimal performance across different inputs.
 
-Measuring just execution time, for example, is useful only if the amount of work is constant between executions with different inputs.
-For this reason, we propose the use of a work-based metric in order to compare the performance of different optimisations across multiple executions of the program with distinct inputs.
+Because of the restriction of having a single execution per input, it is not possible to measure speedup for comparing optimisations.
+On the other hand, measuring just execution time, for example, is useful only if the amount of work is constant between executions with different inputs.
+While previous work have suggested using \textit{instructions per cycle} (IPC) for performing {\itercomp} in \textit{online} scenarios, IPC have no correlation with speedup~\citep{fursin07}.
 
-Because of the restriction of not repeating inputs, we instrument the program for measuring the amount of work it performed during its execution.
+In order to address this challenge, we propose the use of a work-based metric to compare the performance of different optimisations across multiple executions of the program with distinct inputs.
+We instrument the program for measuring the amount of work it performed during its execution.
 Having a low overhead instrumentation is essential in this online scenario for two main reasons:
 $(i)$ the user is directly affected by large overheads;
 $(ii)$ a highly intrusive instrumentation can have a significant impact on the effect of the optimisations.
+With the purpose of reducing profiling overheads, we propose two relaxation algorithms which provides a trade-off between measurement accuracy and overhead.
+The first is a relaxation algorithm that operates on the level of regions of functions, while the second performs the relaxation considering the whole program at the same time.
+
+Our experimental evaluation shows that performing online {\itercomp} guided by the work-based performance (WP) metric good results compared to the oracle, which is allowed to execute each input multiple times in order to use the actual speedup for guiding the {\itercomp}.
+Online {\itercomp} guided by the WP metric is able to achieve an average of 7.5\% and a maximum of 33\% improvement over the standard {\flagstype -O3} optimisation.
 
 \section{Contributions}
 
@@ -59,13 +69,24 @@ $(ii)$ a highly intrusive instrumentation can have a significant impact on the e
 %\item We propose a relaxed instrumentation for low overhead profiling, with a controlled trade-off between accuracy and overhead.
 %\end{itemize}
 
-The main contributions of this thesis are the following:
+To summarise, the main contributions of this thesis are the following:
 \begin{itemize}
 \item We propose the use of a work-based performance (WP) metric for comparing different optimised versions of a program.
       In particular, we use the WP metric to guide {\itercomp} in an online scenario, where the program is expected to execute only once for distinct inputs.
+       
 \item Contrary to what previous work have suggested, we show that instructions per cycle (IPC) is not a good metric for online {\itercomp}.
 \item We adapt the block frequency profiling in order to measure the WP metric.
 \item A relaxation algorithm is proposed for lowering the overhead of the work profiling, with a controlled trade-off between accuracy and overhead.
 \item A whole program relaxation is proposed in order to further reduce the overhead of the work profiling.
-
 \end{itemize}
+
+\section{Thesis Outline}
+
+The remaining of this thesis is structured as follows.
+Chapter~\ref{chap:background} provides background information with basic concepts and theory used in this thesis
+Chapter~\ref{chap:related} presents related work regarding {\itercomp} using multiple inputs or applied in online scenarios,
+profiling of work-related metrics or input size, and algorithms related to optimal profiling.
+Our main contributions are divided into two chapters.
+First, Chapter~\ref{chap:oic} presents both the work-based performance metric and the architecture for online {\itercomp}.
+Second, Chapter~\ref{chap:instr} describes the work profiling and techniques for reducing its overheads.
+An experimental evaluation is provided in Chapter~\ref{chap:eval} with our final remarks in Chapter~\ref{chap:conclusion}.
