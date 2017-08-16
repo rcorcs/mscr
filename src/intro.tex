@@ -60,6 +60,8 @@ The first is a relaxation algorithm that operates on the level of regions of fun
 
 Our experimental evaluation shows that performing online {\itercomp} guided by the work-based performance (WP) metric good results compared to the oracle, which is allowed to execute each input multiple times in order to use the actual speedup for guiding the {\itercomp}.
 Online {\itercomp} guided by the WP metric is able to achieve an average of 7.5\% and a maximum of 33\% improvement over the standard {\flagstype -O3} optimisation.
+Moreover, the experiments regarding the work profiling show that both relaxation algorithms are able to significanly reduce the profiling overhead while incurring a dynamic error of less than 5\% in the work measurement.
+The whole program relaxation achieves an average of $2\times$ reduction in the overhead compared with the optimal profiling technique, while the more conservative relaxation that operates per region achieves an average improvement of 40\% over the optimal profiling.
 
 \section{Contributions}
 
@@ -85,7 +87,7 @@ To summarise, the main contributions of this thesis are the following:
 The remaining of this thesis is structured as follows.
 Chapter~\ref{chap:background} provides background information with basic concepts and theory used in this thesis
 Chapter~\ref{chap:related} presents related work regarding {\itercomp} using multiple inputs or applied in online scenarios,
-profiling of work-related metrics or input size, and algorithms related to optimal profiling.
+profiling of work-based metrics or input size, and algorithms related to optimal profiling.
 Our main contributions are divided into two chapters.
 First, Chapter~\ref{chap:oic} presents both the work-based performance metric and the architecture for online {\itercomp}.
 Second, Chapter~\ref{chap:instr} describes the work profiling and techniques for reducing its overheads.

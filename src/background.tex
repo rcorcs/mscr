@@ -355,7 +355,7 @@ x_i\in\{0,1\}, i\in\{1,\ldots,n\}
 \]
 where $x_i$ takes a value 1 if and only if item $i$ is packed.
 
-Because it is an NP-hard problem, there is no algorithm with polynomial-time complexity on all cases.
+Because it is an NP-hard problem, there is no known algorithm with polynomial-time complexity on all cases.
 The brute force algorithm evaluates all sub-sets of the items, resulting in a search over a full binary tree with complexity of $O(2^n)$.
 However, this problem have been thoroughly studied and several exact algorithms for its solution have been proposed in the literature.
 These exact algorithms are mainly based on two approaches, namely branch-and-bound or dynamic programming~\citep{martello77,martello99}.
@@ -364,7 +364,7 @@ The branch-and-bound approaches usually consist in computing an upper bound for 
 This upper bound is then used to prune unpromising branches by comparing it to the current best solution.
 A common strategy is to sort all items in decreasing order of ratio of profit per unit weight, which allows for efficiently computing upper bounds using a \textit{greedy} approach and also tends to maximise pruning opportunities~\citep{martello77,martello00}.
 
-There are also many heuristics for efficiently selecting the sub-set of item while trying and maximise the total profit.
+There are also many heuristics for efficiently selecting the sub-set of items while trying to maximise the total profit.
 For example, a \textit{greedy} heuristic tries to maximise the total profit by sorting all items based on their profit-weight ratio and then eagerly selecting all items allowed by the maximum capacity as it iterates over the sorted items, in a single pass~\citep{dantzig57}.
 This \textit{greedy} heuristic have a complexity of $O(n\log{n} + n)$, or just $O(n\log{n})$ for short.
 Although heuristics are not guaranteed to find the best solution, they usually tend to efficiently find good or close to optimal solutions.

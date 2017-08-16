@@ -1,6 +1,12 @@
 \chapter{Related Work}\label{chap:related}
 
-\section{{\IterComp}}
+This chapter discuss related work regarding the main contributions of this thesis.
+Section~\ref{sec:related-ic} presents previous work on {\itercomp} that consider online scenarios, optimisation across multiple inputs, or related challenges.
+In Section~\ref{sec:related-metrics}, we discuss related work that propose work-based metrics for different purposes.
+Finally, Section~\ref{subsec:optimalInstrumentation} presents the main literature on optimal profiling.
+
+
+\section{{\IterComp}}\label{sec:related-ic}
 
 Until recently, most of existing work  had been focusing on finding the best optimisation through repeated runs using a single input.
 Although they demonstrate the potential of {\itercomp}, in real scenarios the user rarely executes the same input dataset multiple times~\citep{bodin98,kisuki99,stephenson03,kulkarni04,agakov06}.
@@ -35,13 +41,15 @@ Some existing work on performance assessment suggest that total execution time s
 \cite{alameldeen06} in particular suggest that a simple work-related metric should be used if the unit of work is representative enough.
 Work-related metrics have already been largely used for measuring performance of throughput-oriented applications, for other applications, however, choosing an appropriate unit of work can be more challenging~\citep{alameldeen06}.
 
-\section{Work and Input Size Metrics}
+\section{Work and Input Size Metrics}\label{sec:related-metrics}
 
-\textbf{Talk about work-based metrics}
+In the context of computer architecture research, \cite{alameldeen06} suggested work-based metrics as a substitute for IPC.
+In particular, they propose the use of both \textit{time per work unit} and \textit{work units per time}.
+For example, they suggest a metric based on transactions per minute for throughput-oriented applications.
+For iterative scientific applications, they suggest to measure time per iteration.
+Choosing an appropriate unit of work is a key aspect to enable work-based metrics to accurately predict performance~\citep{alameldeen06}. 
 
-\citep{mcgeoch07}
-
-Previous work have proposed profiling-based mechanism to estimate input sizes~\citep{zaparanuks12,coppa14}.
+In the context of experimental algorithmics, previous work have proposed profiling-based techniques to estimate input sizes~\citep{mcgeoch07,zaparanuks12,coppa14}.
 \cite{coppa14} in particular propose the concept of \textit{read memory size} for automatically estimating the size of the input passed to a routine, where \textit{read memory size} represents the number of distinct memory cells first accessed by a read operation.
 In other words, the \textit{read memory size} metric measures the size of the useful portion of the input's memory footprint.
 However, because we are interested in the amount of computational work performed in respect of a given input, the memory footprint of the input may not always have a direct correspondence to  the amount of computational work.
@@ -51,21 +59,20 @@ Block frequency is a relative metric that represents the number of times a basic
 They argue in favour of block frequency due to its portability, repeatability and exactness, since it does not suffer from timer resolution problems or non-deterministic noises.
 Block frequency also has the advantage of being efficiently profiled by means of automatic code instrumentation~\citep{knuth73,ball94}.
 
-However, in the context of comparing different optimisations, although block frequency would be able to capture aspects of optimisations that simplify the control-flow graph (CFG), measuring work at the basic block resolution would not capture effects of optimisations at the instruction level.
-Because of that, we extend the idea of using basic block frequency to measure computational work by also considering the computational cost of each basic block.
+However, in the context of comparing different compiler optimisations, although block frequency would be able to capture aspects of optimisations that simplify the control-flow graph (CFG), measuring work at the basic block resolution would not capture effects of optimisations at the instruction level.
+Because of that, in this thesis, we extend the idea of using basic block frequency to measure computational work by also considering the computational cost of each basic block.
 The computational cost of a basic block is given by weighting the instructions that it contains.
 
 \section{Program Profiling} \label{subsec:optimalInstrumentation}
 
-\textbf{TODO: }
 Program profiling concerns with the acquisition of dynamic information collected during the program's execution.
-Since early work, program profiling has been used mainly to find performance bottleneck and to focus optimisations.
+Since early work, program profiling has been used mainly to find performance bottlenecks and to focus optimisations.
 \cite{knuth71} introduces program profiling as a table of frequency counts that records execution frequency of each statement during a typical run of a program.
-This program profiling 
-\cite{knuth71} profiles the execution frequency of each FORTRAN statement during the execution of representative programs.
+%\cite{knuth71} profiles the execution frequency of each FORTRAN statement during the execution of representative programs.
+Since then, program profiling have been widely used in optimising compilers.
+For example, most of the industrial-strength compilers provide block frequency profiling, where it records the execution frequency of each basic block in the program.
 
-
-In order to profile  block frequency, the program can be instrumented with counters that determine how many times each basic block in a program executes.
+In order to profile block frequency, the program can be instrumented with counters that determine how many times each basic block in a program executes.
 A naive instrumentation would consist basically of having a counter for each basic block which is incremented every time the basic block is reached.
 Although the naive instrumentation was commonly used in practice~\citep{knuth71}, it is a very invasive instrumentation that imposes an unnecessarily high overhead in the instrumented program.
 An optimal instrumentation based on the principle of \textit{conservation of flow} (\textit{Kirchhoff's first law}\footnote{Gustav Kirchhoff defined two equalities about electric circuits, known as Kirchhoff's circuit laws. The first one is about current and and the second about potential difference.}) have been originally proposed by \cite{nahapetian73} and \cite{knuth73}.
@@ -82,13 +89,9 @@ Previous work have shown that a set of edges represents the minimum number of pr
 In other words, after determining a spanning tree of the CFG, probes need to be placed only in the edges from the complement of a spanning tree, usually called \textit{cotree}.
 Because the edge frequencies satisfy Kirchhoff's first law, each edge flow can be uniquely determined as an algebraic sum of the known edge flows from the cotree~\citep{nahapetian73,ball94}.
 
-The optimal block-frequency instrumentation happens in two main stages:
-\textit{(i.) Before execution.} The code is instrumented with the edge counters, i.e., it requires one global counter for each edge selected to contain a probe.
-\textit{(ii.) After execution.} The information from the recorded probes is propagated in the CFGs of the program.
-\lstlistingname~\ref{lst:populateEdgeFlows} shows the algorithm for the post-processing of a CFG, which requires the profiling information collected by the probes.
-
-\begin{lstlisting}[caption={Post-processing of the CFG for populating all edge flows based on the collected probes.}, label={lst:populateEdgeFlows}, float]
-// Inputs: CFG with the known edges flows from the cotree (collected probes).
+\begin{lstlisting}[caption={Post-processing of the CFG for populating all edge flows based on the collected probes.}, label={lst:populateEdgeFlows}]
+// Inputs: CFG with the known edges flows from
+//         the cotree (collected probes).
 // Output: Updated CFG with all edge flows.
 populateEdgeFlows(G) {
   changed = true
@@ -113,6 +116,11 @@ populateEdgeFlows(G) {
         changed = true
 }
 \end{lstlisting}
+
+The optimal block-frequency instrumentation happens in two main stages:
+\textit{(i.) Before execution.} The code is instrumented with the edge counters, i.e., it requires one global counter for each edge selected to contain a probe.
+\textit{(ii.) After execution.} The information from the recorded probes is propagated in the CFGs of the program.
+\lstlistingname~\ref{lst:populateEdgeFlows} shows the algorithm for the post-processing of a CFG, which requires the profiling information collected by the probes.
 
 \lstlistingname~\ref{lst:populateEdgeFlows} is guaranteed to terminate because the probed edge flows on the complement of a spanning tree are necessary and sufficient to compute all edge flows~\citep{nahapetian73,forman81}.
 Intuitively, if all the edge flows are known for the complement of a spanning tree then at any leaf of the spanning tree there is only one unknown edge flow.
@@ -139,6 +147,7 @@ LLVM implements Kruskal's algorithm using the union-find data structure~(see \ls
 for computing the maximum spanning tree of the CFG.
 Only edges in the cotree are instrumented.
 
+%\newpage 
 \begin{lstlisting}[caption={Optimal placement of probes for block frequency.}, label={lst:instrumentCFG}]
 // Input: CFG	
 instrumentCFG(G) {
@@ -208,7 +217,6 @@ The \textit{ad-hoc} heuristics defined by \cite{ball93} are:
 This algorithm is able to combine several heuristics of the outcome of a branch into an estimated probability of the branch being taken.
 \cite{wu94} use the \textit{ad-hoc} heuristics defined by \cite{ball93} as their initial predictions.
 They also use the Dempster-Shafer theory~\citep{shafer76} that provides the necessary mathematical technique for combining evidences from the different heuristics in order to produce more accurate estimates.
-These branch probabilities can then be used to estimate execution frequencies
-for all the edges in a CFG.
+These branch probabilities can then be used to estimate execution frequencies for all the edges in a CFG.
 
 \section{Summary}

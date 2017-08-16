@@ -1,13 +1,13 @@
 \chapter{Work Instrumentation} \label{chap:instr}
 
-In this section we describe how the computation of the work-metric can be performed during runtime by means of instrumenting the code.
+In this chapter we describe how the computation of the work-metric can be performed during runtime by means of instrumenting the code.
 In particular, we adapt the optimal algorithm proposed originally for block-frequency profiling~\citep{nahapetian73,knuth73,ball94}.
 Afterwards, we propose a relaxed instrumentation that focus on further reducing the overhead by considering the trade-off between profiling accuracy and instrumentation overhead.
 
 Because we define work as a linear equation on the block-frequency counters, it is possible to embed its computation into the execution of the program.
 A naive instrumentation would consist basically of having a global counter that starts with the interception value, $\varepsilon$, and each basic block increments its own cost into the global counter.
 Although this instrumentation is easily implemented, it imposes a large overhead on the instrumented program.
-However, it is possible to insert fewer probes by carefully placing the probes in a way that is possible to reconstruct the complete profiling information~\cite{knuth73,ball94}.
+However, it is possible to insert fewer probes by carefully placing the probes in a way that is possible to reconstruct the complete profiling information~\citep{knuth73,ball94}.
 
 \begin{figure}[h]
   \centering
@@ -18,8 +18,8 @@ However, it is possible to insert fewer probes by carefully placing the probes i
 
 We adapt the optimal block-frequency instrumentation in order to perform the work profiling efficiently.
 The proposed work instrumentation differs from the optimal block-frequency instrumentation as the latter occurs in two stages:
-\textit{(i.) Before execution.} The code is instrumented with counters for each probe.
-\textit{(ii.) After execution.} The information from the recorded probes is propagated in the CFGs of the program.
+\textit{(i.) Before execution:} The code is instrumented with counters for each probe.
+\textit{(ii.) After execution:} The information from the recorded probes is propagated in the CFGs of the program.
 In contrast, the work instrumentation has a single counter and it only requires the instrumentation before execution, without any post-processing of the recorded profiling.
 
 Figure~\ref{fig:instr-diagram} shows a high-level overview of the complete work instrumentation algorithm.

@@ -1,6 +1,10 @@
 
 \chapter{Online {\IterComp}}\label{chap:oic}
 
+This chapter describes the overall architecture for the online {\itercomp} guided by the work-based performance metric.
+Section~\ref{sec:metric} defines the work-based performance metric, with a focus on how it enables the comparison between different optimised versions of a program.
+Section~\ref{sec:oic-infra} details the infrastrcture necessary for performing online {\itercomp}.
+
 \section{Work-based Performance Metric}\label{sec:metric}
 
 In this section we define the work-based performance (WP) metric proposed for comparing different optimised versions of a program when executing with different inputs.
@@ -12,14 +16,16 @@ We define the performance metric as the ratio between the amount of \textit{work
 %The hypothesis is that, given two optimisations $o_1$ and $o_2$, a program compiled with optimisation $o_2$ would \textit{consistently} perform better than when it is compiled with $o_1$, i.e., $o_1 \tilde{<}_p \, o_2$, if it performs more \textit{work} per unit of time when compiled with $o_2$ instead of $o_1$. 
 By measuring the amount of \textit{work} done per unit of time we reduce the impact of input-dependent aspects and focus instead on the efficiency of the optimised program.
 For this metric, the main challenge is to precisely define what represents \textit{work}.
+As discussed in Section~\ref{sec:related-metrics}, many work metrics have been presented in the literature, such as block frequency and others.
+However, for comparing the performance benefits of different compiler optimisations on a program, although block frequency would be able to capture aspects of optimisations that simplify the control-flow graph (CFG), we argue that measuring work only at the basic block resolution would not be enough for capturing the effects of optimisations at the instruction level.
+For this reason, we extend the idea of using basic block frequency to measure computational work by also considering the computational cost of each basic block.
 
 %For that purpose, we intend to use profiling techniques to measure the input size and amount of computation performed on the execution path triggered by the input~\cite{ball94,ball96,zaparanuks12,coppa14}.
-
 %In addition to being useful for speeding up {\itercomp} across a large number of different inputs, this metric based on comparing work-based efficiencies could
 %potentially be used for applying {\itercomp} \textit{online}.
 %However, the overhead for estimating the amount of \textit{work} must be low enough for the performance gains to be beneficial.
-
-We model the computational work $\Delta W$ as a linear equation based on block frequency information and a cost model of the instruction set.
+To this end, we model the computational work $\Delta W$ as a linear equation based on block frequency information and a cost model of the instruction set.
+Formally,
 \[
 \Delta W = \varepsilon + \sum_{B} w(B)f(B)
 \]
@@ -30,9 +36,12 @@ w(B) = \sum_{i} w_i N_B(i)
 \]
 where $w_i$ is the cost of instruction $i$ and $N_B(i)$ is the number of occurrences of instruction $i$ in basic block $B$.
 
-In this simplified model, we consider that $w_i$ is constant across all programs and executions in the given target platform.
-However, $N_B(i)$ is program dependent but constant across executions, while $f(B)$ is both program and execution dependent, since $f(B)$ can change when executing with different inputs.
-In other words, $N_B(i)$ is a static value known at compile-time and $f(B)$ is a dynamic value known only at run-time.
+In this simplified model, we consider that $w_i$ is constant across all programs and executions, varying only between target architectures.
+On the other hand, $N_B(i)$ is a program-dependent static value known which is known at compile-time and $f(B)$ is a dynamic value known only at run-time,
+since $f(B)$ is both program and execution dependent as the execution frequency of a basic block can change when executing with different inputs.
+%However, $N_B(i)$ is program dependent but constant across executions, while $f(B)$ is both program and execution dependent, since $f(B)$ can change when executing with different inputs.
+%In other words, $N_B(i)$ is a static value known at compile-time and $f(B)$ is a dynamic value known only at run-time.
+
 %If we define $x_i$ as
 %\[
 %x_i = \sum_{B\in P} N_B(i)f(B)
@@ -68,6 +77,8 @@ In order to fit the linear model, we measure the wall-clock time when executing 
 For these measurements, the training benchmarks are compiled without optimisation.
 The reason for using no optimisation is because it allows to use the trained cost model for computing a work metric which is independent of optimisations, as we explained in Section~\ref{}.
 
+Our cost model has a total of 52 LLVM instructions\footnote{We do not model all LLVM instructions because some instructions are more common in optimised programs, such as the vector instructions.}.
+
 \begin{figure}[htb]
     \centering
     \includegraphics[width=0.9\linewidth]{figs/cost-model.pdf}
@@ -89,7 +100,7 @@ the IPC metric is computed solely on the final optimised program.
 For different optimisations of the same program, both the number of instructions and the number of cycles can change for the same input.
 On the other hand, WP computes the amount of work based on the unoptimised program, which means that it always consider the same amount of work for the same input, regardless of the optimisations applied on the program.
 
-For this reason, higher IPC does not necessarily translates to shorter execution time.
+For this reason, higher IPC does not necessarily translate to shorter execution time.
 We can illustrate this fact with an example as shown in Table~\ref{}.
 Although program P1 has twice the IPC of P2, P1 is one cycle slower than P2.
 As this example illustrates, the IPC metric can be misleading when compared different versions of the same program.
@@ -105,7 +116,7 @@ Number of Cycles       & 5  & 4   \\
 IPC                    & 1  & 0.5 \\
 \hline
 \end{tabular}
-\caption{Example that illustrates that a higher IPC does not necessarily translates to shorter execution time.}
+\caption{Example that illustrates that a higher IPC does not necessarily translate to shorter execution time.}
 \label{tab:ipc-example}
 \end{table}
 
