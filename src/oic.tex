@@ -37,7 +37,7 @@ w(B) = \sum_{i} w_i N_B(i)
 where $w_i$ is the cost of instruction $i$ and $N_B(i)$ is the number of occurrences of instruction $i$ in basic block $B$.
 
 In this simplified model, we consider that $w_i$ is constant across all programs and executions, varying only between target architectures.
-On the other hand, $N_B(i)$ is a program-dependent static value known which is known at compile-time and $f(B)$ is a dynamic value known only at run-time,
+On the other hand, $N_B(i)$ is a program-dependent static value which is known at compile-time and $f(B)$ is a dynamic value known only at run-time,
 since $f(B)$ is both program and execution dependent as the execution frequency of a basic block can change when executing with different inputs.
 %However, $N_B(i)$ is program dependent but constant across executions, while $f(B)$ is both program and execution dependent, since $f(B)$ can change when executing with different inputs.
 %In other words, $N_B(i)$ is a static value known at compile-time and $f(B)$ is a dynamic value known only at run-time.
@@ -67,6 +67,9 @@ since $f(B)$ is both program and execution dependent as the execution frequency 
 
 \subsection{Estimating a Cost Model of the Instructions}
 
+Our cost model has a total of 52 LLVM instructions\footnote{We do not model all LLVM instructions because some instructions are more common in optimised programs, such as the vector instructions.}.
+
+
 Similarly to previous work~\citep{giusto01,powell09,brandolese11}, we derive the cost model of the instruction set by modelling the problem as a multi-variable linear regression, where the \textit{regression coefficients} are the costs of the instructions and the \textit{regressors} are computed as $\sum_B N_B(i)f(B)$ for each instruction $i$.
 \[
 \Delta W = \varepsilon + \sum_{i} \left(w_i \sum_{B} N_B(i)f(B)\right)
@@ -77,7 +80,6 @@ In order to fit the linear model, we measure the wall-clock time when executing 
 For these measurements, the training benchmarks are compiled without optimisation.
 The reason for using no optimisation is because it allows to use the trained cost model for computing a work metric which is independent of optimisations, as we explained in Section~\ref{}.
 
-Our cost model has a total of 52 LLVM instructions\footnote{We do not model all LLVM instructions because some instructions are more common in optimised programs, such as the vector instructions.}.
 
 \begin{figure}[htb]
     \centering
