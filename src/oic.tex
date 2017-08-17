@@ -67,7 +67,7 @@ since $f(B)$ is both program and execution dependent as the execution frequency 
 
 \subsection{Estimating a Cost Model of the Instructions}
 
-Similarly to previous work~\citep{giusto01,powell09,brandolese11}, we derive the cost model of the instruction set by modelling the problem as a multi-variable linear regression, where the \textit{regression coefficients} are the costs of the instructions and the \textit{regressors} are computed as $\sum_B N_B(i)f(B)$ for each instruction $i$.
+Similarly to previous work~\citep{giusto01,powell09,brandolese11}, we derive the cost model of the instruction set by modelling the problem as a multi-variable linear regression, where the \textit{regression coefficients} are the costs of the instructions and the \textit{regressors} are computed as $\sum_B N_B(i)f(B)$ for each instruction.
 \begin{equation}\label{eq:linear-work-expression}
 \Delta W = \varepsilon + \sum_{i} \left(w_i \sum_{B} N_B(i)f(B)\right)
 \end{equation}
@@ -134,15 +134,15 @@ Moreover, previous work have also presented other arguments against the use of I
   
 \section{Online {\IterComp} Infrastructure} \label{sec:oic-infra}
 
-Although {\itercomp} had been originally proposed as an \textit{offline} optimisation strategy it can also be adapted to work in the online scenario.
-Instead of selecting the best optimisation sequence as part of the development time (pre-shipping) of a program, a first version of the program is shipped together with a {\itercomp} mechanism.
+Although {\itercomp} had been originally proposed as an \textit{offline} optimisation strategy, it can also be adapted to work in online scenarios.
+Instead of selecting the best optimisation sequence as part of the development time (pre-shipping) of a program, a first version of the program is shipped together with an {\itercomp} mechanism.
 In the online scenario, the program is shipped with a initial optimisation sequence and different optimisation sequences are evaluated as the end-user executes the program.
 This optimisation strategy is also known as idle-time optimisation, as the re-compilation happens between runs of the program.
 
 LLVM is particularly suitable for iterative compilation as it makes possible to cache a pre-compiled, but still unoptimised, version of the input program in the bitcode format of the LLVM IR.  
 This caching allows to speedup the time required for re-compilation as it is able to bypass the frontend phase.
-If re-compilation time is critical, it would also be possible to keep only the hot portion of the code in the LLVM bitcode format, while the remaining portion of the code is already in the format of object code.
-However, this is out of the scope of this work and we always re-compile the whole program.
+If re-compilation time is critical, it would also be possible to keep only the hot portion of the code in the LLVM bitcode format, while the remaining portion of the code is already compiled to the final object code.
+However, this is out of the scope of this thesis and we always re-compile the whole program.
 
 \begin{figure}[htb]
     \centering
@@ -152,7 +152,7 @@ However, this is out of the scope of this work and we always re-compile the whol
 \end{figure}
 %\textbf{Describe the process step by step.}
 
-Figure~\ref{fig:infra-diagram} shows an overview of the infrastructure required for applying online {\itercomp},
+Figure~\ref{fig:infra-diagram} shows an overview of the infrastructure required for applying online {\itercomp}
 using WP as the metric of choice for evaluating optimisation sequences.
 The online {\itercomp} follows as described bellow:
 \begin{enumerate}
@@ -174,6 +174,13 @@ The \textit{Work Instrumentation} phase focuses on providing a low-overhead inst
 The instrumentation consists in adding a global counter to the program which is used to accumulate the amount of work computed during the program's execution, by means of the cost model of the instruction set.
 A detailed description of the work instrumentation is presented in Section~\ref{chap:instr}.
 
+Notice how the \textit{Work Instrumentation} phase is executed before performing any optimisation to the program.
+It is critical so that the work profiling always measure the same amount of work for a given input, regardless of the optimisation sequence applied to the program.
+Because the instrumentation is performed before optimising the program, it means that the work profiling derives the linear expression defined in Equation~\ref{eq:linear-work-expression}
+based on the unoptimised program.
+In other words, the basic blocks and the number of occurrences of the instruction in the basic blocks reflect the unoptimised program.
+This particular sequence of compilation guarantees that the amount of work must is only input dependent, but consistent between different optimisation sequences.
+
 %In both phases the goal is to improve the performance of the execution phase, but from different perspectives.
 %\textit{(i.)} In the compilation phase we focused on providing a low-overhead instrumentation for profiling the work metric. This phase is responsible to improve performance by lowering the overhead of the work profiling.
 %\textit{(ii.)} In the evaluation phase we proposed the use of the WP metric in order to enable {\itercomp} in an online scenario.
@@ -182,8 +189,18 @@ A detailed description of the work instrumentation is presented in Section~\ref{
 
 %\textbf{Talk about the process of keeping the same optimization for a given input-window and how the optimizations as selected based on the evaluation of these "evidences". Perhaps we could suggest using the Theory of Evidences at this point?!}
 
-In most online scenarios, it is common for periods of peak usage and idle periods.
-For example, mobile devices are usually intensely used during the day, with some idle periods at night while its battery is being re-charged.
-The proposed infrastructure is very well suited for these online scenarios as multiple runs of the program can be monitored during peak time, by collecting the work profiling and measuring its execution time, while at the idle time, the profiling statistics can be used for selecting better optimisations and re-compiling the program.
-However, if idle time is almost non-existent, the proposed infrastructure can still be used by re-compiling the program with a different optimisation while multiple runs of the program are being executed.
+As the name suggests, the component called \textit{Optimisation Selector} is responsible for selecting which optimisation sequence to use for the next execution of the program.
+It can either keep the same optimisation sequence used in the previous execution or start monitoring the performance of a new optimisation sequence.
+An optimisation sequence can be kept for multiple executions of the program in order to gather enough measurement to compute an average performance with small statistical deviations, i.e., for which the confidence interval has a small range.
+We call by \textit{Input-Window Size} the number of executions performed using the same optimisation sequence.
 
+\subsection{Real Online Scenarios}
+
+In most online scenarios, it is common for periods of peak usage and idle periods.
+For example, mobile devices are usually intensely used during the day, with some idle periods usually when the battery is being re-charged~\citep{mpeis16}.
+Similarly, many authors have considered peak and idle (or underutilised) periods of data centres~\ref{armbrust10}.
+
+The proposed infrastructure is very well suited for these real online scenarios\footnote{
+However, if idle time is almost non-existent, the proposed infrastructure can still be used by re-compiling the program with a different optimisation while multiple runs of the program are being executed.}.
+In particular, periods of peak usage could be used to monitor multiple runs of the program using the same optimisation sequence, collecting the work profiling and measuring its execution time,
+while periods of idleness or underutilisation could be leveraged to use the profiling statistics for selecting better optimisations and re-compiling the program.
