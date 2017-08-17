@@ -1,24 +1,25 @@
 
 \chapter{Experimental Evaluation}\label{chap:eval}
 
-In this section we discuss our experimental evaluation.
+In this chapter we discuss our experimental evaluation.
 First we describe the benchmarks with datasets used in the experiments.
 Afterwards, we discuss our results concerning the instrumentations for profiling our work metric.
 Finally we present the results of the online {\itercomp}.
 
-We implemented the instrumentations in LLVM 4.0.
+We implemented the instrumentations in LLVM 4.0\footnote{The implementation of the work profiling in LLVM is available at: \url{https://github.com/rcorcs/llvm-work-instr}.}.
 The target platform is a Linux-4.4.27 system with an Intel Core i7-4770 3.40GHz Skylake~CPU with 16~GiB RAM.
+All experiments use the Clang/LLVM compiler suite.
 
 \section{Benchmarks and Datasets} \label{sec:benchmarks}
 
 %{\Itercomp} is essentially based on repeatedly trying out a large number of compiler optimisations until the best combination of compiler optimisations is found for a particular program.
 %Our main goal is to speed up {\itercomp} while targeting optimal performance across large input datasets.
 
-For the experimental evaluation we have used a subset of the \textit{KDataSets} benchmark suit, which is the same benchmark and dataset suit used by Chen~\etal~\cite{chen10,chen12a}.
+For the experimental evaluation we have used a subset of the \textit{KDataSets} benchmark suite, which is the same benchmark and dataset suite used by \cite{chen10,chen12a}.
 The KDataSets contains 1000 different inputs for each one of its benchmark programs.
 These benchmarks cover a broad spectrum of application scenarios, ranging from simple embedded signal-processing tasks to common mobile-phone and desktop tasks.
 The different inputs try to capture distinct characteristics in terms of workload sizes and how these workloads exercise different control flow paths.
-A summary of the benchmarks and dataset suit is shown in Table~\ref{tab:kdatasets}.
+A summary of the benchmarks and dataset suite is shown in Table~\ref{tab:kdatasets}.
 
 \begin{table}[h]
 \centering
@@ -75,7 +76,7 @@ bzip2d        & 5125   & 0.2K-25M                   & Compressed files          
 \end{table}
 
 The shaded (grey) benchmarks in Table~\ref{tab:kdatasets} represent the benchmarks used for training the cost model used for computing the weight of the instructions for the work metric.
-These same training benchmarks were also used for collecting a fixed set of optimisations for the {\itercomp}.
+These same training benchmarks were also used for collecting a fixed set of optimisation sequences for the {\itercomp}.
 The remaining (white) benchmarks are used for the experimental evaluation.
 
 \section{Evaluation of the Instrumentation}
