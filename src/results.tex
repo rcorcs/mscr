@@ -276,7 +276,7 @@ The optimisation sequences are ranked based on their average performance and the
 \begin{itemize}
 \item \textbf{Oracle-RM} executes the program multiple times for each input, measuring the real speedup for each compiler optimisation, and then uses the real speedup over {\flagstype -O0} for comparing the optimisations.
 The speedups are computed based on the wall-clock time.
-In order to reduce noise, the program is executed several times for the same input, until the confidence interval no larger than 1\% for a 99\% confidence.
+In order to reduce noise, the program is executed several times for the same input, until the confidence interval was no larger than 1\% for a 99\% confidence.
 \item \textbf{Oracle-PP} represents an oracle with a \textit{perfect} non-intrusive profiling.
   Although it uses the WP metric for comparing optimisation, this oracle also avoids noise in its measurements by also executing the program multiple times for each input.
   The first execution is used for profiling the work metric.
