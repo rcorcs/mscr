@@ -216,17 +216,17 @@ A basic block $u$ dominates another basic block $v$ if and only if all paths
 to $v$ must also contain $u$.
 In other words, any basic block that dominates all predecessors of $v$ also dominates $v$.
 
-Natural loops are the cyclic structure in a CFG.
-First we define a backedge, which is an edge $(u,v)$ such that $v$ dominates $u$.
-Hence, a natural loop can be defined by the subgraph encompassed by its backedge.
-That is, for any given backedge $(u,v)$, the subgraph consisting of all paths with origin $v$ and terminus $u$, in addition to the backedge itself, is a natural loop.
-
 \begin{figure}[h]
   \centering
   \includegraphics[scale=1]{figs/natural-loop.pdf}
   \caption{Example of a natural loop.}
   \label{fig:natural-loops}
 \end{figure}
+
+Natural loops are the cyclic structure in a CFG.
+First we define a backedge, which is an edge $(u,v)$ such that $v$ dominates $u$.
+Hence, a natural loop can be defined by the subgraph encompassed by its backedge.
+That is, for any given backedge $(u,v)$, the subgraph consisting of all paths with origin $v$ and terminus $u$, in addition to the backedge itself, is a natural loop.
 
 Figure~\ref{fig:natural-loops} shows an example of a natural loop.
 Natural loops contain a \textit{header} basic block, which is the entry basic block of the loop,
@@ -380,7 +380,7 @@ For an input sample $x$ of size $n$, the confidence interval $CI$ for a confiden
 \begin{aligned}
 \overline{x} &= \frac{1}{n}\sum_{i=1}^n x_i \\
 \sigma &= \sqrt{ \frac{\sum_{i=1}^n \left( x_i - \overline{x} \right)^2}{n-1} }\\
-CI &= \overline{x} - z_{1-\frac{\alpha}{2}}\frac{\sigma}{\sqrt{n}} \\
+CI &= \overline{x} \pm z_{1-\frac{\alpha}{2}}\frac{\sigma}{\sqrt{n}} \\
 \end{aligned}
 \end{equation}
 where $\overline{x}$ is the mean of the input sample and $\sigma$ is its variance.

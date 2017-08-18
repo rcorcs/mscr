@@ -181,7 +181,6 @@ escapeinside={\@}{\@}             % Escape sequence \@ESCAPED STUFF\@
    /Subject (Optimising Compilers)
    /Keywords (Iterative Compilation;Profiling;Compiler Optimisation)
 }
-
 %% If the year of submission is not the current year, uncomment this line and 
 %% specify it here:
 % \submityear{1785}
@@ -195,17 +194,17 @@ escapeinside={\@}{\@}             % Escape sequence \@ESCAPED STUFF\@
 In modern optimising compilers,  the correct choice of an optimisation sequence can have a significant impact on the performance of the final optimised program.
 Each of these optimisation passes interacts with the code in complicated ways, depending on all other optimisations and the order they were applied to the code being optimised.
 Because of the unpredictability of optimisation interactions and their complexity,
-efficiently selecting the best optimisation sequence for a given program or program section remains an open problem.
+efficiently selecting the best optimisation sequence for a given program, or program section, remains an open problem.
 A well-known compilation technique that addresses this challenge is {\itercomp}.
 
-In this work, we focus on enabling {\itercomp} in \textit{online} scenarios.
-For this thesis, we define the online scenario as having the restriction that programs execute multiple inputs and distinct inputs are executed only once.
-Because of these restrictions, standard metrics for comparing optimisations are not viable, such as speedups or execution time alone.
+In this thesis, we focus on enabling {\itercomp} in \textit{online} scenarios.
+We define the online scenario as having the restriction that programs execute multiple inputs and distinct inputs are executed only once.
+Because of these restrictions, standard metrics for comparing optimisations, such as speedups or execution time alone, are not viable.
 To address this challenge, we propose the use of a work-based performance metric for guiding {\itercomp},
 where we instrument the program for measuring the amount of work it performed during its execution.
-In order to reduce the profiling overhead, we propose two relaxation algorithms which provide a trade-off between measurement accuracy and overhead.
+In order to reduce the profiling overhead, we also propose two relaxation algorithms which provide a trade-off between measurement accuracy and overhead.
 
-In the experimental evaluation, the first relaxation algorithm that operates on regions of functions is able to reduce the average overhead by about 43\% over the optimal work profiling, while incurring in a dynamic measurement error of much less than 1\%.
+In our experimental evaluation, the first relaxation algorithm that operates on regions of functions is able to reduce the average overhead by about 43\% over the optimal work profiling, while incurring in a dynamic measurement error of much less than 1\%.
 Similarly, the second relaxation algorithm which operates on the whole program, which also makes use of profiling from previous execution, was able to reduce even further this overhead by a factor of $2.1\times$ compared to the optimal profiling, while incurring in a dynamic measurement error of less than 3\%.
 
 Our evaluation also corroborates the use of the work-based performance metric for guiding online {\itercomp}.
