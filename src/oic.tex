@@ -14,7 +14,7 @@ We define the performance metric as the ratio between the amount of \textit{work
 \]
 
 %The hypothesis is that, given two optimisations $o_1$ and $o_2$, a program compiled with optimisation $o_2$ would \textit{consistently} perform better than when it is compiled with $o_1$, i.e., $o_1 \tilde{<}_p \, o_2$, if it performs more \textit{work} per unit of time when compiled with $o_2$ instead of $o_1$. 
-By measuring the amount of \textit{work} done per unit of time we reduce the impact of input-dependent aspects and focus instead on the efficiency of the optimised program.
+By measuring the amount of \textit{work} done per unit of time, we reduce the impact of input-dependent aspects and focus instead on the efficiency of the optimised program.
 For this metric, the main challenge is to precisely define what represents \textit{work}.
 As discussed in Section~\ref{sec:related-metrics}, many work metrics have been presented in the literature, such as block frequency and others.
 However, for comparing the performance benefits of different compiler optimisations on a program, although block frequency would be able to capture aspects of optimisations that simplify the control-flow graph (CFG), we argue that measuring work only at the basic block resolution would not be enough for capturing the effects of optimisations at the instruction level.
@@ -75,7 +75,7 @@ By having some empirical data after executing several benchmarks with different 
 In order to fit the linear model, we measure the wall-clock time when executing the training benchmarks described in Section\ref{sec:benchmarks} with their respective 1000 input datasets.
 For these measurements, the training benchmarks are compiled without optimisation.
 The reason for using no optimisation, as discussed in Section\ref{sec:oic-infra}, is because the amount of work must be only input dependent and consistent between different optimisation sequences.
-This aspect is crucial for the work-based performance metric to enable a consistent comparison between different optimisation sequences when executing with distinct inputs.
+This aspect is crucial for the work-based performance metric to enable a consistent comparison between the various optimisation sequences when executing with distinct inputs.
 %it allows to use the estimated cost model for computing a work metric which is independent of optimisations, as we explained in Section~\ref{}.
 
 Our cost model has a total of 52 LLVM instructions\footnote{We do not model all LLVM instructions because some instructions are more common in optimised programs, such as the vector instructions.}.
@@ -88,23 +88,23 @@ Because we fit the linear model based on the wall-clock execution time, the deri
 \begin{figure}[htb]
     \centering
     \includegraphics[width=0.9\linewidth]{figs/cost-model.pdf}
-    \caption{Linear model fitted from empirical data. The mean absolute error (MAE) for the fitted curve is of 7 milliseconds.}
+    \caption{Linear model fitted from empirical data. The mean absolute error (MAE) for the fitted curve is seven milliseconds.}
     \label{fig:cost-model}
 \end{figure}
 
 Figure~\ref{fig:cost-model} compare the work metric with the corresponding execution time for some instances of the test benchmarks.
 Notice how the fitted model has a higher relative error for the instances with very short execution time, namely those that run for less than one tenth of a second.
-The mean absolute error (MAE) for the fitted curve is of 7 milliseconds.
+The mean absolute error (MAE) for the fitted curve is seven milliseconds.
 
 \subsection{Comparison with Instructions Per Cycle} \label{sec:ipc-vs-work-metric}
 
-The IPC metric have been widely used for studying performance benefits of hardware optimisations.
-Although previous work have suggested the use of IPC for guiding {\itercomp}, in this section we argue in favour of the WP metric over IPC.
+The IPC metric has been widely used for studying performance benefits of hardware optimisations.
+Although previous work has suggested the use of IPC for guiding {\itercomp}, in this section we argue in favour of the WP metric over IPC.
 
 The IPC metric differs from the proposed WP metric in a key aspect:
 the IPC metric is computed solely based on the final optimised program.
-When executing different optimised versions of a program with a the same input, both the number of instructions and the number of clock cycles can change.
-For this reason, higher IPC does not necessarily translate to shorter execution time (or even less clock cycles).
+When executing different optimised versions of a program with the same input, both the number of instructions and the number of clock cycles can change.
+For this reason, higher IPC does not necessarily translate to shorter execution time (or even fewer clock cycles).
 
 We can illustrate this fact with a very small example as shown in Table~\ref{tab:ipc-example}.
 This example shows two versions of a program, namely P1 and P2, and their respective measurements related to IPC.
@@ -130,13 +130,13 @@ IPC                    & 1  & 0.5 \\
 
 On the other hand, WP computes the amount of work based on the unoptimised version of the program, which means that it always measures the same amount of work for the same input, regardless of the optimisations applied on the program.
 This is a key aspect that enables the use of the WP metric for guiding {\itercomp}, because a higher WP, which represents work per unit time, naturally translate to shorter execution time.
-Moreover, previous work have also presented other arguments against the use of IPC in similar use-case scenarios, as discussed in Chapter~\ref{chap:related}.
+Moreover, previous work has also presented other arguments against the use of IPC in similar use-case scenarios, as discussed in Chapter~\ref{chap:related}.
   
 \section{Online {\IterComp} Infrastructure} \label{sec:oic-infra}
 
 Although {\itercomp} had been originally proposed as an \textit{offline} optimisation strategy, it can also be adapted to work in online scenarios.
 Instead of selecting the best optimisation sequence as part of the development time (pre-shipping) of a program, a first version of the program is shipped together with an {\itercomp} mechanism.
-In the online scenario, the program is shipped with a initial optimisation sequence and different optimisation sequences are evaluated as the end-user executes the program.
+In the online scenario, the program is shipped with an initial optimisation sequence and different optimisation sequences are evaluated as the end-user executes the program.
 This optimisation strategy is also known as idle-time optimisation, as the re-compilation happens between runs of the program.
 
 LLVM is particularly suitable for iterative compilation as it makes possible to cache a pre-compiled, but still unoptimised, version of the input program in the bitcode format of the LLVM IR.  
@@ -169,9 +169,9 @@ The online {\itercomp} follows as described bellow:
  \end{enumerate}
 \end{enumerate}
 
-In this work we focus mainly on the highlighted components.
+In this work, we focus mainly on the highlighted components.
 The \textit{Work Instrumentation} phase focuses on providing a low-overhead instrumentation for profiling the work metric.
-The instrumentation consists in adding a global counter to the program which is used to accumulate the amount of work computed during the program's execution, by means of the cost model of the instruction set.
+The instrumentation consists of adding a global counter to the program which is used to accumulate the amount of work computed during the program's execution, using the cost model of the instruction set.
 A detailed description of the work instrumentation is presented in Section~\ref{chap:instr}.
 
 Notice how the \textit{Work Instrumentation} phase is executed before performing any optimisation to the program.
@@ -204,3 +204,9 @@ The proposed infrastructure is very well suited for these real online scenarios\
 However, if idle time is almost non-existent, the proposed infrastructure can still be used by re-compiling the program with a different optimisation while multiple runs of the program are being executed.}.
 In particular, periods of peak usage could be used to monitor multiple runs of the program using the same optimisation sequence, collecting the work profiling and measuring its execution time,
 while periods of idleness or underutilisation could be leveraged to use the profiling statistics for selecting better optimisations and re-compiling the program.
+
+\section{Summary}
+
+This chapter has formally defined the work-based performance metric, including a comparison to the \textit{instructions per cycle} metric.
+It also described the infrastructure necessary for performing online {\itercomp} guided by the work-based performance metric,
+in addition to a discussion of its application in real online scenarios.

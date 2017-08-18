@@ -1,12 +1,12 @@
 \chapter{Work Instrumentation} \label{chap:instr}
 
-In this chapter we describe how the computation of the work-metric can be performed during runtime by means of instrumenting the code.
+In this chapter, we describe how the computation of the work metric can be performed during runtime by means of instrumenting the code.
 In particular, we adapt the optimal algorithm proposed originally for block-frequency profiling~\citep{nahapetian73,knuth73,ball94}.
-Afterwards, we propose a relaxed instrumentation that focus on further reducing the overhead by considering the trade-off between profiling accuracy and instrumentation overhead.
+Afterwards, we propose a relaxed instrumentation that focuses on further reducing the overhead by considering the trade-off between profiling accuracy and instrumentation overhead.
 
 Because we define work as a linear equation on the block-frequency counters, it is possible to embed its computation into the execution of the program.
 A naive instrumentation would consist basically of having a global counter that starts with the interception value, $\varepsilon$, and each basic block increments its own cost into the global counter.
-Although this instrumentation is easily implemented, it imposes a large overhead on the instrumented program.
+Although this instrumentation is easily implemented, it imposes a significant overhead on the instrumented program.
 However, it is possible to insert fewer probes by carefully placing the probes in a way that is possible to reconstruct the complete profiling information~\citep{knuth73,ball94}.
 
 \begin{figure}[h]
@@ -20,7 +20,7 @@ We adapt the optimal block-frequency instrumentation in order to perform the wor
 The proposed work instrumentation differs from the optimal block-frequency instrumentation as the latter occurs in two stages:
 \textit{(i.) Before execution:} The code is instrumented with counters for each probe.
 \textit{(ii.) After execution:} The information from the recorded probes is propagated in the CFGs of the program.
-In contrast, the work instrumentation has a single counter and it only requires the instrumentation before execution, without any post-processing of the recorded profiling.
+In contrast, the work instrumentation has a single counter, and it only requires the instrumentation before execution, without any post-processing of the recorded profiling.
 
 Figure~\ref{fig:instr-diagram} shows a high-level overview of the complete work instrumentation algorithm.
 The highlighted sections are introduced or improved by our work profiling  instrumentation.
@@ -40,6 +40,7 @@ Figure~\ref{fig:cfg-example} shows an example of a CFG with a maximum spanning t
 \begin{figure}[htb]
 \centering {
   \includegraphics[scale=1]{figs/cfg-example.pdf}\\\vspace{1ex}
+  \vspace{1em}
   \resizebox{0.8\textwidth}{!}{
   %\scalebox{0.8}{
      \begin{minipage}{0.5\textwidth}
@@ -61,72 +62,6 @@ Figure~\ref{fig:cfg-example} shows an example of a CFG with a maximum spanning t
 
 In contrast to the naive instrumentation where each basic block records only its own amount of work, with the optimal profiling, the instrumented basic blocks need to record an aggregated value of work that represents a path in the CFG.
 These values are constructed with some instrumented basic blocks speculatively assuming some paths while other probes correct when these assumptions are wrong (see for example $w(P_0)$ and $w(P_1)$ in Figure~\ref{fig:cfg-example}).
-
-%\begin{algorithm}[h]
-%  \caption{Pseudocode of the data-flow analysis for assigning the values computed
-%  in each probe of the instrumentation for the profiling of the work metric.}
-%  \label{alg:populateEdgeInfo}
-%  \begin{algorithmic}
-%    \Function{\textrm{populateEdgeInfo}}{$G$}
-%    
-%    \For{\textbf{each} $e \in $ \textrm{instrumentedEdges}($G$) }
-%       \State $B_I \gets $ \textrm{instrumentedBlock}($e$)
-%       \State $inc[e] \gets \{ B_I \}$
-%       \State $dec[e] \gets \{ \}$
-%       \State $known[e] \gets $ \textbf{true}
-%    \EndFor
-%
-%    \State $changed \gets $ \textbf{true}
-%    \While{$changed$}
-%       \State $changed \gets $ \textbf{false}
-%	   \For{\textbf{each} $B \in V(G)$}
-%          \State $uIn \gets $ \textrm{unknownIn}($known, G, B$)
-%          \State $uOut \gets $ \textrm{unknownOut}($known, G, B$)
-%		  \If{$uIn=0$ \textbf{and} $uOut=1$}
-%             \State $changed \gets $ \textbf{true}
-%		     \State $incOut \gets \{\}$
-%			 \State $decOut \gets \{\}$
-%		     \For{$B_p\in$ \textrm{predecessors}($G, B$)}
-%			    \State $incOut \gets incOut \bigcup inc[(B_p,B)]$
-%			    \State $decOut \gets decOut \bigcup dec[(B_p,B)]$
-%			 \EndFor
-%		     \For{$B_s\in$ \textrm{successors}($G, B$)}
-%			    \State $incOut \gets incOut \cup dec[(B,B_s)]$
-%			    \State $decOut \gets decOut \cup inc[(B,B_s)]$
-%			 \EndFor
-%		     \For{$B_s\in$ \textrm{successors}($G, B$)}
-%			    \If{\textbf{not} $known[(B,B_s)]$}
-%			       \State $inc[(B,B_s)] \gets incOut\setminus{decOut}$
-%			       \State $dec[(B,B_s)] \gets decOut\setminus{incOut}$
-%			       \State $known[(B,B_s)] \gets$ \textbf{true}
-%				\EndIf
-%			 \EndFor
-%		  \EndIf
-%		  \If{$uIn=1$ \textbf{and} $uOut=0$}
-%             \State $changed \gets $ \textbf{true}
-%		     \State $incIn \gets \{\}$
-%			 \State $decIn \gets \{\}$
-%		     \For{$B_s\in$ \textrm{successors}($G, B$)}
-%			    \State $incIn \gets incIn \cup inc[(B,B_s)]$
-%			    \State $decIn \gets decIn \cup dec[(B,B_s)]$
-%			 \EndFor
-%		     \For{$B_p\in$ \textrm{predecessors}($G, B$)}
-%			    \State $incIn \gets incIn \bigcup dec[(B_p,B)]$
-%			    \State $decIn \gets decIn \bigcup inc[(B_p,B)]$
-%			 \EndFor
-%		     \For{$B_p\in$ \textrm{predecessors}($G, B$)}
-%			    \If{\textbf{not} $known[(B_p,B)]$}
-%			       \State $inc[(B_p,B)] \gets incIn\setminus{decIn}$
-%			       \State $dec[(B_p,B)] \gets decIn\setminus{incIn}$
-%			       \State $known[(B_p,B)] \gets$ \textbf{true}
-%				\EndIf
-%			 \EndFor
-%		  \EndIf
-%	   \EndFor
-%    \EndWhile
-%    \EndFunction
-%  \end{algorithmic}
-%\end{algorithm}
 
 \begin{lstlisting}[caption={Pseudocode of the data-flow analysis for assigning the values computed
   in each probe of the instrumentation for the profiling of the work metric.}, label={lst:populateEdgeInfo}, float]
@@ -156,7 +91,8 @@ populateEdgeInfo(G) {
         for succB in G.successors(B):
           incSum = incSum union inc[G.getEdge(B, succB)]
           decSum = decSum union dec[G.getEdge(B, succB)]
-        //update unknown outgoing edge in B with incSum and decSum
+        //update unknown outgoing edge in B
+        //with incSum and decSum
         e = G.getUnknownOutgoingEdge(B,knownInfo)
         inc[e] = incSum-decSum
         dec[e] = decSum-incSum
@@ -172,7 +108,8 @@ populateEdgeInfo(G) {
         for succB in G.successors(B):
           incSum = incSum union dec[G.getEdge(B, succB)]
           decSum = decSum union inc[G.getEdge(B, succB)]
-        //update unknown incoming edge in B with incSum and decSum
+        //update unknown incoming edge in B
+        //with incSum and decSum
         e = G.getUnknownIncomingEdge(B,knownInfo)
         inc[e] = incSum-decSum
         dec[e] = decSum-incSum
@@ -200,37 +137,8 @@ For example, the symbolic sum of the incoming edges of the basic block $B_8$ is 
 
 \lstlistingname~\ref{lst:instrValue} reads the edge information for each basic block by computing the symbolic sum of their respective incoming edges (or outgoing edges).
 From these \textit{edge expressions}, we are able to compose the aggregated value of the probes.
-The positive terms in the edge expression of a basic block indicate that the amount of work of this basic block will be incremented in the probes represented by these positive terms, similarly, the negative terms indicate that the amount of work of this basic block will be decremented in the probes represented by these negative terms.
+The positive terms in the edge expression of a basic block indicate that the amount of work of this basic block will be incremented in the probes represented by these positive terms. Similarly, the negative terms indicate that the amount of work of this basic block will be decremented in the probes represented by these negative terms.
 For example, because the edge expression for the basic block $B_8$ is $P_0 - P_1$, the amount of work of $B_8$, denoted by $w(B_8)$, is incremented in probe $P_0$ and decremented in $P_1$.
-
-%\begin{algorithm}[h]
-%  \caption{Pseudocode that describes how the edge information is used in order to extract the value that will be computed in a given instrumented basic block $B_I$. This algorithm could equally be implemented based on the predecessors.}
-%  \label{alg:instrValue}
-%  \begin{algorithmic}
-%    \Function{\textrm{instrValue}}{$G, B_I, inc, dec$}
-%	\State $v \gets 0$
-%    \For{\textbf{each} $B \in V(G)$}
-%	   \State $inc_B \gets \{\}$
-%	   \State $dec_B \gets \{\}$
-%%	   \For{$B_p\in$ \textrm{predecessors}($G, B$)}
-%%	      \State $inc_B \gets inc_B \bigcup inc[(B_p,B)]$
-%%	      \State $dec_B \gets dec_B \bigcup dec[(B_p,B)]$
-%%	   \EndFor
-%	   \For{$B_s\in$ \textrm{successors}($G, B$)}
-%	      \State $inc_B \gets inc_B \bigcup inc[(B,B_s)]$
-%	      \State $dec_B \gets dec_B \bigcup dec[(B,B_s)]$
-%	   \EndFor
-%	   \If{ $B_I \in inc_B\setminus{dec_B}$}
-%	      \State $v \gets v + w(B)$
-%	   \EndIf
-%	   \If{ $B_I \in dec_B\setminus{inc_B}$}
-%	      \State $v \gets v - w(B)$
-%	   \EndIf
-%	\EndFor
-%    \Return $v$
-%    \EndFunction
-%  \end{algorithmic}
-%\end{algorithm}
 
 \begin{lstlisting}[caption={Pseudocode that describes how the edge information is used in order to extract the value that will be computed in a given instrumented basic block $B_I$. This algorithm could equally be implemented based on the predecessors.}, label={lst:instrValue}, float]
 // Inputs: 1) CFG with the known edges flows of the chords
@@ -300,7 +208,7 @@ For the special case where a probe belongs to a basic block which is also an exi
 \end{lstlisting}
 
 After optimisations, the instrumented code can benefit from some of the transformations.
-For example, the optimisation pass for promoting memory to register (\texttt{-mem2reg}) is able to eliminate the local variable such that the local work counter is only kept in registers.
+For example, the optimisation pass for promoting memory to register (\texttt{-mem2reg}) can eliminate the local variable such that the local work counter is only kept in registers.
 The only explicit access to memory is performed when updating the global work counter.
 
 \begin{lstlisting}[language=llvm,style=nasm,caption={An illustrative example of how \texttt{-mem2reg} can optimise the instrumented code.}, label={lst:instr_opt_probe}]
@@ -322,12 +230,12 @@ The only explicit access to memory is performed when updating the global work co
 
 Although the optimal instrumentation significantly reduces the profiling overhead when compared to the naive instrumentation, from an average overhead of 79\% to 13\%, in some critical cases, even the optimal instrumentation can have an overhead of about 70\% (see benchmark \texttt{adpcm\_d} in Figure~\ref{fig:overhead-O3}).
 In order to further reduce the overhead in these critical cases, we propose a relaxed instrumentation by trading off accuracy and overhead.
-While the optimal placement of probes tries to place probes in edges that are less likely to be executed, the relaxation focus on removing probes that are more likely to be executed.
+While the optimal placement of probes tries to place probes in edges that are less likely to be executed, the relaxation focus on removing probes that are more likely to be executed but add little to the work metric.
 
 \begin{figure}[h]
   \centering
   \includegraphics[scale=0.9]{figs/relax-instr-diagram.pdf}
-  \caption{Diagram.}
+  \caption{Overview of the work instrumentation algorithm, including the relaxation technique.}
   \label{fig:relax-instr-diagram}
 \end{figure}
 
@@ -341,8 +249,13 @@ While the optimal placement of probes tries to place probes in edges that are le
 
 %Define an DAG of a CFG as a directed graph which may contain cycles if they have known constant trip counts.
 Figure~\ref{fig:relax-instr-diagram} shows an overview of the relaxed instrumentation algorithm.
-The highlighted step is introduced by the relaxed instrumentation on top of the previously defined optimal work instrumentation algorithm.
+The highlighted step is introduced by the relaxed instrumentation on top of the previously defined optimal profiling.
 The relaxed instrumentation performs a post-processing on the resulting instrumentation of the optimal algorithm.
+This post-processing identifies probes that add little to the work metric, and removes their instrumentation.
+In order to guarantee an upper bound for the dynamic error in the profiling measurement, the relaxation algorithm applies a constrained post-processing on a per DAG (directed acyclic graph) basis.
+By constraining the relaxation within each DAG by a maximum allowed static error, it guarantees that the overall relaxation will also be constrained by the same bound.
+
+
 The relaxation starts by extracting DAGs (directed acyclic graphs) from the CFG, as illustrated in Figure~\ref{fig:cfg-relax-example}.
 First, the algorithm extracts all the subgraphs that represent a loop or the outer most region of the function.
 Section~\ref{sec:natural-loops} explains how loops can be identified in the CFG.
@@ -362,7 +275,7 @@ Figure~\ref{fig:cfg-relax-example} shows a CFG partitioned into two DAGs (consid
   \label{fig:cfg-relax-example}
 \end{figure}
 
-
+\newpage
 \begin{lstlisting}[caption={Optimal placement of probes for block frequency.}, label={lst:instrumentCFG}]
 // Input: CFG	
 relaxInstrumentation(G) {
@@ -388,7 +301,7 @@ x_i\in\{0,1\}, i\in\{0,\ldots,k\}
 \]
 where $f(P_i)$ is the execution frequency of probe $P_i$, $x_i$ denotes the probes selected for removal, and $\varepsilon(P_i)$ is the percentage error of removing probe $P_i$ relative to the minimum work value possible to compute in the DAG, i.e., if $m$ is the minimum amount of work possible to be computed when executing the DAG, then $\varepsilon(P_i) = \frac{\omega(P_i)}{m}$.
 Because the percentage error is computed based on the path with the minimum amount of work, $\varepsilon(P_i)$ represents the maximum error possible that would be incurred when removing probe $P_i$.
-Furthermore, by constraining the percentage error of every DAG below a given threshold we guarantee that the final error of the relaxation will always be bounded by the threshold, as demonstrated by Proposition~\ref{prop:relax-bound}.
+Furthermore, by constraining the percentage error of every DAG below a given threshold, we guarantee that the final error of the relaxation will always be bounded by the threshold, as demonstrated by Proposition~\ref{prop:relax-bound}.
 
 \begin{prop}\label{prop:relax-bound}
 Let $n_i$ be the number of times a given DAG $i$ is executed, $r_i$ be the total relaxation (amount of work removed) in DAG $i$, and $m_i$ be its minimum amount of work.
@@ -449,7 +362,7 @@ Some of the benchmarks have DAGs with several hundreds of probes, which could re
 \section{Whole Program Relaxation}
 
 In some cases, the proposed relaxation can be very conservative, because it considers the static error of removing probe $P_i$ relative to the minimum work possible of a DAG, in order to be able to guarantee that the dynamic error will be bounded by a given threshold.
-This conservatism can be overly restrictive in some cases, resulting in a negligible overhead reduction but also causing only negligible dynamic error to the work profiling.
+This conservatism can be overly restrictive in some cases, resulting in a negligible overhead reduction but also causing just a negligible dynamic error to the work profiling.
 
 In some cases, this overly restrictive conservatism may be unnecessary.
 For these cases, we propose an adapted version of the relaxation algorithm that operates on the whole program.
@@ -480,3 +393,9 @@ Contrary to the per DAG relaxation, the whole program relaxation is not guarante
 as it depends on the representativity % representativeness
  of the profiling information provided to the whole program relaxation.
  
+\section{Summary}
+
+This chapter has described the instrumentation algorithm for the profiling of the work metric.
+We adapted the optimal algorithm proposed originally for block-frequency profiling.
+Additionally, we also proposed two relaxation algorithms that focus on further reducing the overhead by considering the trade-off between profiling accuracy and instrumentation overhead.
+The first is a relaxation algorithm that works in regions of functions and the second is a whole program relaxation algorithm.

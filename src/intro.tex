@@ -12,37 +12,36 @@ Because of all those dependencies and interactions, although most compiler optim
 Compiler writers typically use a combination of experience, insight, and experimentation on benchmark programs to construct a set of default optimisation sequences,
 which are commonly associated with the optimisation options like {\flagstype -O1}, {\flagstype -O2}, {\flagstype -O3}, {\flagstype -Os}, and {\flagstype -Oz}.
 Although these default optimisation sequences are expected to provide good performance on average, they are often sub-optimal for individual programs.
-Moreover, they usually do not include all the available optimisation passes and they are always applied in the same pre-defined order, without regard to the program being optimised~\citep{pan06,cavazos07,zhou12,kulkarni12}.
-Another major drawback concerns the fact that these default optimisation sequences should be re-constructed whenever the backend of the compiler re-targeted to a new processor architecture or new analysis and optimisations are implemented in the compiler.
+Moreover, they usually do not include all the available optimisation passes, and they are always applied in the same pre-defined order, without regard to the program being optimised~\citep{pan06,cavazos07,zhou12,kulkarni12}.
+Another major drawback concerns the fact that these default optimisation sequences should be reconstructed whenever the backend of the compiler re-targeted to a new processor architecture or new analysis and optimisations are implemented in the compiler.
 %in hopes that a programmer will know which combination of optimisations will benefit their code~\cite{pan06,cavazos07,zhou12,kulkarni12}.
 
 Efficiently selecting the best optimisation sequence for a given program or program section remains an open problem.
-A well known compilation technique that addresses this challenge is {\itercomp}.
+A well-known compilation technique that addresses this challenge is {\itercomp}.
 {\Itercomp} has the ability to adapt to new platforms, program and workload while still having a systematic and simple optimisation process.
 It works by repeatedly evaluating a large number of compiler optimisations until the best combination is found for a particular program~\citep{fursin07,chen10}.
 The main challenge concerning {\itercomp} is the need for efficiently exploring such a large optimisation space~\citep{fursin07,cavazos07,zhou12}.
 
-Until recently, most of existing work  had been focusing on finding the best optimisation through repeated runs using a single input.
+Until recently, most of the existing work had been focusing on finding the best optimisation through repeated runs using a single input.
 Although they demonstrate the potential of {\itercomp}, in real scenarios the user rarely executes the same input dataset multiple times~\citep{bodin98,kisuki99,stephenson03,kulkarni04,agakov06}.
-Applying {\itercomp} in light of a single input may not result in good performance when executing the optimised code with different inputs.
+Applying {\itercomp} in light of a single input may not result in a good performance when executing the optimised code with different inputs.
 
-Most of real world applications are complex enough so that a single input case does not capture the whole range of possible scenarios and program behaviour~\citep{haneda06,fursin07,chen10,chen12a}.
+Most of the real-world applications are complex enough so that a single input case does not capture the whole range of possible scenarios and program behaviour~\citep{haneda06,fursin07,chen10,chen12a}.
 Because programs can exhibit behaviours that differ greatly depending on the input,
 %This is something that is well known when writing test cases for correctness.
 %We can extend the same argument when optimising the code for performance.
-using a single input for {\itercomp} can produce poor performance when executed with different inputs.
+using a single input for {\itercomp} can produce a poor performance when executed with different inputs.
 
-Recent work have been studying the impact of using multiple input datasets for performing {\itercomp}.
-This previous work suggests that optimising based on a representative range of input datasets allows for selecting a robust compiler optimisation that produces good performance in real scenarios where the input is expected to change constantly~\citep{haneda06,fursin07,chen10,chen12a,chen12b,fang15,mpeis16}.
-Their results show that a limited number of input datasets may be sufficient to obtain a well optimised program for a wider range of different inputs~\citep{haneda06,fursin07,chen10,chen12a}.
-Finding such a robust combination of compiler optimisations by means of {\itercomp} across a large range of inputs may be very time consuming.
+Recent work has been studying the impact of using multiple input datasets for performing {\itercomp}.
+This previous work suggests that optimising based on a representative range of input datasets allows for selecting a robust compiler optimisation that produces a good performance in real scenarios where the input is expected to change constantly~\citep{haneda06,fursin07,chen10,chen12a,chen12b,fang15,mpeis16}.
+Their results show that a limited number of input datasets may be sufficient to obtain a well-optimised program for a wider range of different inputs~\citep{haneda06,fursin07,chen10,chen12a}.
+Finding such a robust combination of compiler optimisations by means of {\itercomp} across a large range of inputs may be very time-consuming.
 %In order to speed up this process we intend to reduce the number of actual executions during the exploration of the optimisation space without much degradation of the final selected optimisation.
 
 \section{{\IterComp} in Online Scenarios}
 
 In this work, our main goal is to enable {\itercomp} in \textit{online} scenarios.
 For the purposes of this thesis, we define the online scenario as having the restriction that programs execute multiple inputs and distinct inputs are executed only once.
-%while targeting optimal performance across different inputs.
 This online aspect is usually found in mobile and data centre platforms~\citep{chen12b,fang15,mpeis16}, where the goal is to optimise programs based on the workload of a particular user (or group of users) between executions.
 Online {\itercomp} must target optimal performance across different inputs.
 
@@ -55,12 +54,12 @@ We instrument the program for measuring the amount of work it performed during i
 Having a low overhead instrumentation is essential in this online scenario for two main reasons:
 $(i)$ the user is directly affected by large overheads;
 $(ii)$ a highly intrusive instrumentation can have a significant impact on the effect of the optimisations.
-With the purpose of reducing profiling overheads, we propose two relaxation algorithms which provides a trade-off between measurement accuracy and overhead.
+With the purpose of reducing profiling overhead, we propose two relaxation algorithms which provide a trade-off between measurement accuracy and overhead.
 The first is a relaxation algorithm that operates on the level of regions of functions, while the second performs the relaxation considering the whole program at the same time.
 
 Our experimental evaluation shows that performing online {\itercomp} guided by the work-based performance (WP) metric good results compared to the oracle, which is allowed to execute each input multiple times in order to use the actual speedup for guiding the {\itercomp}.
 Online {\itercomp} guided by the WP metric is able to achieve an average of 7.5\% and a maximum of 33\% improvement over the standard {\flagstype -O3} optimisation.
-Moreover, the experiments regarding the work profiling show that both relaxation algorithms are able to significanly reduce the profiling overhead while incurring a dynamic error of less than 5\% in the work measurement.
+Moreover, the experiments regarding the work profiling show that both relaxation algorithms are able to significantly reduce the profiling overhead while incurring a dynamic error of less than 5\% in the work measurement.
 The whole program relaxation achieves an average of $2\times$ reduction in the overhead compared with the optimal profiling technique, while the more conservative relaxation that operates per region achieves an average improvement of 40\% over the optimal profiling.
 
 \section{Contributions}
@@ -76,7 +75,7 @@ To summarise, the main contributions of this thesis are the following:
 \item We propose the use of a work-based performance (WP) metric for comparing different optimised versions of a program.
       In particular, we use the WP metric to guide {\itercomp} in an online scenario, where the program is expected to execute only once for distinct inputs.
        
-\item Contrary to what previous work have suggested, we show that instructions per cycle (IPC) is not a good metric for online {\itercomp}.
+\item Contrary to what previous work has suggested, we show that instructions per cycle (IPC) is not a good metric for online {\itercomp}.
 \item We adapt the block frequency profiling in order to measure the WP metric.
 \item A relaxation algorithm is proposed for lowering the overhead of the work profiling, with a controlled trade-off between accuracy and overhead.
 \item A whole program relaxation is proposed in order to further reduce the overhead of the work profiling.

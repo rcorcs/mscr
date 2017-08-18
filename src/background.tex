@@ -4,7 +4,7 @@ This chapter provides a description of basic concepts and theory used in this th
 The first section presents basic concepts of graph theory.
 Graph theory is largely used throughout the literature of compiler construction and compilation techniques.
 Second is an overview of the LLVM compiler infrastructure, including the description of compiler concepts useful for this thesis.
-In the sequence, it presents some of the early work on {\itercomp} and some of the work that address the challenges of its optimisation-space exploration.
+In the sequence, it presents some of the early work on {\itercomp} and some of the work that addresses the challenges of its optimisation-space exploration.
 Finally, this chapter also introduces the 0-1 knapsack problem, some basic concepts of statics and linear regression.
 
 \section{Basic Concepts of Graph Theory}
@@ -32,7 +32,7 @@ The problem of finding the maximum (or minimum) spanning tree is a polynomial-ti
 There are several efficient algorithms for solving the problem of finding a maximum (or minimum) spanning tree in a greedy manner\footnote{The problem of finding a maximum spanning tree can be solved by the same solution that finds a minimum spanning tree just by negating the edge weights.} \citep{bazlamacci01}.
 A well-known efficient algorithm is Kruskal's algorithm~\citep{kruskal56}.
 Kruskal's algorithm works in a greedy manner with a single pass over the edges sorted in order of increasing weights.
-It starts with a forest of singleton graphs, i.e., a set of disjoint trees where each tree comprises a single vertex.
+It starts with a forest of \textit{singleton} graphs, i.e., a set of disjoint trees where each tree comprises a single vertex.
 The algorithm evaluates all edges in increasing order, joining disconnected trees into larger trees.
 In the end, there is a single tree connecting all vertices of the graph with minimum total weight.
 
@@ -68,12 +68,9 @@ The main components under the LLVM umbrella is the LLVM intermediate representat
 The LLVM compiler infrastructure implements the classical \textit{three-phase compiler} infrastructure, which consists of a frontend, an optimiser, and a backend, as depicted in Figure~\ref{fig:3-phase-compiler}.
 The frontend is responsible for parsing, validating and diagnosing errors in the source code.
 This parsed source code is then translated into an intermediate representation, which is the LLVM IR in this case.
-The optimiser is responsible for doing a broad variety of transformations, that are usually independent of language and target machine, to improve the code's performance.
-%The front end parses source code, checking it for errors, and builds a language-specific Abstract Syntax Tree (AST) to represent the input code. The AST is optionally converted to a new representation for optimization, and the optimizer and back end are run on the code.
-%The optimizer is responsible for doing a broad variety of transformations to try to improve the code's running time, such as eliminating redundant computations, and is usually more or less independent of language and target.
+The optimiser is responsible for doing a broad variety of transformations, which are usually independent of language and target machine, to improve the code's performance.
 The backend, also known as the code generator, then translates the code from the intermediate representation onto the target instruction set.
 It is common for the backend to also perform some low-level optimisations that take advantage of unusual features of the supported architecture.
-%Common parts of a compiler backend include instruction selection, register allocation, and instruction scheduling.
 
 \begin{figure}[h]
   \centering
@@ -95,7 +92,7 @@ It is common for the backend to also perform some low-level optimisations that t
 
 LLVM IR is a low-level RISC-like virtual instruction set.
 It differs from other intermediate representations (e.g. GCC's GENERICS or the most recent GCC's GIMPLE) as it is defined as a first class language with well-defined semantics.
-Beyond being implemented as a language, LLVM IR is actually defined in three isomorphic forms: the textual format above, an in-memory data structure inspected and modified by optimisations themselves, and an efficient and dense on-disk binary \textit{bitcode} format.
+Beyond being defined as a language, LLVM IR is actually implemented in three isomorphic forms: the textual format above, an in-memory data structure inspected and modified by optimisations themselves, and an efficient and dense on-disk binary \textit{bitcode} format.
 %The LLVM Project also provides tools to convert the on-disk format from text to binary: llvm-as assembles the textual .ll file into a .bc file containing the bitcode goop and llvm-dis turns a .bc file into a .ll file.
 
 Unlike most RISC instruction sets, LLVM is strongly typed with a simple language-independent type system.
@@ -110,11 +107,11 @@ The LLVM type system is considered one of the most important features of its int
 The main first class types supported are: single value types, aggregate types, and labels.
 Single value types consist of integers of arbitrary bit width (e.g.\lstinline[language=llvm,style=nasm]{i32} denotes a 32-bit integer), floating-point of commonly used width (e.g.\lstinline[language=llvm,style=nasm]{half},\lstinline[language=llvm,style=nasm]{float},\lstinline[language=llvm,style=nasm]{double}, and\lstinline[language=llvm,style=nasm]{fp128}), pointers (e.g.\lstinline[language=llvm,style=nasm]{i32*}) and vector types.
 Vectors are used when multiple primitive data are operated in parallel using a single instruction (SIMD).
-A vector type is represented by a the number of elements and an underlying primitive data type, e.g.\lstinline[language=llvm,style=nasm]{<4 x i32>} is a vector of four 32-bit integer values.
+A vector type is represented by a number of elements and an underlying primitive data type, e.g.\lstinline[language=llvm,style=nasm]{<4 x i32>} is a vector of four 32-bit integer values.
 Aggregated types consist of arrays and structures.
 Vectors are not considered to be aggregate types.
 
-In addition to type information, LLVM IR also provides other high-level information that are useful for effectively performing several code analysis and transformations.
+In addition to type information, LLVM IR also provides other high-level information that is useful for effectively performing several code analysis and transformations.
 This includes explicit control flow graphs (CFG)~\citep{allen70} and an explicit dataflow representation, by means of the infinite register set in \textit{static single assignment} form~\citep{alpern88,cytron89,cytron91}.
 
 \subsubsection{Control Flow Graph}
@@ -125,7 +122,7 @@ Figure~\ref{fig:cfg-odd_inc} shows an example of a CFG constructed from the code
 
 \subsubsection{Static Single Assignment Form}
 
-An IR is in \textit{static single assignment} (SSA) form if and only if each virtual register is assigned exactly once and every use of registers occur after their definition.
+An IR is in \textit{static single assignment} (SSA) form if and only if each virtual register is assigned exactly once and every use of registers occurs after their definition.
 The primary advantage of using the SSA form is that it simultaneously simplifies and improves several compiler optimisations and analysis~\citep{alpern88,cytron91}.
 Most of the industrial-strength compilers for imperative programming language rely heavily on the SSA form.
 
@@ -154,7 +151,7 @@ Instructions use the three address format, which refers to the use of three oper
 However, instructions with fewer or more operands may occur, e.g. the\lstinline[language=llvm,style=nasm]{ret} instruction have fewer operands, while the\lstinline[language=llvm,style=nasm]{phi} and the\lstinline[language=llvm,style=nasm]{call} instructions may have more than three operands.
 
 Furthermore, the SSA form requires a special assignment statements called the $\phi$-function (see line \ref{lst:odd_inc:phi} of Listing~\ref{lst:ex:odd_inc}).
-The $\phi$-function receives as argument a list of virtual registers from different  control flow predecessors of the point where the $\phi$-function occurs.
+The $\phi$-function receives as argument a list of virtual registers from different control flow predecessors of the point where the $\phi$-function occurs.
 The control flow predecessors of each point in the CFG are listed in some arbitrary fixed order, and the $i$-th operand of $\phi$-function is associated with the $i$-th predecessor.
 If control reaches the $\phi$-function from its $i$-th predecessor, then the value of the $i$-th operand is attributed in the assignment.
 Each execution of a $\phi$-function uses only one of the operands, but which one depends on the flow of control just before the $\phi$-function.
@@ -173,7 +170,7 @@ Figure~\ref{lst:ex:odd_inc_stack} shows an implementation of the\lstinline[langu
 This implementation avoids using the $\phi$-function by keeping the answer on the stack.
 This is the preferred way of generating LLVM code by most frontends, as it simplifies the frontend's own implementation without incurring any serious detriment to the generated code.
 
-LLVM provides an optimisation pass for promoting memory references to be register references (called \texttt{-mem2reg}).
+LLVM provides an optimisation pass for promoting memory references to register references (called \texttt{-mem2reg}).
 It promotes \lstinline[language=llvm,style=nasm]{alloca} instructions which only have loads and stores as uses.
 An \lstinline[language=llvm,style=nasm]{alloca} is transformed by using dominator frontiers to place phi nodes, then traversing the function in depth-first order to rewrite loads and stores as appropriate.
 
@@ -241,7 +238,7 @@ All basic blocks that comprise the natural loop can be found by a backwards \tex
 
 The LLVM optimiser offers several passes in order to provide analysis and transformation capabilities.
 These passes are written using the LLVM Core libraries and they are as loosely coupled as possible.
-In other words, each pass is either a stand-alone pass or it explicitly declares its dependencies among other passes, in the case where it depend on some other analysis.
+In other words, each pass is either a stand-alone pass or it explicitly declares its dependencies among other passes, in the case where it depends on some other analysis.
 A pass can also specify the analysis passes that will be invalidated by its execution.
 
 The LLVM Core libraries provide both analysis and transformation passes for different levels of the input program.
@@ -270,21 +267,21 @@ Similarly, a loop and a region are particular patterns on the CFG of a function.
 The LLVM Pass Manager is responsible for scheduling the passes and make sure that the interactions among the passes are correctly fulfilled.
 For that purpose, when given a series of passes to execute, the Pass Manager uses the explicit dependency information to satisfy these dependencies and optimise the execution of passes.
 The Pass Manager aims at avoiding to repeat the execution of analysis passes.
-It keeps track of which analyses are already available, which are invalidated, and which analyses are pending.
+It keeps track of which analyses are already available, which ones are invalidated, and which analyses are pending.
 It also tracks the lifetimes of the analysis results and frees memory of the analysis results, when appropriate, managing memory usage.
 %The Pass Manager pipelines the passes together to get a better memory and cache usage, improving the overall cache behaviour of the compiler.
 For example, when performing a series of function-level passes, it executes all these passes in only one function, before moving to the next function, in order to improve the overall cache behaviour of the compiler.
 
-Notice however, that the Pass Manager executes the transformation passes in the exact same order as they were requested, as changing this order may result in a different code.
-Deciding on the best order to execute the transformation passes is a well known problem called the phase-ordering problem~\citep{touati06,kulkarni12,jantz14}.
+Notice, however, that the Pass Manager executes the transformation passes in the exact same order as they were requested, as changing this order may result in a different code.
+Deciding on the best order to execute the transformation passes is a well-known problem called the phase-ordering problem~\citep{touati06,kulkarni12,jantz14}.
 The phase-ordering problem is not addressed by the Pass Manager.
 
 \section{{\IterComp} and its Space Exploration}
 
-In this section we present the basic concepts of {\itercomp} and discuss some of the early work on this research topic.
+In this section, we present the basic concepts of {\itercomp} and discuss some of the early work on this research topic.
 We also consider some of the challenges on reducing its compilation time and present recent work that addresses these challenges.
 
-{\Itercomp} is a well known compilation technique that searches the optimisation space in order to find the best optimisation for a particular program.
+{\Itercomp} is a well-known compilation technique that searches the optimisation space in order to find the best optimisation for a particular program.
 {\Itercomp} has the ability to adapt to new platforms, program and workload while still having a systematic and simple optimisation process.
 It works by repeatedly evaluating a large number of compiler optimisations, by means of an execution-driven search, until the best optimisation is found for a particular program~\citep{kisuki99,fursin07,chen10}.
 %The main challenge concerning {\itercomp} is the need for efficiently exploring such a large optimisation space~\citep{fursin07,cavazos07,zhou12}.
@@ -292,7 +289,7 @@ It works by repeatedly evaluating a large number of compiler optimisations, by m
 Figure~\ref{fig:itercomp-diagram} shows an overview of the architecture necessary for performing {\itercomp}.
 After executing an optimised version of the program, profiling data is provided as a feed-back to the iterative search.
 This profiling data can be as simple as the program's execution time, or more complex, including hardware performance counters for cache behaviour, measurements of energy consumption, etc.
-The evaluator is able to use the feed-back in order to rank the optimisations and select the best one.
+The evaluator can use the feed-back to rank the optimisations and select the best one.
 The optimisation generator can be a fixed sequence of optimisations or a dynamic mechanism for suggesting the next optimisation.
 
 \begin{figure}[htb]
@@ -302,7 +299,7 @@ The optimisation generator can be a fixed sequence of optimisations or a dynamic
     \label{fig:itercomp-diagram}
 \end{figure}
 
-Early work on {\itercomp} have demonstrated its use for determining simultaneously optimal tile sizes and unroll factors for any given loop nest~\cite{kisuki00,knijnenburg04}.
+Early work on {\itercomp} has demonstrated its use for determining simultaneously optimal tile sizes and unroll factors for any given loop nest~\cite{kisuki00,knijnenburg04}.
 These two transformations are highly interdependent with a very irregular optimisation space, as both of them affect, in different ways, cache behaviour and instruction-level parallelism.
 Because of their close interaction, with non-trivial trade-offs, designing a static cost model, that enables the compiler to automatically select the best configuration, is a very laborious and impractical task.
 \cite{kisuki00} propose the use of {\itercomp} to address this problem, where it is able to outperform several static techniques.
@@ -322,7 +319,7 @@ They propose a mechanism that learns a predictive model from a training set of b
 This predictive model will later be used for predicting regions of the optimisation space that are more likely to contain promising results.
 Their approach is able to significantly reduce the number of executions necessary for achieving good performance improvements with the iterative search.
 
-More recently, \cite{ogilvie17} have proposed a strategy based on active learning techniques in order to focus the search on promising optimisation candidates.
+More recently, \cite{ogilvie17} have proposed a strategy based on active learning techniques to focus the search on promising optimisation candidates.
 It avoids redundant candidates 
 by using high-quality models which based on a combination of optimisation settings to predict the runtime of the training benchmarks.
 
@@ -355,23 +352,42 @@ x_i\in\{0,1\}, i\in\{1,\ldots,n\}
 \]
 where $x_i$ takes a value 1 if and only if item $i$ is packed.
 
-Because it is an NP-hard problem, there is no known algorithm with polynomial-time complexity on all cases.
-The brute force algorithm evaluates all sub-sets of the items, resulting in a search over a full binary tree with complexity of $O(2^n)$.
-However, this problem have been thoroughly studied and several exact algorithms for its solution have been proposed in the literature.
+Because it is an NP-hard problem, there is no known algorithm with polynomial-time complexity in all cases.
+The brute force algorithm evaluates all sub-sets of the items, resulting in a search over a full binary tree with a complexity of $O(2^n)$.
+However, this problem has been thoroughly studied, and several exact algorithms for its solution have been proposed in the literature.
 These exact algorithms are mainly based on two approaches, namely branch-and-bound or dynamic programming~\citep{martello77,martello99}.
 
 The branch-and-bound approaches usually consist in computing an upper bound for each node of the tree.
 This upper bound is then used to prune unpromising branches by comparing it to the current best solution.
-A common strategy is to sort all items in decreasing order of ratio of profit per unit weight, which allows for efficiently computing upper bounds using a \textit{greedy} approach and also tends to maximise pruning opportunities~\citep{martello77,martello00}.
+A common strategy is to sort all items in decreasing order of their ratio of profit per unit weight, which allows for efficiently computing upper bounds using a \textit{greedy} approach and also tends to maximise pruning opportunities~\citep{martello77,martello00}.
 
 There are also many heuristics for efficiently selecting the sub-set of items while trying to maximise the total profit.
-For example, a \textit{greedy} heuristic tries to maximise the total profit by sorting all items based on their profit-weight ratio and then eagerly selecting all items allowed by the maximum capacity as it iterates over the sorted items, in a single pass~\citep{dantzig57}.
+For example, a \textit{greedy} heuristic attempts to maximise the total profit by sorting all items based on their profit-weight ratio and then eagerly selecting all items allowed by the maximum capacity as it iterates over the sorted items, in a single pass~\citep{dantzig57}.
 This \textit{greedy} heuristic have a complexity of $O(n\log{n} + n)$, or just $O(n\log{n})$ for short.
-Although heuristics are not guaranteed to find the best solution, they usually tend to efficiently find good or close to optimal solutions.
+Although heuristics are not guaranteed to find the best solution, they usually tend to find good or close to optimal solutions efficiently.
 
-\section{Statistics}
+\section{Basic Concepts of Statistics}
 
-Confidence Intervals ...
+This section describes basic statistical concepts used throughout this thesis.
+In particular, it defines confidence intervals and linear regression.
+
+Confidence intervals are estimates of intervals possible for the true value of the unknown population parameter.
+For a given sample of a population and an estimate of the parameter value, the confidence interval provides an estimate 
+for which the true value of the population parameter will be within the confidence interval limits.
+Larger sample sizes usually results in better estimates of the population parameter.
+For an input sample $x$ of size $n$, the confidence interval $CI$ for a confidence of $\alpha$ is defined as:
+\begin{equation}
+\begin{aligned}
+\overline{x} &= \frac{1}{n}\sum_{i=1}^n x_i \\
+\sigma &= \sqrt{ \frac{\sum_{i=1}^n \left( x_i - \overline{x} \right)^2}{n-1} }\\
+CI &= \overline{x} - z_{1-\frac{\alpha}{2}}\frac{\sigma}{\sqrt{n}} \\
+\end{aligned}
+\end{equation}
+where $\overline{x}$ is the mean of the input sample and $\sigma$ is its variance.
+This confidence interval assumes a Gaussian distribution of the true population,
+for which the $z_{1-\frac{\alpha}{2}}$ factor is used.
+For smaller input samples the Student's t-distribution can be applied,
+which produces slightly wider confidence intervals to compensate for the for the fact that the variance of the input sample and the true population can differ significantly.
 
 \subsection{Linear Regression}
 
@@ -380,7 +396,7 @@ In statistics, for a known dataset $\{y_i, x_{i,1}, x_{i,2}, \ldots, x_{i,k}\}_{
 y_i \approx f(x_{i,1}, x_{i,2}, \ldots, x_{i,k})
 \]
 
-A well known regression model is the linear regression model, which assumes that there is a linear relation between regressors and the dependent variables.
+A well-known regression model is the linear regression model, which assumes that there is a linear relation between regressors and the dependent variables.
 In other words, it assumes that function $f$ has the form
 \[
 y_i = \varepsilon_i + \sum_{j=1}^k \beta_j x_{i,j}
@@ -388,16 +404,10 @@ y_i = \varepsilon_i + \sum_{j=1}^k \beta_j x_{i,j}
 where $\beta_j$ are unknown parameters, also called \textit{regression coefficients},
 and $\varepsilon_i$ are error terms.
 
-%For a given dataset, the \textit{regression coefficients} and a single intercept term $\varepsilon$ can be estimated by a mathematical optimisation approach that tries to optimise for a given objective function. For example, it can minimise for the \textit{mean squared error}, i.e.,
-%\[
-%\min \quad MSE = \frac{1}{n} \sum_{i=1}^n\left(f(x_{i,1}, x_{i,2}, \ldots, x_{i,k}) - y_i\right)^2
-%\]
-%where $f$ is the linear function.
 
 For a given dataset, the regression coefficients and an intercept term $\varepsilon$ can be estimated.
 These estimated parameters can then be used to predict the dependent variable $y_i$ for new input variables $x_{i,j}$, not in the dataset.
 
 There are many algorithms for parameter estimation, with different aspects and trade-offs~\citep{seber12}.
-The linear regression model have been widely studied in the literature and describing specific algorithms for fitting the regression is out of the scope of this thesis.
+The linear regression model has been widely studied in the literature and describing specific algorithms for fitting the regression is out of the scope of this thesis.
 
-\section{Summary}

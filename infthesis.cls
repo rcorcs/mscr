@@ -632,8 +632,10 @@ Computer Science}}
         \end{titlepage}
      }}{
      \renewcommand{\maketitle}{
-        \begin{titlepage}\begin{center}
-        \null\vfil\vskip 60\p@
+        \begin{titlepage}
+        \addtolength{\oddsidemargin}{-0.75cm}
+        \begin{center}
+        \null\vfill\vskip 160\p@
         {\LARGE\bfseries \@chapterfont \@title \par
            \ifthenelse{\boolean{draftthesis}}{\large (Draft Copy)}{}
         }\vfill

@@ -81,6 +81,7 @@
 %\usepackage{setspace}
 \usepackage{ragged2e}
 
+\usepackage[hidelinks]{hyperref}
 
 \usepackage{amsthm}
 \usepackage{amsmath,amssymb}
@@ -191,6 +192,26 @@ escapeinside={\@}{\@}             % Escape sequence \@ESCAPED STUFF\@
 %% Specify the abstract here.
 \abstract{%
 
+In modern optimising compilers,  the correct choice of optimisation sequence can have a significant impact on the performance of the final optimised program.
+Each of these optimisation passes interacts with the code in complicated ways, depending on all other optimisations and the order they were applied to the code being optimised.
+Because of the unpredictability of optimisation interactions and their complex interaction,
+efficiently selecting the best optimisation sequence for a given program or program section remains an open problem.
+A well-known compilation technique that addresses this challenge is {\itercomp}.
+
+In this work, we focus on enabling {\itercomp} in \textit{online} scenarios.
+For this thesis, we define the online scenario as having the restriction that programs execute multiple inputs and distinct inputs are executed only once.
+Because of these restrictions, standard metrics for comparing optimisations are not viable, such as speedups or execution time alone.
+To address this challenge, we propose the use of a work-based performance metric for guiding {\itercomp},
+where we instrument the program for measuring the amount of work it performed during its execution.
+In order to reduce the profiling overhead, we propose two relaxation algorithms which provide a trade-off between measurement accuracy and overhead.
+
+In the experimental evaluation, the first relaxation algorithm that operates on regions of functions is able to reduce the average overhead by about 43\% over the optimal work profiling, while incurring in a dynamic measurement error of much less than 1\%.
+Similarly, the second relaxation algorithm which operates on the whole program, which also makes use of profiling from previous execution, was able to reduce even further this overhead by a factor of $2.1\times$ compared to the optimal profiling, while incurring in a dynamic measurement error of less than 3\%.
+
+Our evaluation also corroborates the use of the work-based performance metric for guiding online {\itercomp}.
+Under real conditions, it was able to achieve good performance improvements when compared to the oracles, which were allowed to execute the program with the same input multiple times,
+achieving an average improvement of 5.4\% and a maximum of about 20\%.
+Contrary to what previous work has suggested, we have also shown that instructions per cycle (IPC) is not a good metric for guiding online {\itercomp}.
 }
 
 %% Now we start with the actual document.
@@ -205,6 +226,9 @@ escapeinside={\@}{\@}             % Escape sequence \@ESCAPED STUFF\@
 %% Acknowledgements
 \begin{acknowledgements}
 %\include{src/ack}
+I would like to thank my main supervisor Hugh Leather, as well as my co-supervisors Murray Cole, Zheng Wang, and Pavlos Petoumenos,
+for the support offered throughout the course of this project.
+
 This work was supported in part by the EPSRC Centre for Doctoral Training in Pervasive Parallelism, funded by the UK Engineering and Physical Sciences Research Council (grant EP/L01503X/1) and the University of Edinburgh.
 \end{acknowledgements}
 
